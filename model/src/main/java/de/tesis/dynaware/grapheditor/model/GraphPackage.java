@@ -258,13 +258,31 @@ public interface GraphPackage extends EPackage {
     int GNODE__SUBGRAPH = GCONNECTABLE_FEATURE_COUNT + 6;
 
     /**
+     * The feature id for the '<em><b>Text</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int GNODE__TEXT = GCONNECTABLE_FEATURE_COUNT + 7;
+
+    /**
+     * The feature id for the '<em><b>Subtype</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int GNODE__SUBTYPE = GCONNECTABLE_FEATURE_COUNT + 8;
+
+    /**
      * The number of structural features of the '<em>GNode</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int GNODE_FEATURE_COUNT = GCONNECTABLE_FEATURE_COUNT + 7;
+    int GNODE_FEATURE_COUNT = GCONNECTABLE_FEATURE_COUNT + 9;
 
     /**
      * The number of operations of the '<em>GNode</em>' class.
@@ -350,14 +368,31 @@ public interface GraphPackage extends EPackage {
     int GCONNECTION__JOINTS = GCONNECTABLE_FEATURE_COUNT + 4;
 
     /**
+     * The feature id for the '<em><b>Subtype</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int GCONNECTION__SUBTYPE = GCONNECTABLE_FEATURE_COUNT + 5;
+
+    /**
+     * The feature id for the '<em><b>Text</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int GCONNECTION__TEXT = GCONNECTABLE_FEATURE_COUNT + 6;
+
+    /**
      * The number of structural features of the '<em>GConnection</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int GCONNECTION_FEATURE_COUNT = GCONNECTABLE_FEATURE_COUNT + 5;
-
+    int GCONNECTION_FEATURE_COUNT = GCONNECTABLE_FEATURE_COUNT + 7;
     /**
      * The number of operations of the '<em>GConnection</em>' class.
      * <!-- begin-user-doc -->
@@ -686,6 +721,28 @@ public interface GraphPackage extends EPackage {
     EReference getGNode_Subgraph();
 
     /**
+     * Returns the meta object for the attribute '{@link de.tesis.dynaware.grapheditor.model.GNode#getText <em>Text</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Text</em>'.
+     * @see de.tesis.dynaware.grapheditor.model.GNode#getText()
+     * @see #getGNode()
+     * @generated
+     */
+    EAttribute getGNode_Text();
+
+    /**
+     * Returns the meta object for the attribute '{@link de.tesis.dynaware.grapheditor.model.GNode#getSubtype <em>Subtype</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Subtype</em>'.
+     * @see de.tesis.dynaware.grapheditor.model.GNode#getSubtype()
+     * @see #getGNode()
+     * @generated
+     */
+    EAttribute getGNode_Subtype();
+
+    /**
      * Returns the meta object for class '{@link de.tesis.dynaware.grapheditor.model.GConnector <em>GConnector</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -836,6 +893,28 @@ public interface GraphPackage extends EPackage {
      * @generated
      */
     EReference getGConnection_Joints();
+
+    /**
+     * Returns the meta object for the attribute '{@link de.tesis.dynaware.grapheditor.model.GConnection#getSubtype <em>Subtype</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Subtype</em>'.
+     * @see de.tesis.dynaware.grapheditor.model.GConnection#getSubtype()
+     * @see #getGConnection()
+     * @generated
+     */
+    EAttribute getGConnection_Subtype();
+
+    /**
+     * Returns the meta object for the attribute '{@link de.tesis.dynaware.grapheditor.model.GConnection#getText <em>Text</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Text</em>'.
+     * @see de.tesis.dynaware.grapheditor.model.GConnection#getText()
+     * @see #getGConnection()
+     * @generated
+     */
+    EAttribute getGConnection_Text();
 
     /**
      * Returns the meta object for class '{@link de.tesis.dynaware.grapheditor.model.GJoint <em>GJoint</em>}'.
@@ -1071,6 +1150,22 @@ public interface GraphPackage extends EPackage {
         EReference GNODE__SUBGRAPH = eINSTANCE.getGNode_Subgraph();
 
         /**
+         * The meta object literal for the '<em><b>Text</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute GNODE__TEXT = eINSTANCE.getGNode_Text();
+
+        /**
+         * The meta object literal for the '<em><b>Subtype</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute GNODE__SUBTYPE = eINSTANCE.getGNode_Subtype();
+
+        /**
          * The meta object literal for the '{@link de.tesis.dynaware.grapheditor.model.impl.GConnectorImpl <em>GConnector</em>}' class.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
@@ -1185,6 +1280,22 @@ public interface GraphPackage extends EPackage {
          * @generated
          */
         EReference GCONNECTION__JOINTS = eINSTANCE.getGConnection_Joints();
+
+        /**
+         * The meta object literal for the '<em><b>Text</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute GCONNECTION__TEXT = eINSTANCE.getGConnection_Text();
+
+        /**
+         * The meta object literal for the '<em><b>Subtype</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute GCONNECTION__SUBTYPE = eINSTANCE.getGConnection_Subtype();
 
         /**
          * The meta object literal for the '{@link de.tesis.dynaware.grapheditor.model.impl.GJointImpl <em>GJoint</em>}' class.

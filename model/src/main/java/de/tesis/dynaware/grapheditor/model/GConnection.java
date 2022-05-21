@@ -17,6 +17,8 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link de.tesis.dynaware.grapheditor.model.GConnection#getSource <em>Source</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.GConnection#getTarget <em>Target</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.GConnection#getJoints <em>Joints</em>}</li>
+ *   <li>{@link de.tesis.dynaware.grapheditor.model.GConnection#getSubtype <em>Subtype</em>}</li>
+ *   <li>{@link de.tesis.dynaware.grapheditor.model.GConnection#getText <em>Text</em>}</li>
  * </ul>
  * </p>
  *
@@ -146,5 +148,49 @@ public interface GConnection extends GConnectable {
      * @generated
      */
     EList<GJoint> getJoints();
+
+    /**
+     * Returns the value of the '<em><b>Subtype</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Subtype</em>' attribute.
+     * @see #setSubtype(String)
+     * @see de.tesis.dynaware.grapheditor.model.GraphPackage#getGConnection_Subtype()
+     * @model
+     * @generated
+     */
+    String getSubtype();
+
+    /**
+     * Sets the value of the '{@link de.tesis.dynaware.grapheditor.model.GConnection#getSubtype <em>Subtype</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Subtype</em>' attribute.
+     * @see #getSubtype()
+     * @generated
+     */
+    void setSubtype(String value);
+
+    /**
+     * Returns the value of the '<em><b>Text</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Text</em>' attribute.
+     * @see #setText(String)
+     * @see de.tesis.dynaware.grapheditor.model.GraphPackage#getGConnection_Text()
+     * @model
+     * @generated
+     */
+    String getText();
+
+    /**
+     * Sets the value of the '{@link de.tesis.dynaware.grapheditor.model.GConnection#getText <em>Text</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Text</em>' attribute.
+     * @see #getText()
+     * @generated
+     */
+    void setText(String value);
 
 } // GConnection

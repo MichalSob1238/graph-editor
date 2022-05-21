@@ -30,6 +30,8 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GConnectionImpl#getSource <em>Source</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GConnectionImpl#getTarget <em>Target</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GConnectionImpl#getJoints <em>Joints</em>}</li>
+ *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GConnectionImpl#getSubtype <em>Subtype</em>}</li>
+ *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GConnectionImpl#getText <em>Text</em>}</li>
  * </ul>
  * </p>
  *
@@ -105,6 +107,46 @@ public class GConnectionImpl extends GConnectableImpl implements GConnection {
      * @ordered
      */
     protected EList<GJoint> joints;
+
+    /**
+     * The default value of the '{@link #getSubtype() <em>Subtype</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getSubtype()
+     * @generated
+     * @ordered
+     */
+    protected static final String SUBTYPE_EDEFAULT = null;
+
+    /**
+     * The cached value of the '{@link #getSubtype() <em>Subtype</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getSubtype()
+     * @generated
+     * @ordered
+     */
+    protected String subtype = SUBTYPE_EDEFAULT;
+
+    /**
+     * The default value of the '{@link #getText() <em>Text</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getText()
+     * @generated
+     * @ordered
+     */
+    protected static final String TEXT_EDEFAULT = null;
+
+    /**
+     * The cached value of the '{@link #getText() <em>Text</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getText()
+     * @generated
+     * @ordered
+     */
+    protected String text = TEXT_EDEFAULT;
 
     /**
      * <!-- begin-user-doc -->
@@ -255,6 +297,54 @@ public class GConnectionImpl extends GConnectableImpl implements GConnection {
         return joints;
     }
 
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public String getSubtype() {
+        return subtype;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public void setSubtype(String newSubtype) {
+        String oldSubtype = subtype;
+        subtype = newSubtype;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, GraphPackage.GCONNECTION__SUBTYPE, oldSubtype, subtype));
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public String getText() {
+        return text;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public void setText(String newText) {
+        String oldText = text;
+        text = newText;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, GraphPackage.GCONNECTION__TEXT, oldText, text));
+    }
+
+
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -304,6 +394,10 @@ public class GConnectionImpl extends GConnectableImpl implements GConnection {
                 return basicGetTarget();
             case GraphPackage.GCONNECTION__JOINTS:
                 return getJoints();
+            case GraphPackage.GCONNECTION__SUBTYPE:
+                return getSubtype();
+            case GraphPackage.GCONNECTION__TEXT:
+                return getText();
         }
         return super.eGet(featureID, resolve, coreType);
     }
@@ -333,6 +427,12 @@ public class GConnectionImpl extends GConnectableImpl implements GConnection {
                 getJoints().clear();
                 getJoints().addAll((Collection<? extends GJoint>)newValue);
                 return;
+            case GraphPackage.GCONNECTION__SUBTYPE:
+                setSubtype((String)newValue);
+                return;
+            case GraphPackage.GCONNECTION__TEXT:
+                setText((String)newValue);
+                return;
         }
         super.eSet(featureID, newValue);
     }
@@ -360,6 +460,12 @@ public class GConnectionImpl extends GConnectableImpl implements GConnection {
             case GraphPackage.GCONNECTION__JOINTS:
                 getJoints().clear();
                 return;
+            case GraphPackage.GCONNECTION__SUBTYPE:
+                setSubtype(SUBTYPE_EDEFAULT);
+                return;
+            case GraphPackage.GCONNECTION__TEXT:
+                setText(TEXT_EDEFAULT);
+                return;
         }
         super.eUnset(featureID);
     }
@@ -382,6 +488,10 @@ public class GConnectionImpl extends GConnectableImpl implements GConnection {
                 return target != null;
             case GraphPackage.GCONNECTION__JOINTS:
                 return joints != null && !joints.isEmpty();
+            case GraphPackage.GCONNECTION__SUBTYPE:
+                return SUBTYPE_EDEFAULT == null ? subtype != null : !SUBTYPE_EDEFAULT.equals(subtype);
+            case GraphPackage.GCONNECTION__TEXT:
+                return TEXT_EDEFAULT == null ? text != null : !TEXT_EDEFAULT.equals(text);
         }
         return super.eIsSet(featureID);
     }
@@ -400,6 +510,10 @@ public class GConnectionImpl extends GConnectableImpl implements GConnection {
         result.append(id);
         result.append(", type: ");
         result.append(type);
+        result.append(", subtype: ");
+        result.append(subtype);
+        result.append(", text: ");
+        result.append(text);
         result.append(')');
         return result.toString();
     }
