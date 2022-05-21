@@ -26,6 +26,8 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GNodeImpl#getWidth <em>Width</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GNodeImpl#getHeight <em>Height</em>}</li>
  *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GNodeImpl#getSubgraph <em>Subgraph</em>}</li>
+ *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GNodeImpl#getText <em>Text</em>}</li>
+ *   <li>{@link de.tesis.dynaware.grapheditor.model.impl.GNodeImpl#getSubtype <em>Subtype</em>}</li>
  * </ul>
  * </p>
  *
@@ -161,6 +163,49 @@ public class GNodeImpl extends GConnectableImpl implements GNode {
      * @ordered
      */
     protected GModel subgraph;
+
+
+    /**
+     * The default value of the '{@link #getText() <em>Text</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getText()
+     * @generated
+     * @ordered
+     */
+    protected static final String TEXT_EDEFAULT = null;
+
+    /**
+     * The cached value of the '{@link #getText() <em>Text</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getText()
+     * @generated
+     * @ordered
+     */
+    protected String text = TEXT_EDEFAULT;
+
+    //TODO: check if null are okay here
+    /**
+     * The default value of the '{@link #getSubtype() <em>Subtype</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getSubtype()
+     * @generated
+     * @ordered
+     */
+    protected static final String SUBTYPE_EDEFAULT = null;
+
+    /**
+     * The cached value of the '{@link #getSubtype() <em>Subtype</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getSubtype()
+     * @generated
+     * @ordered
+     */
+    protected String subtype = SUBTYPE_EDEFAULT;
+
 
     /**
      * <!-- begin-user-doc -->
@@ -350,6 +395,54 @@ public class GNodeImpl extends GConnectableImpl implements GNode {
             eNotify(new ENotificationImpl(this, Notification.SET, GraphPackage.GNODE__SUBGRAPH, newSubgraph, newSubgraph));
     }
 
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public String getText() {
+        return text;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public void setText(String newText) {
+        String oldText = text;
+        text = newText;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, GraphPackage.GNODE__TEXT, oldText, text));
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public String getSubtype() {
+        return subtype;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public void setSubtype(String newSubtype) {
+        String oldSubtype = subtype;
+        subtype = newSubtype;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, GraphPackage.GNODE__SUBTYPE, oldSubtype, subtype));
+    }
+
+
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -402,6 +495,10 @@ public class GNodeImpl extends GConnectableImpl implements GNode {
                 return getHeight();
             case GraphPackage.GNODE__SUBGRAPH:
                 return getSubgraph();
+            case GraphPackage.GNODE__TEXT:
+                return getText();
+            case GraphPackage.GNODE__SUBTYPE:
+                return getSubtype();
         }
         return super.eGet(featureID, resolve, coreType);
     }
@@ -434,6 +531,12 @@ public class GNodeImpl extends GConnectableImpl implements GNode {
                 return;
             case GraphPackage.GNODE__SUBGRAPH:
                 setSubgraph((GModel)newValue);
+                return;
+            case GraphPackage.GNODE__TEXT:
+                setText((String)newValue);
+                return;
+            case GraphPackage.GNODE__SUBTYPE:
+                setSubtype((String)newValue);
                 return;
         }
         super.eSet(featureID, newValue);
@@ -468,6 +571,12 @@ public class GNodeImpl extends GConnectableImpl implements GNode {
             case GraphPackage.GNODE__SUBGRAPH:
                 setSubgraph((GModel)null);
                 return;
+            case GraphPackage.GNODE__TEXT:
+                setText(TEXT_EDEFAULT);
+                return;
+            case GraphPackage.GNODE__SUBTYPE:
+                setSubtype(SUBTYPE_EDEFAULT);
+                return;
         }
         super.eUnset(featureID);
     }
@@ -494,6 +603,10 @@ public class GNodeImpl extends GConnectableImpl implements GNode {
                 return height != HEIGHT_EDEFAULT;
             case GraphPackage.GNODE__SUBGRAPH:
                 return subgraph != null;
+            case GraphPackage.GNODE__TEXT:
+                return TEXT_EDEFAULT == null ? text != null : !TEXT_EDEFAULT.equals(text);
+            case GraphPackage.GNODE__SUBTYPE:
+                return SUBTYPE_EDEFAULT == null ? subtype != null : !SUBTYPE_EDEFAULT.equals(subtype);
         }
         return super.eIsSet(featureID);
     }
@@ -520,6 +633,10 @@ public class GNodeImpl extends GConnectableImpl implements GNode {
         result.append(width);
         result.append(", height: ");
         result.append(height);
+        result.append(", text: ");
+        result.append(text);
+        result.append(", subtype: ");
+        result.append(subtype);
         result.append(')');
         return result.toString();
     }

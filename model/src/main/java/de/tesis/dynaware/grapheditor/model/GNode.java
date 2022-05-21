@@ -214,4 +214,48 @@ public interface GNode extends GConnectable {
      */
     void setSubgraph(GModel value);
 
+    /**
+     * Returns the value of the '<em><b>Text</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Text</em>' attribute.
+     * @see #setText(String)
+     * @see de.tesis.dynaware.grapheditor.model.GraphPackage#getGNode_Text()
+     * @model
+     * @generated
+     */
+    String getText();
+
+    /**
+     * Sets the value of the '{@link de.tesis.dynaware.grapheditor.model.GNode#getText <em>Text</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Text</em>' attribute.
+     * @see #getText()
+     * @generated
+     */
+    void setText(String value);
+
+    /**
+     * Returns the value of the '<em><b>Subtype</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Subtype</em>' attribute.
+     * @see #setSubtype(String)
+     * @see de.tesis.dynaware.grapheditor.model.GraphPackage#getGNode_Subtype()
+     * @model
+     * @generated
+     */
+    String getSubtype();
+
+    /**
+     * Sets the value of the '{@link de.tesis.dynaware.grapheditor.model.GNode#getSubtype <em>Subtype</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Subtype</em>' attribute.
+     * @see #getSubtype()
+     * @generated
+     */
+    void setSubtype(String value);
+
 } // GNode
