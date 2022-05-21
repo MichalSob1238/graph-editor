@@ -89,7 +89,7 @@ public class TitledNodeSkin extends GNodeSkin {
     @Override
     public void initialize() {
         super.initialize();
-        title.setText(TITLE_TEXT + getNode().getId());
+        title.setText(TITLE_TEXT + getNode().getId() + "" + getNode().getDescription());
     }
 
     @Override
