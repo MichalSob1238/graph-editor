@@ -6,6 +6,7 @@ import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorT
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
+import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -29,6 +30,11 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
     private static final double MIN_WIDTH = 41;
     private static final double MIN_HEIGHT = 41;
+
+    private final Rectangle selectionHalo = new Rectangle();
+    private final Rectangle background = new Rectangle();
+
+    private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
 
     private final List<GConnectorSkin> topConnectorSkins = new ArrayList<>();
     private final List<GConnectorSkin> rightConnectorSkins = new ArrayList<>();
@@ -55,6 +61,8 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         title.setAlignment(Pos.CENTER);
         title.setVisible(true);
         getRoot().getChildren().add(title);
+        addSelectionHalo();
+        addSelectionListener();
     }
 
     @Override
@@ -129,7 +137,24 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
     @Override
     public void layoutConnectors() {
         layoutAllConnectors();
+        layoutSelectionHalo();
 
+    }
+
+    private void addSelectionListener() {
+
+        selectedProperty().addListener((v, o, n) -> {
+
+            if (n) {
+                selectionHalo.setVisible(true);
+                layoutSelectionHalo();
+                background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
+                getRoot().toFront();
+            } else {
+                selectionHalo.setVisible(false);
+                background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
+            }
+        });
     }
 
     private void layoutAllConnectors() {
@@ -209,6 +234,35 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
             return MINOR_POSITIVE_OFFSET;
         } else {
             return MINOR_NEGATIVE_OFFSET;
+        }
+    }
+
+    private void addSelectionHalo() {
+
+        getRoot().getChildren().add(selectionHalo);
+
+        selectionHalo.setManaged(false);
+        selectionHalo.setMouseTransparent(false);
+        selectionHalo.setVisible(false);
+
+        selectionHalo.setLayoutX(-HALO_OFFSET);
+        selectionHalo.setLayoutY(-HALO_OFFSET);
+
+    }
+
+    private void layoutSelectionHalo() {
+
+        if (selectionHalo.isVisible()) {
+
+            selectionHalo.setWidth(border.getWidth() + 20 * HALO_OFFSET);
+            selectionHalo.setHeight(border.getHeight() + 20 * HALO_OFFSET);
+
+            final double cornerLength = 20 * HALO_CORNER_SIZE;
+            final double xGap = border.getWidth() - 20 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
+            final double yGap = border.getHeight() - 20 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
+
+            selectionHalo.setStrokeDashOffset(HALO_CORNER_SIZE);
+            selectionHalo.getStrokeDashArray().setAll(cornerLength, yGap, cornerLength, xGap);
         }
     }
 }
