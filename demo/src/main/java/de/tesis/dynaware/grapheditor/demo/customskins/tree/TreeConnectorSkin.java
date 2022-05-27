@@ -12,7 +12,7 @@ import de.tesis.dynaware.grapheditor.GConnectorStyle;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 
 /**
- * Connector skin for the 'tree-like' graph.
+ * Connector skin for the 'tree-like' de.tesis.dynaware.grapheditor.model.
  */
 public class TreeConnectorSkin extends GConnectorSkin {
 

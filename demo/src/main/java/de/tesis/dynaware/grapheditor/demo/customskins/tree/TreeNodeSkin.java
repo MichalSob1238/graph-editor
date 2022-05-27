@@ -32,7 +32,7 @@ import de.tesis.dynaware.grapheditor.model.GraphFactory;
 import de.tesis.dynaware.grapheditor.model.GraphPackage;
 
 /**
- * Node skin for a 'tree-like' graph.
+ * Node skin for a 'tree-like' de.tesis.dynaware.grapheditor.model.
  */
 public class TreeNodeSkin extends GNodeSkin {
 

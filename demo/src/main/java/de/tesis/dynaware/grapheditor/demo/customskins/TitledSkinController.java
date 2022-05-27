@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
 
+import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EAttribute;
@@ -60,11 +61,12 @@ public class TitledSkinController extends DefaultSkinController {
 
         final GConnector input = GraphFactory.eINSTANCE.createGConnector();
         node.getConnectors().add(input);
-        input.setType(TitledSkinConstants.TITLED_INPUT_CONNECTOR);
 
         final GConnector output = GraphFactory.eINSTANCE.createGConnector();
         node.getConnectors().add(output);
-        output.setType(TitledSkinConstants.TITLED_OUTPUT_CONNECTOR);
+
+        input.setType(DefaultConnectorTypes.RIGHT_OUTPUT);
+        output.setType(DefaultConnectorTypes.LEFT_INPUT);
 
         Commands.addNode(graphEditor.getModel(), node);
     }

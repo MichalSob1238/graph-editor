@@ -5,6 +5,7 @@ package de.tesis.dynaware.grapheditor.demo;
 
 import java.util.Map;
 
+import de.tesis.dynaware.grapheditor.demo.customskins.*;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -28,10 +29,6 @@ import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
-import de.tesis.dynaware.grapheditor.demo.customskins.DefaultSkinController;
-import de.tesis.dynaware.grapheditor.demo.customskins.SkinController;
-import de.tesis.dynaware.grapheditor.demo.customskins.TitledSkinController;
-import de.tesis.dynaware.grapheditor.demo.customskins.TreeSkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledSkinConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeConnectionSelectionPredicate;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeConnectorValidator;
@@ -84,6 +81,8 @@ public class GraphEditorDemoController {
     @FXML
     private RadioMenuItem titledSkinButton;
     @FXML
+    private RadioMenuItem cecaSkinButton;
+    @FXML
     private Menu intersectionStyle;
     @FXML
     private RadioMenuItem gappedStyleButton;
@@ -105,6 +104,7 @@ public class GraphEditorDemoController {
     private DefaultSkinController defaultSkinController;
     private TreeSkinController treeSkinController;
     private TitledSkinController titledSkinController;
+    private CecaDiagramSkinController cecaSkinController;
 
     private final ObjectProperty<SkinController> activeSkinController = new SimpleObjectProperty<>();
 
@@ -122,6 +122,7 @@ public class GraphEditorDemoController {
         defaultSkinController = new DefaultSkinController(graphEditor, graphEditorContainer);
         treeSkinController = new TreeSkinController(graphEditor, graphEditorContainer);
         titledSkinController = new TitledSkinController(graphEditor, graphEditorContainer);
+        cecaSkinController = new CecaDiagramSkinController(graphEditor, graphEditorContainer);
 
         activeSkinController.set(defaultSkinController);
 
@@ -244,6 +245,11 @@ public class GraphEditorDemoController {
     }
 
     @FXML
+    public void setCecaSkin() {
+        activeSkinController.set(cecaSkinController);
+    }
+
+    @FXML
     public void setGappedStyle() {
 
         graphEditor.getProperties().getCustomProperties().remove(SimpleConnectionSkin.SHOW_DETOURS_KEY);
@@ -285,7 +291,7 @@ public class GraphEditorDemoController {
         graphEditor.getView().getTransforms().add(scaleTransform);
 
         final ToggleGroup skinGroup = new ToggleGroup();
-        skinGroup.getToggles().addAll(defaultSkinButton, treeSkinButton, titledSkinButton);
+        skinGroup.getToggles().addAll(defaultSkinButton, treeSkinButton, titledSkinButton, cecaSkinButton);
 
         final ToggleGroup connectionStyleGroup = new ToggleGroup();
         connectionStyleGroup.getToggles().addAll(gappedStyleButton, detouredStyleButton);
@@ -395,6 +401,11 @@ public class GraphEditorDemoController {
             }
             titledSkinButton.setSelected(true);
 
+        } else if (cecaSkinController.equals(activeSkinController.get())) {
+            graphEditor.setConnectorValidator(null);
+            graphEditor.getSelectionManager().setConnectionSelectionPredicate(null);
+            graphEditor.getView().getStyleClass().remove(STYLE_CLASS_TITLED_SKINS);
+            cecaSkinButton.setSelected(true);
         } else {
 
             graphEditor.setConnectorValidator(null);

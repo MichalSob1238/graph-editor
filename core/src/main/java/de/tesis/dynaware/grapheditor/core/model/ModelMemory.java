@@ -19,7 +19,7 @@ import de.tesis.dynaware.grapheditor.model.GNode;
  *
  * <p>
  * When a new model state is set, we compare it to the old state and decide what nodes, connectors, connections and
- * joints need to be added or removed from the graph.
+ * joints need to be added or removed from the de.tesis.dynaware.grapheditor.model.
  * </p>
  *
  * <p>

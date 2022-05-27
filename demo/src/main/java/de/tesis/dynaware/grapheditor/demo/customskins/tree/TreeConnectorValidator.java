@@ -7,7 +7,7 @@ import de.tesis.dynaware.grapheditor.GConnectorValidator;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 
 /**
- * Validation rules for how connectors can be connected for the 'tree-like' graph.
+ * Validation rules for how connectors can be connected for the 'tree-like' de.tesis.dynaware.grapheditor.model.
  */
 public class TreeConnectorValidator implements GConnectorValidator {
 

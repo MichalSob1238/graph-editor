@@ -16,9 +16,10 @@ import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.utils.Arrow;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
+import javafx.scene.text.Text;
 
 /**
- * Connection skin for the 'tree-like' graph. Pretty much just an arrow.
+ * Connection skin for the 'tree-like' de.tesis.dynaware.grapheditor.model. Pretty much just an arrow.
  */
 public class TreeConnectionSkin extends GConnectionSkin {
 
@@ -36,7 +37,8 @@ public class TreeConnectionSkin extends GConnectionSkin {
     private final Line haloFirstSide = new Line();
     private final Line haloSecondSide = new Line();
     private final Group selectionHalo = new Group(haloFirstSide, haloSecondSide);
-    private final Group root = new Group(background, selectionHalo, arrow);
+    private Text text = new Text("some text");
+    private final Group root = new Group(background, selectionHalo, arrow, text);
 
     private List<Point2D> points;
 
@@ -61,6 +63,9 @@ public class TreeConnectionSkin extends GConnectionSkin {
         haloFirstSide.getStyleClass().add(STYLE_CLASS_SELECTION_HALO);
         haloSecondSide.getStyleClass().add(STYLE_CLASS_SELECTION_HALO);
         selectionHalo.setVisible(false);
+
+        text.setText("TEXT" + getConnection().getDescription());
+        text.setManaged(false);
 
         selectedProperty().addListener((v, o, n) -> handleSelection(n));
     }
@@ -93,7 +98,10 @@ public class TreeConnectionSkin extends GConnectionSkin {
 
             this.points = points;
         }
-
+        text.setVisible(true);
+        double x = points.get(0).getX()/2.0 + points.get(1).getX()/2;
+        text.setX(x);
+        text.setY(points.get(1).getY()/2.0 + points.get(0).getY()/2.0);
         if (isSelected()) {
             drawSelectionHalo();
         }

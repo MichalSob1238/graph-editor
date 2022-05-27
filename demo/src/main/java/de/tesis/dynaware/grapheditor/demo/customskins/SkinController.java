@@ -8,7 +8,7 @@ import javafx.geometry.Side;
 public interface SkinController {
 
     /**
-     * Adds a node to the graph.
+     * Adds a node to the de.tesis.dynaware.grapheditor.model.
      * 
      * @param currentZoomFactor the current zoom factor (1 for 100%)
      */

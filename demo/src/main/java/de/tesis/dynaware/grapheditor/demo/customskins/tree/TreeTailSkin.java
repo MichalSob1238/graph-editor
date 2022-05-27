@@ -13,7 +13,7 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.utils.Arrow;
 
 /**
- * Tail skin for the 'tree-like' graph. Pretty much just an arrow.
+ * Tail skin for the 'tree-like' de.tesis.dynaware.grapheditor.model. Pretty much just an arrow.
  */
 public class TreeTailSkin extends GTailSkin {
 

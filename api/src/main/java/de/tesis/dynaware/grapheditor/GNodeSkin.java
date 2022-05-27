@@ -86,7 +86,7 @@ public abstract class GNodeSkin extends GSkin {
      *
      * <p>
      * This will be called as the node is created, or if a connector is added or removed. The connector skin's regions
-     * should be added to the scene graph.
+     * should be added to the scene de.tesis.dynaware.grapheditor.model.
      * </p>
      *
      * @param connectorSkins a list of {@link GConnectorSkin} objects for each of the node's connectors
