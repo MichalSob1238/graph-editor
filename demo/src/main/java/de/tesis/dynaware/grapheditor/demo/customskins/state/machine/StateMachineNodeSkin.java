@@ -1,4 +1,4 @@
-package de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram;
+package de.tesis.dynaware.grapheditor.demo.customskins.state.machine;
 
 import com.jfoenix.controls.JFXTextField;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
@@ -18,7 +18,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -28,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CecaDiagramNodeSkin extends GNodeSkin {
+public class StateMachineNodeSkin extends GNodeSkin {
 
     private final Label title = new Label();
     private final Rectangle border = new Rectangle();
@@ -50,6 +49,110 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
     private final List<GConnectorSkin> bottomConnectorSkins = new ArrayList<>();
     private final List<GConnectorSkin> leftConnectorSkins = new ArrayList<>();
     private EventHandler<? super MouseEvent> doubleClickedListener = getDoubleClickedListener();
+
+    /**
+     * Creates a new {@link GNodeSkin}.
+     *
+     * @param node the {@link GNode} represented by the skin
+     */
+    public StateMachineNodeSkin(GNode node) {
+        super(node);
+
+        border.widthProperty().bind(getRoot().widthProperty());
+        border.heightProperty().bind(getRoot().heightProperty());
+
+        getRoot().getChildren().add(border);
+        background.setFill(Color.TRANSPARENT);
+        border.setFill(Color.TRANSPARENT);
+
+        title.setText("title!");
+        System.out.println("setting title");
+        title.setAlignment(Pos.CENTER);
+        title.setVisible(true);
+        title.setOnMouseClicked(doubleClickedListener);
+        getRoot().getChildren().add(title);
+        //addSelectionHalo();
+        addSelectionListener();
+    }
+
+    private void addSelectionListener() {
+        selectedProperty().addListener((v, o, n) -> {
+
+            if (n) {
+                selectionHalo.setVisible(true);
+//                layoutSelectionHalo();
+                background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
+                getRoot().toFront();
+            } else {
+                selectionHalo.setVisible(false);
+                background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
+            }
+        });
+    }
+
+    @Override
+    public void layoutConnectors() {
+        layoutAllConnectors();
+//        layoutSelectionHalo();
+
+    }
+
+    private void layoutAllConnectors() {
+
+        layoutConnectors(topConnectorSkins, false, 0);
+        layoutConnectors(rightConnectorSkins, true, getRoot().getWidth());
+        layoutConnectors(bottomConnectorSkins, false, getRoot().getHeight());
+        layoutConnectors(leftConnectorSkins, true, 0);
+    }
+
+    private void layoutConnectors(final List<GConnectorSkin> connectorSkins, final boolean vertical, final double offset) {
+
+        final int count = connectorSkins.size();
+
+        for (int i = 0; i < count; i++) {
+
+            final GConnectorSkin skin = connectorSkins.get(i);
+            final Node root = skin.getRoot();
+
+            if (vertical) {
+
+                final double offsetY = getRoot().getHeight() / (count + 1);
+                final double offsetX = getMinorOffsetX(skin.getConnector());
+
+                root.setLayoutX(GeometryUtils.moveOnPixel(offset - skin.getWidth() / 2 + offsetX));
+                root.setLayoutY(GeometryUtils.moveOnPixel((i + 1) * offsetY - skin.getHeight() / 2));
+
+            } else {
+
+                final double offsetX = getRoot().getWidth() / (count + 1);
+                final double offsetY = getMinorOffsetY(skin.getConnector());
+
+                root.setLayoutX(GeometryUtils.moveOnPixel((i + 1) * offsetX - skin.getWidth() / 2));
+                root.setLayoutY(GeometryUtils.moveOnPixel(offset - skin.getHeight() / 2 + offsetY));
+            }
+        }
+    }
+    private double getMinorOffsetX(final GConnector connector) {
+
+        final String type = connector.getType();
+
+        if (type.equals(DefaultConnectorTypes.LEFT_INPUT) || type.equals(DefaultConnectorTypes.RIGHT_OUTPUT)) {
+            return MINOR_POSITIVE_OFFSET;
+        } else {
+            return MINOR_NEGATIVE_OFFSET;
+        }
+    }
+
+    private double getMinorOffsetY(final GConnector connector) {
+
+        final String type = connector.getType();
+
+        if (type.equals(DefaultConnectorTypes.TOP_INPUT) || type.equals(DefaultConnectorTypes.BOTTOM_OUTPUT)) {
+            return MINOR_POSITIVE_OFFSET;
+        } else {
+            return MINOR_NEGATIVE_OFFSET;
+        }
+    }
 
     private EventHandler<MouseEvent> getDoubleClickedListener() {
         return event -> {
@@ -99,32 +202,6 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         title.setFont(font);
     }
 
-    /**
-     * Creates a new {@link GNodeSkin}.
-     *
-     * @param node the {@link GNode} represented by the skin
-     */
-    public CecaDiagramNodeSkin(GNode node) {
-        super(node);
-
-
-        border.widthProperty().bind(getRoot().widthProperty());
-        border.heightProperty().bind(getRoot().heightProperty());
-
-        getRoot().getChildren().add(border);
-        background.setFill(Color.TRANSPARENT);
-        border.setFill(Color.TRANSPARENT);
-
-        title.setText("title!");
-        System.out.println("setting title");
-        title.setAlignment(Pos.CENTER);
-        title.setVisible(true);
-        title.setOnMouseClicked(doubleClickedListener);
-        getRoot().getChildren().add(title);
-        //addSelectionHalo();
-        addSelectionListener();
-    }
-
     @Override
     public void setConnectorSkins(final List<GConnectorSkin> connectorSkins) {
 
@@ -160,21 +237,6 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         layoutConnectors();
     }
 
-    private String typeOfConnector(String connectorType) {
-
-        String result = "invalid";
-        if (DefaultConnectorTypes.isTop(connectorType)) {
-            result = "top";
-        } else if (DefaultConnectorTypes.isBottom(connectorType)) {
-            result = "bottom";
-        } else if (DefaultConnectorTypes.isRight(connectorType)) {
-            result = "right";
-        } else if (DefaultConnectorTypes.isLeft(connectorType)) {
-            result = "left";
-        }
-        return result;
-    }
-
     private void removeAllConnectors() {
 
         for (final GConnectorSkin connectorSkin : topConnectorSkins) {
@@ -194,67 +256,23 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         }
     }
 
-    @Override
-    public void layoutConnectors() {
-        layoutAllConnectors();
-        layoutSelectionHalo();
+    private String typeOfConnector(String connectorType) {
 
-    }
-
-    void addSelectionListener() {
-
-        selectedProperty().addListener((v, o, n) -> {
-
-            if (n) {
-                selectionHalo.setVisible(true);
-                layoutSelectionHalo();
-                background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
-                getRoot().toFront();
-            } else {
-                selectionHalo.setVisible(false);
-                background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, false);
-            }
-        });
-    }
-
-    private void layoutAllConnectors() {
-
-        layoutConnectors(topConnectorSkins, false, 0);
-        layoutConnectors(rightConnectorSkins, true, getRoot().getWidth());
-        layoutConnectors(bottomConnectorSkins, false, getRoot().getHeight());
-        layoutConnectors(leftConnectorSkins, true, 0);
-    }
-
-    private void layoutConnectors(final List<GConnectorSkin> connectorSkins, final boolean vertical, final double offset) {
-
-        final int count = connectorSkins.size();
-
-        for (int i = 0; i < count; i++) {
-
-            final GConnectorSkin skin = connectorSkins.get(i);
-            final Node root = skin.getRoot();
-
-            if (vertical) {
-
-                final double offsetY = getRoot().getHeight() / (count + 1);
-                final double offsetX = getMinorOffsetX(skin.getConnector());
-
-                root.setLayoutX(GeometryUtils.moveOnPixel(offset - skin.getWidth() / 2 + offsetX));
-                root.setLayoutY(GeometryUtils.moveOnPixel((i + 1) * offsetY - skin.getHeight() / 2));
-
-            } else {
-
-                final double offsetX = getRoot().getWidth() / (count + 1);
-                final double offsetY = getMinorOffsetY(skin.getConnector());
-
-                root.setLayoutX(GeometryUtils.moveOnPixel((i + 1) * offsetX - skin.getWidth() / 2));
-                root.setLayoutY(GeometryUtils.moveOnPixel(offset - skin.getHeight() / 2 + offsetY));
-            }
+        String result = "invalid";
+        if (DefaultConnectorTypes.isTop(connectorType)) {
+            result = "top";
+        } else if (DefaultConnectorTypes.isBottom(connectorType)) {
+            result = "bottom";
+        } else if (DefaultConnectorTypes.isRight(connectorType)) {
+            result = "right";
+        } else if (DefaultConnectorTypes.isLeft(connectorType)) {
+            result = "left";
         }
+        return result;
     }
 
     @Override
-    public Point2D getConnectorPosition(GConnectorSkin connectorSkin) {
+    public Point2D getConnectorPosition(GConnectorSkin connectorSkin){
         final Node connectorRoot = connectorSkin.getRoot();
 
         final Side side = DefaultConnectorTypes.getSide(connectorSkin.getConnector().getType());
@@ -276,56 +294,5 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         }
 
         return new Point2D(x, y);
-    }
-
-    private double getMinorOffsetX(final GConnector connector) {
-
-        final String type = connector.getType();
-
-        if (type.equals(DefaultConnectorTypes.LEFT_INPUT) || type.equals(DefaultConnectorTypes.RIGHT_OUTPUT)) {
-            return MINOR_POSITIVE_OFFSET;
-        } else {
-            return MINOR_NEGATIVE_OFFSET;
-        }
-    }
-
-    private double getMinorOffsetY(final GConnector connector) {
-
-        final String type = connector.getType();
-
-        if (type.equals(DefaultConnectorTypes.TOP_INPUT) || type.equals(DefaultConnectorTypes.BOTTOM_OUTPUT)) {
-            return MINOR_POSITIVE_OFFSET;
-        } else {
-            return MINOR_NEGATIVE_OFFSET;
-        }
-    }
-
-    void addSelectionHalo() {
-
-        getRoot().getChildren().add(selectionHalo);
-
-        selectionHalo.setManaged(false);
-        selectionHalo.setMouseTransparent(false);
-        selectionHalo.setVisible(false);
-
-        selectionHalo.setLayoutX(-HALO_OFFSET);
-        selectionHalo.setLayoutY(-HALO_OFFSET);
-
-    }
-
-    private void layoutSelectionHalo() {
-
-        if (selectionHalo.isVisible()) {
-
-            selectionHalo.setWidth(border.getWidth() + 20 * HALO_OFFSET);
-            selectionHalo.setHeight(border.getHeight() + 20 * HALO_OFFSET);
-
-            final double cornerLength = 20 * HALO_CORNER_SIZE;
-            final double xGap = border.getWidth() - 20 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
-            final double yGap = border.getHeight() - 20 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
-
-            selectionHalo.setStrokeDashOffset(HALO_CORNER_SIZE);
-            selectionHalo.getStrokeDashArray().setAll(cornerLength, yGap, cornerLength, xGap);
-        }
     }
 }

@@ -5,7 +5,13 @@ import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
-import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.*;
+import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConnectorSkin;
+import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConstants;
+import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramGateSkin;
+import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramTailSkin;
+import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConnectionSkin;
+import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants;
+import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineNodeSkin;
 import de.tesis.dynaware.grapheditor.model.*;
 import javafx.geometry.Side;
 import org.eclipse.emf.common.command.CompoundCommand;
@@ -17,20 +23,22 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import java.util.List;
 import java.util.OptionalInt;
 
-public class CecaDiagramSkinController implements SkinController{
+public class StateMachineController implements SkinController{
 
     private final GraphEditor graphEditor;
     private final GraphEditorContainer graphEditorContainer;
 
-    public CecaDiagramSkinController(final GraphEditor graphEditor, final GraphEditorContainer graphEditorContainer) {
+    public StateMachineController(final GraphEditor graphEditor, final GraphEditorContainer graphEditorContainer) {
         this.graphEditor = graphEditor;
         this.graphEditorContainer = graphEditorContainer;
 
-        graphEditor.setNodeSkin(CecaDiagramConstants.GATE_NODE, CecaDiagramGateSkin.class);
-        graphEditor.setConnectorSkin(CecaDiagramConstants.DIAGRAM_INPUT_CONNECTOR, CecaDiagramConnectorSkin.class);
-        graphEditor.setConnectorSkin(CecaDiagramConstants.DIAGRAM_OUTPUT_CONNECTOR, CecaDiagramConnectorSkin.class);
-        graphEditor.setTailSkin(CecaDiagramConstants.DIAGRAM_INPUT_CONNECTOR, CecaDiagramTailSkin.class);
-        graphEditor.setTailSkin(CecaDiagramConstants.DIAGRAM_OUTPUT_CONNECTOR, CecaDiagramTailSkin.class);
+        graphEditor.setNodeSkin(StateMachineConstants.STATE_MACHINE_NODE, StateMachineNodeSkin.class);
+        graphEditor.setConnectorSkin(StateMachineConstants.STATE_MACHINE_INPUT_CONNECTOR, CecaDiagramConnectorSkin.class);
+        graphEditor.setConnectorSkin(StateMachineConstants.STATE_MACHINE_OUTPUT_CONNECTOR, CecaDiagramConnectorSkin.class);
+        graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_INPUT_CONNECTOR, CecaDiagramTailSkin.class);
+        graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_OUTPUT_CONNECTOR, CecaDiagramTailSkin.class);
+        graphEditor.setConnectionSkin(StateMachineConstants.STATE_MACHINE_CONNECTION, StateMachineConnectionSkin.class);
+        System.out.println("CREATING SM CONTROLLER");
     }
 
     @Override
@@ -53,7 +61,7 @@ public class CecaDiagramSkinController implements SkinController{
         node.getConnectors().add(output);
         output.setType(DefaultConnectorTypes.RIGHT_OUTPUT);
 
-        node.setType(CecaDiagramConstants.GATE_NODE);
+        node.setType(StateMachineConstants.STATE_MACHINE_NODE);
         node.setDescription("DESCRIPTION!");
 
         Commands.addNode(graphEditor.getModel(), node);
@@ -72,11 +80,11 @@ public class CecaDiagramSkinController implements SkinController{
         for (final GNode node : model.getNodes()) {
 
             if (skinLookup.lookupNode(node).isSelected()) {
-                    final GConnector connector = GraphFactory.eINSTANCE.createGConnector();
-                    connector.setType(type);
+                final GConnector connector = GraphFactory.eINSTANCE.createGConnector();
+                connector.setType(type);
 
-                    final EReference connectors = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
-                    command.append(AddCommand.create(editingDomain, node, connectors, connector));
+                final EReference connectors = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
+                command.append(AddCommand.create(editingDomain, node, connectors, connector));
             }
         }
 
@@ -136,7 +144,6 @@ public class CecaDiagramSkinController implements SkinController{
     @Override
     public void handleSelectAll() {
         graphEditor.getSelectionManager().selectAllNodes();
-        graphEditor.getSelectionManager().selectAllJoints();
     }
 
     private String allocateNewId() {

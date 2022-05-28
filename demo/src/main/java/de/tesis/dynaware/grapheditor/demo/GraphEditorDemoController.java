@@ -6,6 +6,7 @@ package de.tesis.dynaware.grapheditor.demo;
 import java.util.Map;
 
 import de.tesis.dynaware.grapheditor.demo.customskins.*;
+import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConnectorValidator;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -105,6 +106,7 @@ public class GraphEditorDemoController {
     private TreeSkinController treeSkinController;
     private TitledSkinController titledSkinController;
     private CecaDiagramSkinController cecaSkinController;
+    private StateMachineController stateMachineController;
 
     private final ObjectProperty<SkinController> activeSkinController = new SimpleObjectProperty<>();
 
@@ -123,6 +125,7 @@ public class GraphEditorDemoController {
         treeSkinController = new TreeSkinController(graphEditor, graphEditorContainer);
         titledSkinController = new TitledSkinController(graphEditor, graphEditorContainer);
         cecaSkinController = new CecaDiagramSkinController(graphEditor, graphEditorContainer);
+        stateMachineController = new StateMachineController(graphEditor, graphEditorContainer);
 
         activeSkinController.set(defaultSkinController);
 
@@ -246,7 +249,7 @@ public class GraphEditorDemoController {
 
     @FXML
     public void setCecaSkin() {
-        activeSkinController.set(cecaSkinController);
+        activeSkinController.set(stateMachineController);
     }
 
     @FXML
@@ -401,8 +404,8 @@ public class GraphEditorDemoController {
             }
             titledSkinButton.setSelected(true);
 
-        } else if (cecaSkinController.equals(activeSkinController.get())) {
-            graphEditor.setConnectorValidator(null);
+        } else if (stateMachineController.equals(activeSkinController.get())) {
+            graphEditor.setConnectorValidator(new StateMachineConnectorValidator());
             graphEditor.getSelectionManager().setConnectionSelectionPredicate(null);
             graphEditor.getView().getStyleClass().remove(STYLE_CLASS_TITLED_SKINS);
             cecaSkinButton.setSelected(true);
