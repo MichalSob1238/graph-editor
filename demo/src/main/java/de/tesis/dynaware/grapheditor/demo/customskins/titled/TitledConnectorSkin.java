@@ -17,7 +17,7 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
  */
 public class TitledConnectorSkin extends GConnectorSkin {
 
-    private static final String STYLE_CLASS = "titled-connector";
+   // private static final String STYLE_CLASS = "titled-connector";
     private static final String STYLE_CLASS_FORBIDDEN_GRAPHIC = "titled-connector-forbidden-graphic";
 
     private static final double SIZE = 15;
@@ -42,7 +42,7 @@ public class TitledConnectorSkin extends GConnectorSkin {
         root.setMinSize(SIZE, SIZE);
         root.setPrefSize(SIZE, SIZE);
         root.setMaxSize(SIZE, SIZE);
-        root.getStyleClass().setAll(STYLE_CLASS);
+        //root.getStyleClass().setAll(STYLE_CLASS);
         root.setPickOnBounds(false);
 
         forbiddenGraphic = createForbiddenGraphic();

@@ -9,9 +9,9 @@ import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramCo
 import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramGateSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramTailSkin;
-import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConnectionSkin;
-import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants;
-import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineNodeSkin;
+import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.*;
+import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeSkinConstants;
+import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeTailSkin;
 import de.tesis.dynaware.grapheditor.model.*;
 import javafx.geometry.Side;
 import org.eclipse.emf.common.command.CompoundCommand;
@@ -33,11 +33,23 @@ public class StateMachineController implements SkinController{
         this.graphEditorContainer = graphEditorContainer;
 
         graphEditor.setNodeSkin(StateMachineConstants.STATE_MACHINE_NODE, StateMachineNodeSkin.class);
-        graphEditor.setConnectorSkin(StateMachineConstants.STATE_MACHINE_INPUT_CONNECTOR, CecaDiagramConnectorSkin.class);
-        graphEditor.setConnectorSkin(StateMachineConstants.STATE_MACHINE_OUTPUT_CONNECTOR, CecaDiagramConnectorSkin.class);
-        graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_INPUT_CONNECTOR, CecaDiagramTailSkin.class);
-        graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_OUTPUT_CONNECTOR, CecaDiagramTailSkin.class);
+        graphEditor.setConnectorSkin(StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR, StateMachineConnectorSkin.class);
+        graphEditor.setConnectorSkin(StateMachineConstants.STATE_MACHINE_RIGHT_INPUT_CONNECTOR, StateMachineConnectorSkin.class);
+        graphEditor.setConnectorSkin(StateMachineConstants.STATE_MACHINE_BOTTOM_INPUT_CONNECTOR, StateMachineConnectorSkin.class);
+        graphEditor.setConnectorSkin(StateMachineConstants.STATE_MACHINE_TOP_INPUT_CONNECTOR, StateMachineConnectorSkin.class);
+        graphEditor.setConnectorSkin(StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR, StateMachineConnectorSkin.class);
+        graphEditor.setConnectorSkin(StateMachineConstants.STATE_MACHINE_LEFT_OUTPUT_CONNECTOR, StateMachineConnectorSkin.class);
+        graphEditor.setConnectorSkin(StateMachineConstants.STATE_MACHINE_TOP_OUTPUT_CONNECTOR, StateMachineConnectorSkin.class);
+        graphEditor.setConnectorSkin(StateMachineConstants.STATE_MACHINE_BOTTOM_OUTPUT_CONNECTOR, StateMachineConnectorSkin.class);
         graphEditor.setConnectionSkin(StateMachineConstants.STATE_MACHINE_CONNECTION, StateMachineConnectionSkin.class);
+        graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR, StateMachineTailSkin.class);
+        graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_TOP_INPUT_CONNECTOR, StateMachineTailSkin.class);
+        graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_RIGHT_INPUT_CONNECTOR, StateMachineTailSkin.class);
+        graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_BOTTOM_INPUT_CONNECTOR, StateMachineTailSkin.class);
+        graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR, StateMachineTailSkin.class);
+        graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_BOTTOM_OUTPUT_CONNECTOR, StateMachineTailSkin.class);
+        graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_TOP_OUTPUT_CONNECTOR, StateMachineTailSkin.class);
+        graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_LEFT_OUTPUT_CONNECTOR, StateMachineTailSkin.class);
         System.out.println("CREATING SM CONTROLLER");
     }
 
@@ -55,11 +67,11 @@ public class StateMachineController implements SkinController{
 
         final GConnector input = GraphFactory.eINSTANCE.createGConnector();
         node.getConnectors().add(input);
-        input.setType(DefaultConnectorTypes.LEFT_INPUT);
+        input.setType(StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
 
         final GConnector output = GraphFactory.eINSTANCE.createGConnector();
         node.getConnectors().add(output);
-        output.setType(DefaultConnectorTypes.RIGHT_OUTPUT);
+        output.setType(StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
 
         node.setType(StateMachineConstants.STATE_MACHINE_NODE);
         node.setDescription("DESCRIPTION!");
@@ -71,6 +83,7 @@ public class StateMachineController implements SkinController{
     public void addConnector(final Side position, final boolean input) {
 
         final String type = getType(position, input);
+        System.out.println("connector type:" + type);
 
         final GModel model = graphEditor.getModel();
         final SkinLookup skinLookup = graphEditor.getSkinLookup();

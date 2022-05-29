@@ -34,6 +34,7 @@ public class StateMachineConnectorValidator implements GConnectorValidator {
 
     @Override
     public String createConnectionType(final GConnector source, final GConnector target) {
+        System.out.println("creates a state machine conenctions");
         return StateMachineConstants.STATE_MACHINE_CONNECTION;
     }
 

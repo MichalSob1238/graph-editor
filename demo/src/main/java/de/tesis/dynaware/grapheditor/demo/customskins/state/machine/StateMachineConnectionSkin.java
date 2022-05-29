@@ -4,6 +4,7 @@ import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.IntersectionFinder;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.segment.ConnectionSegment;
+import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.utils.LineNode;
 import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.utils.LineUtils;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.ArrowUtils;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeSkinConstants;
@@ -22,13 +23,16 @@ import java.util.Map;
 public class StateMachineConnectionSkin extends GConnectionSkin {
 
     private static final double OFFSET_FROM_CONNECTOR = 10;
+    private static final String STYLE_CLASS = "state-machine-connection";
 
-    protected final Path path = new Path();
-    protected final Path backgroundPath = new Path();
-    private final Line line = new Line();
-    private final Line background = new Line();
+
+    private final Line haloFirstSide = new Line();
+    private final Line haloSecondSide = new Line();
+    private final Group selectionHalo = new Group(haloFirstSide, haloSecondSide);
+    private final LineNode line = new LineNode();
+    private final LineNode background = new LineNode();
     private Text text = new Text("some text");
-    private final Group root = new Group(background, text);
+    private final Group root = new Group(background,selectionHalo, line, text);
 
     private List<Point2D> points;
 
@@ -39,6 +43,9 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
      */
     public StateMachineConnectionSkin(GConnection connection) {
         super(connection);
+        
+        line.setManaged(false);
+        line.getStyleClass().setAll(STYLE_CLASS);
 
         text.setText("TEXT" + getConnection().getDescription());
         text.setManaged(false);

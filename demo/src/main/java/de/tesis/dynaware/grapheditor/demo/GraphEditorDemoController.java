@@ -6,6 +6,7 @@ package de.tesis.dynaware.grapheditor.demo;
 import java.util.Map;
 
 import de.tesis.dynaware.grapheditor.demo.customskins.*;
+import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConnectorValidator;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -438,6 +439,8 @@ public class GraphEditorDemoController {
                 activeSkinController.set(treeSkinController);
             } else if (TitledSkinConstants.TITLED_NODE.equals(type)) {
                 activeSkinController.set(titledSkinController);
+            } else if (CecaDiagramConstants.CECA_NODE.equals(type)){
+                activeSkinController.set(defaultSkinController);
             } else {
                 activeSkinController.set(defaultSkinController);
             }

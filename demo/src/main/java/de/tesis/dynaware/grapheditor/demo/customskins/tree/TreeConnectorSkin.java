@@ -16,8 +16,8 @@ import de.tesis.dynaware.grapheditor.model.GConnector;
  */
 public class TreeConnectorSkin extends GConnectorSkin {
 
-    private static final String STYLE_CLASS_INPUT = "tree-input-connector";
-    private static final String STYLE_CLASS_OUTPUT = "tree-output-connector";
+    //private static final String STYLE_CLASS_INPUT = "tree-input-connector";
+    // static final String STYLE_CLASS_OUTPUT = "tree-output-connector";
 
     private static final PseudoClass PSEUDO_CLASS_ALLOWED = PseudoClass.getPseudoClass("allowed");
     private static final PseudoClass PSEUDO_CLASS_FORBIDDEN = PseudoClass.getPseudoClass("forbidden");
@@ -46,9 +46,9 @@ public class TreeConnectorSkin extends GConnectorSkin {
         circle.resizeRelocate(0, 0, 2 * RADIUS, 2 * RADIUS);
 
         if (TreeSkinConstants.TREE_INPUT_CONNECTOR.equals(connector.getType())) {
-            circle.getStyleClass().setAll(STYLE_CLASS_INPUT);
+            //circle.getStyleClass().setAll(STYLE_CLASS_INPUT);
         } else {
-            circle.getStyleClass().setAll(STYLE_CLASS_OUTPUT);
+            //circle.getStyleClass().setAll(STYLE_CLASS_OUTPUT);
         }
 
         root.getChildren().add(circle);

@@ -62,8 +62,8 @@ public class StateMachineNodeSkin extends GNodeSkin {
         border.heightProperty().bind(getRoot().heightProperty());
 
         getRoot().getChildren().add(border);
-        background.setFill(Color.TRANSPARENT);
-        border.setFill(Color.TRANSPARENT);
+        background.setFill(Color.RED);
+        border.setFill(Color.BLACK);
 
         title.setText("title!");
         System.out.println("setting title");
