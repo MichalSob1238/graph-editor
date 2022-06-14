@@ -84,6 +84,37 @@
 .bottom-output {
 	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -inside-fill, -inside-fill 36%, -fx-stroke 36%, -fx-stroke 40%, -outside-fill 40%, -outside-fill);
 }
+.state-machine-left-input {
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, -outside-fill, -outside-fill 40%, -fx-stroke 40%, -fx-stroke 44%, -inside-fill 44%, -inside-fill);
+}
+
+.state-machine-left-output {
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, -outside-fill, -outside-fill 60%, -fx-stroke 60%, -fx-stroke 64%, -inside-fill 64%, -inside-fill);
+}
+
+.state-machine-right-input {
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, -inside-fill, -inside-fill 56%, -fx-stroke 56%, -fx-stroke 60%, -outside-fill 60%, -outside-fill);
+}
+
+.state-machine-right-output {
+	-fx-fill: linear-gradient(from 0px 0px to 25px 0px, -inside-fill, -inside-fill 36%, -fx-stroke 36%, -fx-stroke 40%, -outside-fill 40%, -outside-fill);
+}
+
+.state-machine-top-input {
+	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -outside-fill, -outside-fill 40%, -fx-stroke 40%, -fx-stroke 44%, -inside-fill 44%, -inside-fill);
+}
+
+.state-machine-top-output {
+	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -outside-fill, -outside-fill 60%, -fx-stroke 60%, -fx-stroke 64%, -inside-fill 64%, -inside-fill);
+}
+
+.state-machine-bottom-input {
+	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -inside-fill, -inside-fill 56%, -fx-stroke 56%, -fx-stroke 60%, -outside-fill 60%, -outside-fill);
+}
+
+.state-machine-bottom-output {
+	-fx-fill: linear-gradient(from 0px 0px to 0px 25px, -inside-fill, -inside-fill 36%, -fx-stroke 36%, -fx-stroke 40%, -outside-fill 40%, -outside-fill);
+}
 
 .default-connection {
 	-fx-stroke-width: 1;

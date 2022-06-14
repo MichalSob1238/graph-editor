@@ -1,5 +1,6 @@
 package de.tesis.dynaware.grapheditor.demo.customskins.state.machine;
 
+import com.jfoenix.controls.JFXTextField;
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.IntersectionFinder;
@@ -9,16 +10,23 @@ import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.utils.LineUt
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.ArrowUtils;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeSkinConstants;
 import de.tesis.dynaware.grapheditor.model.GConnection;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Path;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-
+import javafx.scene.text.TextAlignment;
+import javafx.scene.control.Label;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class StateMachineConnectionSkin extends GConnectionSkin {
 
@@ -33,6 +41,7 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
     private final LineNode background = new LineNode();
     private Text text = new Text("some text");
     private final Group root = new Group(background,selectionHalo, line, text);
+    private EventHandler<? super MouseEvent> doubleClickedListener = getDoubleClickedListener();
 
     private List<Point2D> points;
 
@@ -50,6 +59,7 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
         text.setText("TEXT" + getConnection().getDescription());
         text.setManaged(false);
         System.out.println("SMCON");
+        text.setOnMouseClicked(doubleClickedListener);
         background.setManaged(false);
     }
 
@@ -80,4 +90,17 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
     public Node getRoot() {
         return root;
     }
+
+    private EventHandler<MouseEvent> getDoubleClickedListener() {
+        return event -> {
+            if (event.getClickCount() >= 2) {
+                TextInputDialog td = new TextInputDialog();
+                td.showAndWait();
+                getConnection().setDescription(td.getEditor().getText());
+                System.out.println("set description to + "  + getConnection().getDescription());
+                text.setText(getConnection().getDescription());
+            }
+        };
+    }
+
 }

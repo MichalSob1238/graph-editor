@@ -33,6 +33,10 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
     private final Label title = new Label();
     private final Rectangle border = new Rectangle();
 
+    private static final String STYLE_CLASS_BORDER = "default-node-border";
+    private static final String STYLE_CLASS_BACKGROUND = "default-node-background";
+    private static final String STYLE_CLASS_SELECTION_HALO = "default-node-selection-halo";
+
     private static final double HALO_OFFSET = 5;
     private static final double HALO_CORNER_SIZE = 10;
 
@@ -107,21 +111,27 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
     public CecaDiagramNodeSkin(GNode node) {
         super(node);
 
-
         border.widthProperty().bind(getRoot().widthProperty());
         border.heightProperty().bind(getRoot().heightProperty());
+        background.widthProperty().bind(border.widthProperty().subtract(border.strokeWidthProperty().multiply(2)));
+        background.heightProperty().bind(border.heightProperty().subtract(border.strokeWidthProperty().multiply(2)));
 
-        getRoot().getChildren().add(border);
-        background.setFill(Color.TRANSPARENT);
-        border.setFill(Color.TRANSPARENT);
 
         title.setText("title!");
         System.out.println("setting title");
         title.setAlignment(Pos.CENTER);
         title.setVisible(true);
+
+        background.getStyleClass().setAll(STYLE_CLASS_BACKGROUND);
+        border.getStyleClass().setAll(STYLE_CLASS_BORDER);
+
         title.setOnMouseClicked(doubleClickedListener);
+         getRoot().getChildren().addAll(border, background);
         getRoot().getChildren().add(title);
-        //addSelectionHalo();
+
+        //background.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::filterMouseDragged);
+
+        addSelectionHalo();
         addSelectionListener();
     }
 
@@ -310,6 +320,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
         selectionHalo.setLayoutX(-HALO_OFFSET);
         selectionHalo.setLayoutY(-HALO_OFFSET);
+        selectionHalo.getStyleClass().add(STYLE_CLASS_SELECTION_HALO);
 
     }
 
@@ -317,15 +328,21 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
         if (selectionHalo.isVisible()) {
 
-            selectionHalo.setWidth(border.getWidth() + 20 * HALO_OFFSET);
-            selectionHalo.setHeight(border.getHeight() + 20 * HALO_OFFSET);
+            selectionHalo.setWidth(border.getWidth() + 2 * HALO_OFFSET);
+            selectionHalo.setHeight(border.getHeight() + 2 * HALO_OFFSET);
 
-            final double cornerLength = 20 * HALO_CORNER_SIZE;
-            final double xGap = border.getWidth() - 20 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
-            final double yGap = border.getHeight() - 20 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
+            final double cornerLength = 2 * HALO_CORNER_SIZE;
+            final double xGap = border.getWidth() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
+            final double yGap = border.getHeight() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
 
             selectionHalo.setStrokeDashOffset(HALO_CORNER_SIZE);
             selectionHalo.getStrokeDashArray().setAll(cornerLength, yGap, cornerLength, xGap);
+        }
+    }
+
+    private void filterMouseDragged(final MouseEvent event) {
+        if (event.isPrimaryButtonDown() && !isSelected()) {
+            event.consume();
         }
     }
 }

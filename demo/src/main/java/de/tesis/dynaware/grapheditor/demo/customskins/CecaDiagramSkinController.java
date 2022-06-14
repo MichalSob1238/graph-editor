@@ -26,11 +26,12 @@ public class CecaDiagramSkinController implements SkinController{
         this.graphEditor = graphEditor;
         this.graphEditorContainer = graphEditorContainer;
 
+        graphEditor.setNodeSkin(CecaDiagramConstants.CECA_NODE, CecaDiagramNodeSkin.class);
         graphEditor.setNodeSkin(CecaDiagramConstants.GATE_NODE, CecaDiagramGateSkin.class);
         graphEditor.setConnectorSkin(CecaDiagramConstants.DIAGRAM_INPUT_CONNECTOR, CecaDiagramConnectorSkin.class);
         graphEditor.setConnectorSkin(CecaDiagramConstants.DIAGRAM_OUTPUT_CONNECTOR, CecaDiagramConnectorSkin.class);
-        graphEditor.setTailSkin(CecaDiagramConstants.DIAGRAM_INPUT_CONNECTOR, CecaDiagramTailSkin.class);
-        graphEditor.setTailSkin(CecaDiagramConstants.DIAGRAM_OUTPUT_CONNECTOR, CecaDiagramTailSkin.class);
+//        graphEditor.setTailSkin(CecaDiagramConstants.DIAGRAM_INPUT_CONNECTOR, CecaDiagramTailSkin.class);
+//        graphEditor.setTailSkin(CecaDiagramConstants.DIAGRAM_OUTPUT_CONNECTOR, CecaDiagramTailSkin.class);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class CecaDiagramSkinController implements SkinController{
         node.getConnectors().add(output);
         output.setType(DefaultConnectorTypes.RIGHT_OUTPUT);
 
-        node.setType(CecaDiagramConstants.GATE_NODE);
+        node.setType(CecaDiagramConstants.CECA_NODE);
         node.setDescription("DESCRIPTION!");
 
         Commands.addNode(graphEditor.getModel(), node);
@@ -137,6 +138,68 @@ public class CecaDiagramSkinController implements SkinController{
     public void handleSelectAll() {
         graphEditor.getSelectionManager().selectAllNodes();
         graphEditor.getSelectionManager().selectAllJoints();
+    }
+
+    @Override
+    public void addAndGate(double currentZoomFactor) {
+        System.out.println("called and gate");
+        final double windowXOffset = graphEditorContainer.windowXProperty().get() / currentZoomFactor;
+        final double windowYOffset = graphEditorContainer.windowYProperty().get() / currentZoomFactor;
+
+        final GNode node = GraphFactory.eINSTANCE.createGNode();
+        node.setY(10 + windowYOffset);
+
+        node.setX(10 + windowXOffset);
+        node.setId(allocateNewId());
+
+        final GConnector input = GraphFactory.eINSTANCE.createGConnector();
+        node.getConnectors().add(input);
+        input.setType(DefaultConnectorTypes.LEFT_INPUT);
+
+        final GConnector input2 = GraphFactory.eINSTANCE.createGConnector();
+        node.getConnectors().add(input2);
+        input2.setType(DefaultConnectorTypes.LEFT_INPUT);
+
+        final GConnector output = GraphFactory.eINSTANCE.createGConnector();
+        node.getConnectors().add(output);
+        output.setType(DefaultConnectorTypes.RIGHT_OUTPUT);
+
+        node.setType(CecaDiagramConstants.GATE_NODE);
+        node.setSubtype("and");
+        node.setDescription("DESCRIPTION2!");
+
+        Commands.addNode(graphEditor.getModel(), node);
+    }
+
+    @Override
+    public void addOrGate(double currentZoomFactor) {
+        System.out.println("called or gate");
+        final double windowXOffset = graphEditorContainer.windowXProperty().get() / currentZoomFactor;
+        final double windowYOffset = graphEditorContainer.windowYProperty().get() / currentZoomFactor;
+
+        final GNode node = GraphFactory.eINSTANCE.createGNode();
+        node.setY(10 + windowYOffset);
+
+        node.setX(10 + windowXOffset);
+        node.setId(allocateNewId());
+
+        final GConnector input = GraphFactory.eINSTANCE.createGConnector();
+        node.getConnectors().add(input);
+        input.setType(DefaultConnectorTypes.LEFT_INPUT);
+
+        final GConnector input2 = GraphFactory.eINSTANCE.createGConnector();
+        node.getConnectors().add(input2);
+        input2.setType(DefaultConnectorTypes.LEFT_INPUT);
+
+        final GConnector output = GraphFactory.eINSTANCE.createGConnector();
+        node.getConnectors().add(output);
+        output.setType(DefaultConnectorTypes.RIGHT_OUTPUT);
+
+        node.setType(CecaDiagramConstants.GATE_NODE);
+        node.setSubtype("or");
+        node.setDescription("DESCRIPTION3!");
+
+        Commands.addNode(graphEditor.getModel(), node);
     }
 
     private String allocateNewId() {

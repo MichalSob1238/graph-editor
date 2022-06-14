@@ -60,6 +60,7 @@ public class StateMachineController implements SkinController{
         final double windowYOffset = graphEditorContainer.windowYProperty().get() / currentZoomFactor;
 
         final GNode node = GraphFactory.eINSTANCE.createGNode();
+        node.setType(StateMachineConstants.STATE_MACHINE_NODE);
         node.setY(10 + windowYOffset);
 
         node.setX(10 + windowXOffset);
@@ -73,7 +74,6 @@ public class StateMachineController implements SkinController{
         node.getConnectors().add(output);
         output.setType(StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
 
-        node.setType(StateMachineConstants.STATE_MACHINE_NODE);
         node.setDescription("DESCRIPTION!");
 
         Commands.addNode(graphEditor.getModel(), node);
@@ -157,6 +157,16 @@ public class StateMachineController implements SkinController{
     @Override
     public void handleSelectAll() {
         graphEditor.getSelectionManager().selectAllNodes();
+    }
+
+    @Override
+    public void addAndGate(double currentZoomFactor) {
+
+    }
+
+    @Override
+    public void addOrGate(double currentZoomFactor) {
+
     }
 
     private String allocateNewId() {

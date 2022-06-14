@@ -85,7 +85,6 @@ public class DefaultNodeSkin extends GNodeSkin {
         border.heightProperty().bind(getRoot().heightProperty());
 
         border.getStyleClass().setAll(STYLE_CLASS_BORDER);
-        background.getStyleClass().setAll(STYLE_CLASS_BACKGROUND);
 
         getRoot().getChildren().addAll(border, background);
         getRoot().setMinSize(MIN_WIDTH, MIN_HEIGHT);

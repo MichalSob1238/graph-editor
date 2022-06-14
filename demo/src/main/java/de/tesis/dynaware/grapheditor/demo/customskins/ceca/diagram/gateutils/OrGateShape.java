@@ -26,18 +26,17 @@ public class OrGateShape extends Shape {
         semiCircleBackgroundFront.setLength(270.0f);
         semiCircleBackgroundFront.setSmooth(true);
         semiCircleBackgroundFront.setType(ArcType.ROUND);
-        semiCircleBackgroundFront.setFill(Color.YELLOW);
-        background.setArcHeight(15.0);
-        background.setArcWidth(15.0);
+        background.setArcHeight(0.0);
+        background.setArcWidth(0.0);
 
     }
 
     public List<Shape> getComponents() {
-        return Arrays.asList(background, border, semiCircleBackgroundBack, semiCircleBackgroundFront);
+        return Arrays.asList(border, semiCircleBackgroundBack, semiCircleBackgroundFront, background );
     }
 
     public List<Shape> getBackgroundComponents() {
-        return Arrays.asList(background, semiCircleBackgroundBack, semiCircleBackgroundFront);
+        return Arrays.asList( semiCircleBackgroundBack, semiCircleBackgroundFront, background);
     }
 
     public Rectangle getBackground() {
@@ -51,4 +50,6 @@ public class OrGateShape extends Shape {
     public Arc getSemiCircleBackgroundFront() {
         return semiCircleBackgroundFront;
     }
+
+    public Rectangle getBorder() { return border; }
 }

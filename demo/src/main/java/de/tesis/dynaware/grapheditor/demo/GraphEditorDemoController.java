@@ -3,34 +3,14 @@
  */
 package de.tesis.dynaware.grapheditor.demo;
 
-import java.util.Map;
-
-import de.tesis.dynaware.grapheditor.demo.customskins.*;
-import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConstants;
-import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConnectorValidator;
-import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ListChangeListener;
-import javafx.fxml.FXML;
-import javafx.geometry.Side;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.transform.Scale;
-
-import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
-import org.eclipse.emf.edit.domain.EditingDomain;
-
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
+import de.tesis.dynaware.grapheditor.demo.customskins.*;
+import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConstants;
+import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConnectorValidator;
 import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledSkinConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeConnectionSelectionPredicate;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeConnectorValidator;
@@ -40,6 +20,20 @@ import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphFactory;
 import de.tesis.dynaware.grapheditor.window.WindowPosition;
+import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
+import javafx.fxml.FXML;
+import javafx.geometry.Side;
+import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.transform.Scale;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.domain.EditingDomain;
+
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Controller for the {@link GraphEditorDemo} application.
@@ -84,6 +78,8 @@ public class GraphEditorDemoController {
     private RadioMenuItem titledSkinButton;
     @FXML
     private RadioMenuItem cecaSkinButton;
+    @FXML
+    private RadioMenuItem stateMachineSkinButton;
     @FXML
     private Menu intersectionStyle;
     @FXML
@@ -132,6 +128,7 @@ public class GraphEditorDemoController {
 
         initializeMenuBar();
         addActiveSkinControllerListener();
+
     }
 
     @FXML
@@ -223,6 +220,12 @@ public class GraphEditorDemoController {
         activeSkinController.get().addNode(currentZoomFactor);
     }
 
+
+    @FXML
+    public void addOrGate() { activeSkinController.get().addOrGate(currentZoomFactor); }
+
+    @FXML void addAndGate() { activeSkinController.get().addAndGate(currentZoomFactor); }
+
     @FXML
     public void addConnector() {
         activeSkinController.get().addConnector(getSelectedConnectorPosition(), inputConnectorTypeButton.isSelected());
@@ -250,7 +253,11 @@ public class GraphEditorDemoController {
 
     @FXML
     public void setCecaSkin() {
-        activeSkinController.set(stateMachineController);
+        activeSkinController.set(cecaSkinController);
+    }
+
+    @FXML
+    public void setStateMachineSkin() { activeSkinController.set(stateMachineController);
     }
 
     @FXML
@@ -295,7 +302,7 @@ public class GraphEditorDemoController {
         graphEditor.getView().getTransforms().add(scaleTransform);
 
         final ToggleGroup skinGroup = new ToggleGroup();
-        skinGroup.getToggles().addAll(defaultSkinButton, treeSkinButton, titledSkinButton, cecaSkinButton);
+        skinGroup.getToggles().addAll(defaultSkinButton, treeSkinButton, titledSkinButton, cecaSkinButton, stateMachineSkinButton);
 
         final ToggleGroup connectionStyleGroup = new ToggleGroup();
         connectionStyleGroup.getToggles().addAll(gappedStyleButton, detouredStyleButton);
@@ -405,11 +412,20 @@ public class GraphEditorDemoController {
             }
             titledSkinButton.setSelected(true);
 
-        } else if (stateMachineController.equals(activeSkinController.get())) {
-            graphEditor.setConnectorValidator(new StateMachineConnectorValidator());
+        } else if (cecaSkinController.equals(activeSkinController.get())) {
+
+            graphEditor.setConnectorValidator(null);
             graphEditor.getSelectionManager().setConnectionSelectionPredicate(null);
             graphEditor.getView().getStyleClass().remove(STYLE_CLASS_TITLED_SKINS);
             cecaSkinButton.setSelected(true);
+
+        } else if (stateMachineController.equals(activeSkinController.get())) {
+
+            graphEditor.setConnectorValidator(new StateMachineConnectorValidator());
+            graphEditor.getSelectionManager().setConnectionSelectionPredicate(null);
+            graphEditor.getView().getStyleClass().remove(STYLE_CLASS_TITLED_SKINS);
+            stateMachineSkinButton.setSelected(true);
+
         } else {
 
             graphEditor.setConnectorValidator(null);
@@ -419,7 +435,7 @@ public class GraphEditorDemoController {
         }
 
         // Demo does not currently support mixing of skin types. Skins don't know how to cope with it.
-        clearAll();
+        //clearAll();
         flushCommandStack();
         checkConnectorButtonsToDisable();
         graphEditor.getSelectionManager().clearMemory();
@@ -467,7 +483,12 @@ public class GraphEditorDemoController {
             clearConnectorsButton.setDisable(true);
             connectorTypeMenu.setDisable(false);
             connectorPositionMenu.setDisable(false);
-        } else {
+        } else if (cecaSkinController.equals(activeSkinController.get())) {
+            addConnectorButton.setDisable(false);
+            clearConnectorsButton.setDisable(false);
+            connectorTypeMenu.setDisable(false);
+            connectorPositionMenu.setDisable(false);
+        }else {
             addConnectorButton.setDisable(false);
             clearConnectorsButton.setDisable(false);
             connectorTypeMenu.setDisable(false);
@@ -505,4 +526,5 @@ public class GraphEditorDemoController {
             return Side.BOTTOM;
         }
     }
+
 }

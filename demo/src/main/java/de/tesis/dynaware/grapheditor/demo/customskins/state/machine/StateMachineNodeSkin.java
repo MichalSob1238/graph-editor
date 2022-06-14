@@ -15,7 +15,9 @@ import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -38,9 +40,15 @@ public class StateMachineNodeSkin extends GNodeSkin {
     private static final double MINOR_POSITIVE_OFFSET = 2;
     private static final double MINOR_NEGATIVE_OFFSET = -3;
 
+    private static final double MIN_WIDTH = 41;
+    private static final double MIN_HEIGHT = 41;
+
     private final Rectangle selectionHalo = new Rectangle();
     private final Rectangle background = new Rectangle();
 
+    private static final String STYLE_CLASS_BACKGROUND = "and-node-background";
+    private static final String STYLE_CLASS_SELECTION_HALO = "default-node-selection-halo";
+    private static final String STYLE_CLASS_BORDER = "default-node-border";
 
     private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
 
@@ -48,6 +56,8 @@ public class StateMachineNodeSkin extends GNodeSkin {
     private final List<GConnectorSkin> rightConnectorSkins = new ArrayList<>();
     private final List<GConnectorSkin> bottomConnectorSkins = new ArrayList<>();
     private final List<GConnectorSkin> leftConnectorSkins = new ArrayList<>();
+
+
     private EventHandler<? super MouseEvent> doubleClickedListener = getDoubleClickedListener();
 
     /**
@@ -60,10 +70,10 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
         border.widthProperty().bind(getRoot().widthProperty());
         border.heightProperty().bind(getRoot().heightProperty());
+        background.widthProperty().bind(border.widthProperty().subtract(border.strokeWidthProperty().multiply(2)));
+        background.heightProperty().bind(border.heightProperty().subtract(border.strokeWidthProperty().multiply(2)));
 
-        getRoot().getChildren().add(border);
-        background.setFill(Color.RED);
-        border.setFill(Color.BLACK);
+        getRoot().getChildren().addAll(border, background);
 
         title.setText("title!");
         System.out.println("setting title");
@@ -71,7 +81,12 @@ public class StateMachineNodeSkin extends GNodeSkin {
         title.setVisible(true);
         title.setOnMouseClicked(doubleClickedListener);
         getRoot().getChildren().add(title);
-        //addSelectionHalo();
+
+        background.getStyleClass().setAll(STYLE_CLASS_BACKGROUND);
+        border.getStyleClass().setAll(STYLE_CLASS_BORDER);
+        getRoot().setMinSize(MIN_WIDTH, MIN_HEIGHT);
+
+        addSelectionHalo();
         addSelectionListener();
     }
 
@@ -80,7 +95,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
             if (n) {
                 selectionHalo.setVisible(true);
-//                layoutSelectionHalo();
+                layoutSelectionHalo();
                 background.pseudoClassStateChanged(PSEUDO_CLASS_SELECTED, true);
                 getRoot().toFront();
             } else {
@@ -93,8 +108,38 @@ public class StateMachineNodeSkin extends GNodeSkin {
     @Override
     public void layoutConnectors() {
         layoutAllConnectors();
-//        layoutSelectionHalo();
+        layoutSelectionHalo();
 
+    }
+
+    void addSelectionHalo() {
+
+        getRoot().getChildren().add(selectionHalo);
+
+        selectionHalo.setManaged(false);
+        selectionHalo.setMouseTransparent(false);
+        selectionHalo.setVisible(false);
+
+        selectionHalo.setLayoutX(-HALO_OFFSET);
+        selectionHalo.setLayoutY(-HALO_OFFSET);
+        selectionHalo.getStyleClass().add(STYLE_CLASS_SELECTION_HALO);
+
+    }
+
+    private void layoutSelectionHalo() {
+
+        if (selectionHalo.isVisible()) {
+
+            selectionHalo.setWidth(border.getWidth() + 2 * HALO_OFFSET);
+            selectionHalo.setHeight(border.getHeight() + 2 * HALO_OFFSET);
+
+            final double cornerLength = 2 * HALO_CORNER_SIZE;
+            final double xGap = border.getWidth() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
+            final double yGap = border.getHeight() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
+
+            selectionHalo.setStrokeDashOffset(HALO_CORNER_SIZE);
+            selectionHalo.getStrokeDashArray().setAll(cornerLength, yGap, cornerLength, xGap);
+        }
     }
 
     private void layoutAllConnectors() {
@@ -136,7 +181,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
         final String type = connector.getType();
 
-        if (type.equals(DefaultConnectorTypes.LEFT_INPUT) || type.equals(DefaultConnectorTypes.RIGHT_OUTPUT)) {
+        if (type.equals(StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR) || type.equals(StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR)) {
             return MINOR_POSITIVE_OFFSET;
         } else {
             return MINOR_NEGATIVE_OFFSET;
@@ -147,7 +192,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
         final String type = connector.getType();
 
-        if (type.equals(DefaultConnectorTypes.TOP_INPUT) || type.equals(DefaultConnectorTypes.BOTTOM_OUTPUT)) {
+        if (type.equals(StateMachineConstants.STATE_MACHINE_TOP_INPUT_CONNECTOR) || type.equals(StateMachineConstants.STATE_MACHINE_BOTTOM_OUTPUT_CONNECTOR)) {
             return MINOR_POSITIVE_OFFSET;
         } else {
             return MINOR_NEGATIVE_OFFSET;

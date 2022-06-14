@@ -40,4 +40,6 @@ public class AndGateShape extends Shape {
     public Arc getSemiCircleBackground() {
         return semiCircleBackground;
     }
+
+    public Rectangle getBorder() { return border; }
 }

@@ -37,6 +37,7 @@ public class GraphEditorDemo extends Application {
         scene.getStylesheets().add(getClass().getResource(DEMO_STYLESHEET).toExternalForm());
         scene.getStylesheets().add(getClass().getResource(TREE_SKIN_STYLESHEET).toExternalForm());
         scene.getStylesheets().add(getClass().getResource(TITLED_SKIN_STYLESHEET).toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("gateSkin.css").toExternalForm());
         Font.loadFont(getClass().getResource(FONT_AWESOME).toExternalForm(), 12);
 
         stage.setScene(scene);

@@ -118,6 +118,16 @@ public class DefaultSkinController implements SkinController {
         graphEditor.getSelectionManager().selectAllJoints();
     }
 
+    @Override
+    public void addAndGate(double currentZoomFactor) {
+
+    }
+
+    @Override
+    public void addOrGate(double currentZoomFactor) {
+
+    }
+
     /**
      * Counts the number of connectors the given node currently has of the given type.
      *

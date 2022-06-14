@@ -21,7 +21,7 @@ public class StateMachineConnectorSkin extends GConnectorSkin {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultConnectorSkin.class);
 
-    //private static final String STYLE_CLASS_BASE = "default-connector";
+    private static final String STYLE_CLASS_BASE = "default-connector";
 
     private static final PseudoClass PSEUDO_CLASS_ALLOWED = PseudoClass.getPseudoClass("allowed");
     private static final PseudoClass PSEUDO_CLASS_FORBIDDEN = PseudoClass.getPseudoClass("forbidden");
@@ -51,10 +51,12 @@ public class StateMachineConnectorSkin extends GConnectorSkin {
         root.setManaged(false);
         root.resize(SIZE, SIZE);
         root.setPickOnBounds(false);
+        root.getStyleClass().setAll(STYLE_CLASS_BASE);
 
         polygon.setManaged(false);
-        polygon.setFill(Color.ORANGE);
-        //polygon.getStyleClass().addAll(STYLE_CLASS_BASE, connector.getType());
+        System.out.println("very werid thing: " + connector.getType());
+        polygon.getStyleClass().addAll(STYLE_CLASS_BASE, connector.getType());
+
 
         drawTriangleConnector(connector.getType(), polygon);
 
@@ -114,48 +116,38 @@ public class StateMachineConnectorSkin extends GConnectorSkin {
 
         switch (type) {
 
-            case DefaultConnectorTypes.TOP_INPUT:
+            case StateMachineConstants.STATE_MACHINE_TOP_INPUT_CONNECTOR:
                 drawVertical(false, polygon);
                 break;
 
-            case DefaultConnectorTypes.TOP_OUTPUT:
+            case StateMachineConstants.STATE_MACHINE_TOP_OUTPUT_CONNECTOR:
                 drawVertical(true, polygon);
                 break;
 
-            case DefaultConnectorTypes.RIGHT_INPUT:
+            case StateMachineConstants.STATE_MACHINE_RIGHT_INPUT_CONNECTOR:
                 drawHorizontal(false, polygon);
                 break;
 
-            case DefaultConnectorTypes.RIGHT_OUTPUT:
+            case StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR:
                 drawHorizontal(true, polygon);
                 break;
 
-            case DefaultConnectorTypes.BOTTOM_INPUT:
+            case StateMachineConstants.STATE_MACHINE_BOTTOM_INPUT_CONNECTOR:
                 drawVertical(true, polygon);
                 break;
 
-            case DefaultConnectorTypes.BOTTOM_OUTPUT:
+            case StateMachineConstants.STATE_MACHINE_BOTTOM_OUTPUT_CONNECTOR:
                 drawVertical(false, polygon);
-                break;
-
-            case DefaultConnectorTypes.LEFT_INPUT:
-                drawHorizontal(true, polygon);
-                break;
-
-            case DefaultConnectorTypes.LEFT_OUTPUT:
-                drawHorizontal(false, polygon);
                 break;
 
             case StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR:
                 drawHorizontal(true, polygon);
                 break;
 
-            case StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR:
-                drawHorizontal(true, polygon);
+            case StateMachineConstants.STATE_MACHINE_LEFT_OUTPUT_CONNECTOR:
+                drawHorizontal(false, polygon);
                 break;
         }
-
-        System.out.println("failed to draw type: " + type);
     }
 
     /**

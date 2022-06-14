@@ -88,6 +88,16 @@ public class TreeSkinController implements SkinController {
         graphEditor.getSelectionManager().selectAll();
     }
 
+    @Override
+    public void addAndGate(double currentZoomFactor) {
+
+    }
+
+    @Override
+    public void addOrGate(double currentZoomFactor) {
+
+    }
+
     /**
      * Selects all connections that are referenced (i.e. connected to) the given nodes.
      * 

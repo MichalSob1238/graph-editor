@@ -61,12 +61,11 @@ public class TitledSkinController extends DefaultSkinController {
 
         final GConnector input = GraphFactory.eINSTANCE.createGConnector();
         node.getConnectors().add(input);
+        input.setType(TitledSkinConstants.TITLED_INPUT_CONNECTOR);
 
         final GConnector output = GraphFactory.eINSTANCE.createGConnector();
         node.getConnectors().add(output);
-
-        input.setType(DefaultConnectorTypes.RIGHT_OUTPUT);
-        output.setType(DefaultConnectorTypes.LEFT_INPUT);
+        output.setType(TitledSkinConstants.TITLED_OUTPUT_CONNECTOR);
 
         Commands.addNode(graphEditor.getModel(), node);
     }

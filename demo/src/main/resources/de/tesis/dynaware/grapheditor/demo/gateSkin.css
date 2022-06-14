@@ -1,0 +1,67 @@
+.root {
+    -background-color:rgb(211,211,211);
+}
+
+.and-node-border {
+    -fx-stroke: darkslategrey;
+    -fx-stroke-type: inside;
+    -fx-stroke-width: 1;
+    -fx-arc-width: 25;
+    -fx-arc-height: 25;
+    -fx-fill: null;
+    -fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
+}
+
+.and-node-background {
+    -fx-fill: -background-color;
+    -fx-opacity: 1;
+    -fx-stroke: null;
+    -fx-stroke-type: inside;
+    -fx-stroke-width: 0;
+    -fx-arc-width: 0;
+    -fx-arc-height: 0;
+}
+
+.and-node-background-no-stroke {
+    -fx-fill: -background-color;
+    -fx-opacity: 1;
+    -fx-stroke: null;
+    -fx-stroke-type: inside;
+    -fx-stroke-width: 1;
+    -fx-arc-width: 0;
+    -fx-arc-height: 0;
+}
+
+.and-node-background:selected {
+    -fx-fill: derive(-background-color, -5%);
+}
+
+.and-node-background-no-stroke:selected {
+    -fx-fill: derive(-background-color, -5%);
+}
+
+.and-node-selection-halo {
+    -fx-stroke: deepskyblue;
+    -fx-stroke-type: inside;
+    -fx-stroke-line-cap: butt;
+    -fx-fill: null;
+}
+
+.and-node-button {
+    -fx-padding: 0 12 9 0;
+}
+
+.and-node-button .icon {
+    -fx-font-family: FontAwesome;
+    -fx-font-size: 24;
+    -fx-fill: deepskyblue;
+    -fx-effect: dropshadow(one-pass-box, rgba(180, 180, 180), 5, 0, 1, 1);
+}
+
+.and-node-button:hover .icon {
+    -fx-fill: derive(deepskyblue, -5%);
+}
+
+.and-node-button:pressed .icon {
+    -fx-fill: derive(deepskyblue, 20%);
+}

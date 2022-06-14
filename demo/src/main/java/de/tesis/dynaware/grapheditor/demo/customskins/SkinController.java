@@ -36,4 +36,8 @@ public interface SkinController {
      * Handles the select-all operation.
      */
     void handleSelectAll();
+
+    void addAndGate(final double currentZoomFactor);
+
+    void addOrGate(final double currentZoomFactor);
 }
