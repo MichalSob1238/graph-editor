@@ -307,31 +307,36 @@ public class GraphEditorDemoController {
 
     private void onActionProcess(GNode rootNode, GNode actionNode, String description) {
         //TODO: action with more than one inputs
+        //System.out.println("caleld onActionProcess");
         graphEditor.getSkinLookup().lookupNode(actionNode).setSelected(true);
         List<GConnector> actuionInputs = actionNode.getConnectors().stream()
                 .filter(actionConnector -> isInput(actionConnector.getType()))
                 .filter(actionConnector -> !actionConnector.getConnections().isEmpty())
                 .collect(Collectors.toList());
-        GConnector predecessorSourceConnector = actuionInputs.get(0).getConnections().get(0).getSource();
 
-        GNode predecessorState = (GNode) predecessorSourceConnector.getParent();
+        actuionInputs.forEach(trueInput -> {
+            GConnector predecessorSourceConnector = trueInput.getConnections().get(0).getSource();
+            GNode predecessorState = (GNode) predecessorSourceConnector.getParent();
 
-        List<GConnector> predecessorStateInputs = predecessorState.getConnectors().stream()
-                .filter(predecessorStateConector -> isInput(predecessorStateConector.getType()))
-                .filter(predecessorStateConector -> !predecessorStateConector.getConnections().isEmpty())
-                .collect(Collectors.toList());
+            List<GConnector> predecessorStateInputs = predecessorState.getConnectors().stream()
+                    .filter(predecessorStateConector -> isInput(predecessorStateConector.getType()))
+                    .filter(predecessorStateConector -> !predecessorStateConector.getConnections().isEmpty())
+                    .collect(Collectors.toList());
 
 
-        System.out.println("found edge state: " + predecessorState);
-        beginTransformation(predecessorState);
+            System.out.println("found edge state: " + predecessorState);
+            beginTransformation(predecessorState);
 
-        final GConnector output = stateMachineController.addConnector(predecessorState, StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
+            final GConnector output = stateMachineController.addConnector(predecessorState, StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
 
-        final GConnector input = stateMachineController.addConnector(rootNode, StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
+            final GConnector input = stateMachineController.addConnector(rootNode, StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
 
-        stateMachineController.addConnection(output, input, StateMachineConstants.STATE_MACHINE_CONNECTION, description);
+            stateMachineController.addConnection(output, input, StateMachineConstants.STATE_MACHINE_CONNECTION, description);
 
-        System.out.println("new edge state: " + predecessorState);
+            System.out.println("new edge state: " + predecessorState);
+        } );
+
+
     }
 
     public boolean isInput(String type) {
