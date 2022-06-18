@@ -202,7 +202,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
     private EventHandler<MouseEvent> getDoubleClickedListener() {
         return event -> {
             if (event.getClickCount() >= 2) {
-                System.out.println("handling doubleclick");
+                System.out.println("State Machine handling doubleclick");
                 JFXTextField descriptionEditable = new JFXTextField();
                 descriptionEditable.setPrefSize(-1, -1);
                 descriptionEditable.setMinSize(title.getWidth(), title.getHeight());

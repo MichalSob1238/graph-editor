@@ -59,6 +59,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         return event -> {
             if (event.getClickCount() >= 2) {
                 System.out.println("handling doubleclick");
+                System.out.println(getNode());
                 JFXTextField descriptionEditable = new JFXTextField();
                 descriptionEditable.setPrefSize(-1, -1);
                 descriptionEditable.setMinSize(title.getWidth(), title.getHeight());
@@ -117,8 +118,8 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         background.heightProperty().bind(border.heightProperty().subtract(border.strokeWidthProperty().multiply(2)));
 
 
-        title.setText("title!");
-        System.out.println("setting title");
+        title.setText(node.getDescription());
+        System.out.println("ceca setting title");
         title.setAlignment(Pos.CENTER);
         title.setVisible(true);
 

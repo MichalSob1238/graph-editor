@@ -28,6 +28,9 @@ public class StateMachineController implements SkinController{
     private final GraphEditor graphEditor;
     private final GraphEditorContainer graphEditorContainer;
 
+    private static final EReference CONNECTIONS = GraphPackage.Literals.GMODEL__CONNECTIONS;
+    private static final EReference CONNECTOR_CONNECTIONS = GraphPackage.Literals.GCONNECTOR__CONNECTIONS;
+
     public StateMachineController(final GraphEditor graphEditor, final GraphEditorContainer graphEditorContainer) {
         this.graphEditor = graphEditor;
         this.graphEditorContainer = graphEditorContainer;
@@ -104,6 +107,42 @@ public class StateMachineController implements SkinController{
         if (command.canExecute()) {
             editingDomain.getCommandStack().execute(command);
         }
+    }
+
+    public GConnector addConnector(GNode node, String type) {
+
+        final GConnector connector = GraphFactory.eINSTANCE.createGConnector();
+        connector.setType(type);
+        node.getConnectors().add(connector);
+
+        return connector;
+
+    }
+
+    public GConnection addConnection(GConnector source, GConnector target, String type, String description) {
+        final GConnection connection = GraphFactory.eINSTANCE.createGConnection();
+
+        connection.setType(type);
+        connection.setSource(source);
+        connection.setTarget(target);
+        connection.setDescription(description);
+
+        source.getConnections().add(connection);
+
+        // Set the rest of the values via EMF commands because they touch the currently-edited model.
+        GModel model = graphEditor.getModel();
+        final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
+        final CompoundCommand command = new CompoundCommand();
+
+        command.append(AddCommand.create(editingDomain, model, CONNECTIONS, connection));
+        command.append(AddCommand.create(editingDomain, target, CONNECTOR_CONNECTIONS, connection));
+        //command.append(RemoveCommand.create(editingDomain, model, CONNECTOR, connector));
+
+        if (command.canExecute()) {
+            editingDomain.getCommandStack().execute(command);
+        }
+
+        return connection;
     }
     /**
      * Gets the connector type string corresponding to the given position and input values.

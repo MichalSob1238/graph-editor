@@ -56,7 +56,7 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
         line.setManaged(false);
         line.getStyleClass().setAll(STYLE_CLASS);
 
-        text.setText("TEXT" + getConnection().getDescription());
+        text.setText("TEXT " + getConnection().getDescription());
         text.setManaged(false);
         System.out.println("SMCON");
         text.setOnMouseClicked(doubleClickedListener);

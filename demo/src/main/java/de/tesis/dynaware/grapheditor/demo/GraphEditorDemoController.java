@@ -11,14 +11,13 @@ import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnec
 import de.tesis.dynaware.grapheditor.demo.customskins.*;
 import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConnectorValidator;
+import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.titled.TitledSkinConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeConnectionSelectionPredicate;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeConnectorValidator;
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeSkinConstants;
 import de.tesis.dynaware.grapheditor.demo.utils.AwesomeIcon;
-import de.tesis.dynaware.grapheditor.model.GModel;
-import de.tesis.dynaware.grapheditor.model.GNode;
-import de.tesis.dynaware.grapheditor.model.GraphFactory;
+import de.tesis.dynaware.grapheditor.model.*;
 import de.tesis.dynaware.grapheditor.window.WindowPosition;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -29,11 +28,14 @@ import javafx.geometry.Side;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.transform.Scale;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Controller for the {@link GraphEditorDemo} application.
@@ -222,9 +224,124 @@ public class GraphEditorDemoController {
 
 
     @FXML
-    public void addOrGate() { activeSkinController.get().addOrGate(currentZoomFactor); }
+    public void addOrGate() {
+        activeSkinController.get().addOrGate(currentZoomFactor);
+    }
 
-    @FXML void addAndGate() { activeSkinController.get().addAndGate(currentZoomFactor); }
+    @FXML
+    public void transformIntoStateMachine() {
+        List<GNode> rootNodes = graphEditor.getModel().getNodes().stream()
+                .filter(node -> node.getDescription().equals("3"))
+                .collect(Collectors.toList());
+
+        System.out.println("found " + rootNodes.size() + " root nodes");
+
+        activeSkinController.set(stateMachineController);
+
+        rootNodes.forEach(this::beginTransformation);
+        deleteSelection();
+        for (GNode node : graphEditor.getModel().getNodes()) {
+            System.out.println("NODE: " + node + '\n' + node.getConnectors());
+            node.getConnectors().removeIf(connector -> connector.getConnections().isEmpty());
+        }
+        for (GNode node : graphEditor.getModel().getNodes()) {
+            System.out.println("NODE: " + node + '\n' + node.getConnectors());
+        }
+        graphEditor.reload();
+
+
+    }
+
+    private static final EReference CONNECTIONS = GraphPackage.Literals.GMODEL__CONNECTIONS;
+    private static final EReference CONNECTOR_CONNECTIONS = GraphPackage.Literals.GCONNECTOR__CONNECTIONS;
+    private static final EReference CONNECTOR = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
+
+    private void beginTransformation(GNode rootNode) {
+        System.out.println("Called begin transform on node " + rootNode);
+        List<GConnector> inputConnectors = rootNode.getConnectors().stream()
+                .filter(conector -> isInput(conector.getType()))
+                .filter(connector -> !connector.getConnections().isEmpty())
+                .collect(Collectors.toList());
+
+        System.out.println("found " + inputConnectors.size() + " input connectors");
+
+        if (inputConnectors.isEmpty()) {
+            System.out.println("fucked up, somehow " + rootNode);
+            return;
+        }
+        //TRUE STEP
+        inputConnectors.forEach(connector -> {
+            GNode actionOrGateNode = (GNode) connector.getConnections().get(0).getSource().getParent();
+            List<GConnector> actionOrGateInputs = actionOrGateNode.getConnectors().stream()
+                    .filter(actionOrGateConector -> isInput(actionOrGateConector.getType()))
+                    .filter(actionOrGateConector -> !actionOrGateConector.getConnections().isEmpty())
+                    .collect(Collectors.toList());
+            if (actionOrGateInputs.isEmpty()) {
+                System.out.println("found floating action or gate: " + actionOrGateNode);
+                return;
+            }
+            String description = "";
+            //TODO:GATE LOGIC HERE
+            if (actionOrGateNode.getType().equals(CecaDiagramConstants.GATE_NODE)) {
+                if (actionOrGateNode.getSubtype().equals("or")) {
+                    List<GNode> nodePredecessors = actionOrGateInputs.stream().map(orConnector -> ((GNode) orConnector.getConnections().get(0).getSource().getParent())).collect(Collectors.toList());
+                    nodePredecessors.forEach( predNode -> onActionProcess(rootNode, predNode, predNode.getDescription()));
+                    graphEditor.getSkinLookup().lookupNode(actionOrGateNode).setSelected(true);
+                }
+                if (actionOrGateNode.getSubtype().equals("and")) {
+                    ArrayList<String> descriptions = new ArrayList<String>();
+                    List<GNode> nodePredecessors = actionOrGateInputs.stream().map(orConnector -> ((GNode) orConnector.getConnections().get(0).getSource().getParent())).collect(Collectors.toList());
+                    nodePredecessors.forEach( predNode -> descriptions.add(predNode.getDescription()));
+                    nodePredecessors.forEach( predNode -> onActionProcess(rootNode, predNode, String.join(" & ", descriptions)));
+                    graphEditor.getSkinLookup().lookupNode(actionOrGateNode).setSelected(true);
+                }
+            } else {
+                description = actionOrGateNode.getDescription();
+                onActionProcess(rootNode, actionOrGateNode, description);
+            }
+        });
+
+
+    }
+
+
+    private void onActionProcess(GNode rootNode, GNode actionNode, String description) {
+        //TODO: action with more than one inputs
+        graphEditor.getSkinLookup().lookupNode(actionNode).setSelected(true);
+        List<GConnector> actuionInputs = actionNode.getConnectors().stream()
+                .filter(actionConnector -> isInput(actionConnector.getType()))
+                .filter(actionConnector -> !actionConnector.getConnections().isEmpty())
+                .collect(Collectors.toList());
+        GConnector predecessorSourceConnector = actuionInputs.get(0).getConnections().get(0).getSource();
+
+        GNode predecessorState = (GNode) predecessorSourceConnector.getParent();
+
+        List<GConnector> predecessorStateInputs = predecessorState.getConnectors().stream()
+                .filter(predecessorStateConector -> isInput(predecessorStateConector.getType()))
+                .filter(predecessorStateConector -> !predecessorStateConector.getConnections().isEmpty())
+                .collect(Collectors.toList());
+
+
+        System.out.println("found edge state: " + predecessorState);
+        beginTransformation(predecessorState);
+
+        final GConnector output = stateMachineController.addConnector(predecessorState, StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
+
+        final GConnector input = stateMachineController.addConnector(rootNode, StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
+
+        stateMachineController.addConnection(output, input, StateMachineConstants.STATE_MACHINE_CONNECTION, description);
+
+        System.out.println("new edge state: " + predecessorState);
+    }
+
+    public boolean isInput(String type) {
+        return type.contains("input");
+    }
+
+    @FXML
+    void addAndGate() {
+        activeSkinController.get().addAndGate(currentZoomFactor);
+    }
 
     @FXML
     public void addConnector() {
@@ -257,7 +374,8 @@ public class GraphEditorDemoController {
     }
 
     @FXML
-    public void setStateMachineSkin() { activeSkinController.set(stateMachineController);
+    public void setStateMachineSkin() {
+        activeSkinController.set(stateMachineController);
     }
 
     @FXML
@@ -455,7 +573,7 @@ public class GraphEditorDemoController {
                 activeSkinController.set(treeSkinController);
             } else if (TitledSkinConstants.TITLED_NODE.equals(type)) {
                 activeSkinController.set(titledSkinController);
-            } else if (CecaDiagramConstants.CECA_NODE.equals(type)){
+            } else if (CecaDiagramConstants.CECA_NODE.equals(type)) {
                 activeSkinController.set(defaultSkinController);
             } else {
                 activeSkinController.set(defaultSkinController);
@@ -488,7 +606,7 @@ public class GraphEditorDemoController {
             clearConnectorsButton.setDisable(false);
             connectorTypeMenu.setDisable(false);
             connectorPositionMenu.setDisable(false);
-        }else {
+        } else {
             addConnectorButton.setDisable(false);
             clearConnectorsButton.setDisable(false);
             connectorTypeMenu.setDisable(false);
