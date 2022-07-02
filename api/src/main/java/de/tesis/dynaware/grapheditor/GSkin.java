@@ -77,4 +77,6 @@ public abstract class GSkin {
      * @return a the skin's root JavaFX {@link Node}
      */
     public abstract Node getRoot();
+
+    //public abstract void updateStatus(boolean checkForDiagramNodeOfSubtype);
 }

@@ -143,6 +143,11 @@ public class TitledNodeSkin extends GNodeSkin {
         }
     }
 
+    @Override
+    public void updateStatus(boolean status) {
+
+    }
+
     /**
      * Creates the content of the node skin - header, title, close button, etc.
      */

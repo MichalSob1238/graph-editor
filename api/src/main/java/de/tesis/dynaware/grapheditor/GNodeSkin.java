@@ -110,4 +110,6 @@ public abstract class GNodeSkin extends GSkin {
      * @return the x and y coordinates of the connector
      */
     public abstract Point2D getConnectorPosition(GConnectorSkin connectorSkin);
+
+    public abstract void updateStatus(boolean status);
 }

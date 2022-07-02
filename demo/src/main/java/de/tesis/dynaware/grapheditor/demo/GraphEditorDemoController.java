@@ -9,6 +9,7 @@ import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
+import de.tesis.dynaware.grapheditor.demo.CoherencyChecker.CoherencyChecker;
 import de.tesis.dynaware.grapheditor.demo.customskins.*;
 import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConnectorValidator;
@@ -19,17 +20,21 @@ import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeConnectorValidato
 import de.tesis.dynaware.grapheditor.demo.customskins.tree.TreeSkinConstants;
 import de.tesis.dynaware.grapheditor.demo.utils.AwesomeIcon;
 import de.tesis.dynaware.grapheditor.model.*;
+import de.tesis.dynaware.grapheditor.model.impl.GModelImpl;
 import de.tesis.dynaware.grapheditor.window.WindowPosition;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.transform.Scale;
 import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
@@ -109,6 +114,8 @@ public class GraphEditorDemoController {
     private TitledSkinController titledSkinController;
     private CecaDiagramSkinController cecaSkinController;
     private StateMachineController stateMachineController;
+    private CoherencyChecker coherencyChecker;
+
 
     private final ObjectProperty<SkinController> activeSkinController = new SimpleObjectProperty<>();
 
@@ -133,6 +140,12 @@ public class GraphEditorDemoController {
 
         initializeMenuBar();
         addActiveSkinControllerListener();
+        graphEditor.setOnConnectionCreated((connection, command) -> {
+            System.out.println("connection added" + connection);
+        });
+        graphEditor.setOnConnectionRemoved((connection, command) -> {
+            System.out.println("connection removed" + connection);
+        });
 
     }
 
@@ -187,6 +200,8 @@ public class GraphEditorDemoController {
 
     @FXML
     public void undo() {
+        System.out.println("AAA + " + graphEditor.getModel().getConnections());
+        System.out.println("AAA + " + ((GModelImpl) graphEditor.getModel()).connections);
         Commands.undo(graphEditor.getModel());
     }
 
@@ -264,7 +279,9 @@ public class GraphEditorDemoController {
         graphEditor.reload();
     }
 
-
+//    private void observeConnections() {
+//        graphEditor.getModel().getConnections()
+//    }
 
 
     private List<GNode> get3Nodes() {

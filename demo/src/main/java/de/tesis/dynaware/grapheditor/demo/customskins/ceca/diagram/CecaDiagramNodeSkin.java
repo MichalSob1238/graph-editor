@@ -7,6 +7,8 @@ import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorT
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -57,6 +59,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
     private EventHandler<? super MouseEvent> doubleClickedListener = getDoubleClickedListener();
     private final List<String> issuesWithNode = new ArrayList<>();
     private final boolean isCorrect = true;
+    ObservableList<String> observableList;
 
     private EventHandler<MouseEvent> getDoubleClickedListener() {
         return event -> {
@@ -219,15 +222,6 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         return type.contains("input");
     }
 
-    public void addCorrectnessCheck()  {
-        List<GConnector> con = getNode().getConnectors().stream().filter(conector -> isInput(conector.getType()))
-                .collect(Collectors.toList());
-
-        for( GConnector connector : con ) {
-            connector.conn
-        }
-    }
-
     void addSelectionListener() {
 
         selectedProperty().addListener((v, o, n) -> {
@@ -303,6 +297,11 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         }
 
         return new Point2D(x, y);
+    }
+
+    @Override
+    public void updateStatus(boolean status) {
+
     }
 
     private double getMinorOffsetX(final GConnector connector) {

@@ -340,4 +340,9 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
         return new Point2D(x, y);
     }
+
+    @Override
+    public void updateStatus(boolean status) {
+
+    }
 }

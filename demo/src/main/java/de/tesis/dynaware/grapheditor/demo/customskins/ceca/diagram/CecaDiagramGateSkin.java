@@ -27,6 +27,7 @@ import javafx.scene.text.TextAlignment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class CecaDiagramGateSkin extends GNodeSkin {
@@ -115,7 +116,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
      */
     public CecaDiagramGateSkin(GNode node) {
         super(node);
-        if (subtype == "and") {
+        if (Objects.equals(subtype, "and")) {
             andGateShape.getBackground().translateXProperty().bind(getRoot().widthProperty().divide(-2.0).add(andGateShape.getBackground().widthProperty().divide(2.0)));
             andGateShape.getBackground().widthProperty().bind(getRoot().widthProperty().multiply(0.9));
             andGateShape.getBackground().heightProperty().bind(getRoot().heightProperty());
@@ -369,6 +370,11 @@ public class CecaDiagramGateSkin extends GNodeSkin {
         }
 
         return new Point2D(x, y);
+    }
+
+    @Override
+    public void updateStatus(boolean status) {
+
     }
 
     private void filterMouseDragged(final MouseEvent event) {

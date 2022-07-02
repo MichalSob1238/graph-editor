@@ -133,6 +133,11 @@ public class TreeNodeSkin extends GNodeSkin {
         return new Point2D(x, y);
     }
 
+    @Override
+    public void updateStatus(boolean status) {
+
+    }
+
     /**
      * Lays out the connectors. Inputs on top, outputs on the bottom.
      */

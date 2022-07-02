@@ -53,7 +53,6 @@ public class ConnectionCommands {
      */
     public static CompoundCommand addConnection(final GModel model, final GConnector source, final GConnector target,
             final String type, final List<GJoint> joints) {
-
         final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
 
         if (editingDomain != null) {

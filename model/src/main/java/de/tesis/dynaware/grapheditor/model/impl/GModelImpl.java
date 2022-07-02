@@ -60,7 +60,7 @@ public class GModelImpl extends MinimalEObjectImpl.Container implements GModel {
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<GConnection> connections;
+	public EList<GConnection> connections;
 
 	/**
 	 * The default value of the '{@link #getType() <em>Type</em>}' attribute.

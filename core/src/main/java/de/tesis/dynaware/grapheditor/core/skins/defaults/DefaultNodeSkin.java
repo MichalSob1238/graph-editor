@@ -159,6 +159,11 @@ public class DefaultNodeSkin extends GNodeSkin {
         return new Point2D(x, y);
     }
 
+    @Override
+    public void updateStatus(boolean status) {
+
+    }
+
     /**
      * Checks that the node and its connectors have the correct values to be displayed using this skin.
      */

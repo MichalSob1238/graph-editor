@@ -3,10 +3,15 @@
  */
 package de.tesis.dynaware.grapheditor.core;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.function.BiConsumer;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.layout.Region;
 
 import org.eclipse.emf.common.command.CompoundCommand;
@@ -25,6 +30,7 @@ import de.tesis.dynaware.grapheditor.core.skins.SkinManager;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.utils.GraphEditorProperties;
+import org.eclipse.emf.common.util.EList;
 
 /**
  * Default implementation of the {@link GraphEditor}.
@@ -37,6 +43,7 @@ public class DefaultGraphEditor implements GraphEditor {
     private final GraphEditorController controller;
 
     private final ObjectProperty<GModel> modelProperty = new SimpleObjectProperty<>();
+
 
     /**
      * Creates a new default implementation of the {@link GraphEditor}.
@@ -53,6 +60,7 @@ public class DefaultGraphEditor implements GraphEditor {
         setProperties(new GraphEditorProperties());
 
         addModelPropertyListener();
+
     }
 
     @Override
@@ -132,11 +140,13 @@ public class DefaultGraphEditor implements GraphEditor {
 
     @Override
     public void setOnConnectionCreated(final BiConsumer<GConnection, CompoundCommand> consumer) {
+        System.out.println("called setOnConnectionCreated in default graph editor");
         connectionEventManager.setOnConnectionCreated(consumer);
     }
 
     @Override
     public void setOnConnectionRemoved(final BiConsumer<GConnection, CompoundCommand> consumer) {
+        System.out.println("called setOnConnectionRemoved in default graph editor");
         connectionEventManager.setOnConnectionRemoved(consumer);
     }
 
@@ -147,6 +157,8 @@ public class DefaultGraphEditor implements GraphEditor {
 
         modelProperty.addListener((observable, oldValue, newValue) -> {
             controller.setModel(newValue);
+            System.out.println("changed in addmodel");
         });
     }
+
 }
