@@ -37,10 +37,65 @@ public class CoherencyChecker {
                 sourceNodeSkin.updateStatus(checkForDiagramNode(sourceNode));
                 break;
             case StateMachineConstants.STATE_MACHINE_NODE:
+                sourceNodeSkin.updateStatus(checkForStateMachineNode(sourceNode));
                 break;
             case CecaDiagramConstants.GATE_NODE:
+                sourceNodeSkin.updateStatus(checkForGateNode(sourceNode));
                 break;
         }
+    }
+
+    private boolean checkForGateNode(GNode gate) {
+        Integer inputs = 0;
+        boolean outputCondition = false;
+        for (GConnector connector : gate.getConnectors()) {
+            if (NodeTraversalUtils.isInput(connector)) {
+                if (connector.getConnections().size() > 0) {
+                    inputs++;
+                }
+            } else {
+                if (connector.getConnections().size() > 0) {
+                    outputCondition = true;
+                }
+            }
+        }
+        boolean inputCondition = inputs > 1;
+        return inputCondition&&outputCondition;
+    }
+
+    private boolean checkForStateMachineNode(GNode node) {
+        boolean isCorrect = false;
+        switch (node.getSubtype()) {
+            case "initial-state":
+            case "target-disadvantage": {
+                //has to have at least 1 output (input is blocked by system)
+                for (GConnector connector : node.getConnectors()) {
+                    if (connector.getConnections().size() > 0) {
+                        isCorrect = true;
+                    }
+                }
+                break;
+            }
+            case "intermediate-disadvantage": {
+                //needs at least one input and one output, leading to actions each
+                boolean inputCondition = false;
+                boolean outputcondition = false;
+                for (GConnector connector : node.getConnectors()) {
+                    if (NodeTraversalUtils.isInput(connector)) {
+                        if (connector.getConnections().size() > 0) {
+                            inputCondition = true;
+                        }
+                    } else {
+                        if (connector.getConnections().size() > 0) {
+                            outputcondition = true;
+                        }
+                    }
+                }
+                isCorrect = (inputCondition && outputcondition);
+                break;
+            }
+        }
+        return isCorrect;
     }
 
 
