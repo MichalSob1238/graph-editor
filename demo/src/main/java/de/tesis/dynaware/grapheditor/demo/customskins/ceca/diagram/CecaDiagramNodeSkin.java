@@ -27,6 +27,7 @@ import javafx.scene.text.TextAlignment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class CecaDiagramNodeSkin extends GNodeSkin {
 
@@ -54,6 +55,8 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
     private final List<GConnectorSkin> bottomConnectorSkins = new ArrayList<>();
     private final List<GConnectorSkin> leftConnectorSkins = new ArrayList<>();
     private EventHandler<? super MouseEvent> doubleClickedListener = getDoubleClickedListener();
+    private final List<String> issuesWithNode = new ArrayList<>();
+    private final boolean isCorrect = true;
 
     private EventHandler<MouseEvent> getDoubleClickedListener() {
         return event -> {
@@ -210,6 +213,19 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         layoutAllConnectors();
         layoutSelectionHalo();
 
+    }
+
+    public boolean isInput(String type) {
+        return type.contains("input");
+    }
+
+    public void addCorrectnessCheck()  {
+        List<GConnector> con = getNode().getConnectors().stream().filter(conector -> isInput(conector.getType()))
+                .collect(Collectors.toList());
+
+        for( GConnector connector : con ) {
+            connector.conn
+        }
     }
 
     void addSelectionListener() {

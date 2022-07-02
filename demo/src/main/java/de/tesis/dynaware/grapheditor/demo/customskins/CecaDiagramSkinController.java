@@ -13,14 +13,19 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import de.tesis.dynaware.grapheditor.core.connections.ConnectionCommands;
 
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
 
-public class CecaDiagramSkinController implements SkinController{
+public class CecaDiagramSkinController implements SkinController {
 
     private final GraphEditor graphEditor;
     private final GraphEditorContainer graphEditorContainer;
+    private static final EReference CONNECTIONS = GraphPackage.Literals.GMODEL__CONNECTIONS;
+    private static final EReference CONNECTOR_CONNECTIONS = GraphPackage.Literals.GCONNECTOR__CONNECTIONS;
 
     public CecaDiagramSkinController(final GraphEditor graphEditor, final GraphEditorContainer graphEditorContainer) {
         this.graphEditor = graphEditor;
@@ -60,6 +65,31 @@ public class CecaDiagramSkinController implements SkinController{
         Commands.addNode(graphEditor.getModel(), node);
     }
 
+    public GNode addNode(double X, double Y, String description) {
+        System.out.println("called add using coords node");
+
+        final GNode node = GraphFactory.eINSTANCE.createGNode();
+        node.setY(Y);
+
+        node.setX(X);
+        node.setId(allocateNewId());
+
+        final GConnector input = GraphFactory.eINSTANCE.createGConnector();
+        node.getConnectors().add(input);
+        input.setType(DefaultConnectorTypes.LEFT_INPUT);
+
+        final GConnector output = GraphFactory.eINSTANCE.createGConnector();
+        node.getConnectors().add(output);
+        output.setType(DefaultConnectorTypes.RIGHT_OUTPUT);
+
+        node.setType(CecaDiagramConstants.CECA_NODE);
+        node.setDescription(description);
+
+        Commands.addNode(graphEditor.getModel(), node);
+
+        return node;
+    }
+
     @Override
     public void addConnector(final Side position, final boolean input) {
 
@@ -73,11 +103,11 @@ public class CecaDiagramSkinController implements SkinController{
         for (final GNode node : model.getNodes()) {
 
             if (skinLookup.lookupNode(node).isSelected()) {
-                    final GConnector connector = GraphFactory.eINSTANCE.createGConnector();
-                    connector.setType(type);
+                final GConnector connector = GraphFactory.eINSTANCE.createGConnector();
+                connector.setType(type);
 
-                    final EReference connectors = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
-                    command.append(AddCommand.create(editingDomain, node, connectors, connector));
+                final EReference connectors = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
+                command.append(AddCommand.create(editingDomain, node, connectors, connector));
             }
         }
 
@@ -85,11 +115,12 @@ public class CecaDiagramSkinController implements SkinController{
             editingDomain.getCommandStack().execute(command);
         }
     }
+
     /**
      * Gets the connector type string corresponding to the given position and input values.
      *
      * @param position a {@link Side} value
-     * @param input {@code true} for input, {@code false} for output
+     * @param input    {@code true} for input, {@code false} for output
      * @return the connector type corresponding to these values
      */
     //TODO: add methods not reliant on demo gui
@@ -124,6 +155,7 @@ public class CecaDiagramSkinController implements SkinController{
 
         return null;
     }
+
     @Override
     public void clearConnectors() {
         Commands.clearConnectors(graphEditor.getModel(), graphEditor.getSelectionManager().getSelectedNodes());
@@ -171,6 +203,26 @@ public class CecaDiagramSkinController implements SkinController{
         Commands.addNode(graphEditor.getModel(), node);
     }
 
+    public GNode addAndGate(double X, double Y) {
+        System.out.println("called and gate");
+
+        final GNode node = GraphFactory.eINSTANCE.createGNode();
+        node.setY(Y);
+        node.setX(X);
+        node.setId(allocateNewId());
+
+        final GConnector output = GraphFactory.eINSTANCE.createGConnector();
+        node.getConnectors().add(output);
+        output.setType(DefaultConnectorTypes.RIGHT_OUTPUT);
+
+        node.setType(CecaDiagramConstants.GATE_NODE);
+        node.setSubtype("and");
+        node.setDescription("DESCRIPTION2!");
+
+        Commands.addNode(graphEditor.getModel(), node);
+        return node;
+    }
+
     @Override
     public void addOrGate(double currentZoomFactor) {
         System.out.println("called or gate");
@@ -202,6 +254,32 @@ public class CecaDiagramSkinController implements SkinController{
         Commands.addNode(graphEditor.getModel(), node);
     }
 
+    public GNode addOrGate(double X, double Y, int inputs) {
+        System.out.println("called or gate");
+
+        final GNode node = GraphFactory.eINSTANCE.createGNode();
+        node.setY(Y);
+
+        node.setX(X);
+        node.setId(allocateNewId());
+        for (int i= 0; i < inputs; i++) {
+            final GConnector input = GraphFactory.eINSTANCE.createGConnector();
+            node.getConnectors().add(input);
+            input.setType(DefaultConnectorTypes.LEFT_INPUT);
+        }
+
+        final GConnector output = GraphFactory.eINSTANCE.createGConnector();
+        node.getConnectors().add(output);
+        output.setType(DefaultConnectorTypes.RIGHT_OUTPUT);
+
+        node.setType(CecaDiagramConstants.GATE_NODE);
+        node.setSubtype("or");
+        node.setDescription("DESCRIPTION3!");
+
+        Commands.addNode(graphEditor.getModel(), node);
+        return node;
+    }
+
     private String allocateNewId() {
 
         final List<GNode> nodes = graphEditor.getModel().getNodes();
@@ -212,5 +290,49 @@ public class CecaDiagramSkinController implements SkinController{
         } else {
             return "1";
         }
+    }
+
+    public void addConnection(GConnector source, GConnector target) {
+        // Set the rest of the values via EMF commands because they touch the currently-edited model.
+        GModel model = graphEditor.getModel();
+        final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
+        final CompoundCommand command = new CompoundCommand();
+
+//        graphEditor.getSkinLookup().lookupTail(source).draw(
+//                new Point2D(source.getX(), source.getX()),
+//                new Point2D(target.getX(), source.getY()),
+//                target,
+//                false
+//        );
+//
+//        final List<Point2D> jointPositions = graphEditor.getSkinLookup().lookupTail(source).allocateJointPositions();
+//        System.out.println("jointPositions " + jointPositions);
+        final List<GJoint> joints = new ArrayList<>();
+//        for (final Point2D position : jointPositions) {
+//            final GJoint joint = GraphFactory.eINSTANCE.createGJoint();
+//            joint.setX(position.getX());
+//            joint.setY(position.getY());
+//            joint.setType(null);
+//            joints.add(joint);
+//        }
+        final GJoint joint = GraphFactory.eINSTANCE.createGJoint();
+        joint.setX(((((GNode) target.getParent()).getX() + ((GNode) source.getParent()).getX())/2.0) + ((GNode) source.getParent()).getWidth() );
+        joint.setY(((GNode) source.getParent()).getY());
+        joints.add(joint);
+        final GJoint joint2 = GraphFactory.eINSTANCE.createGJoint();
+        joint2.setX((((GNode) target.getParent()).getX()+ ((GNode) source.getParent()).getX())/2.0);
+        joint2.setY(((GNode) target.getParent()).getX());
+        joints.add(joint2);
+        System.out.println("JOINTS " + joints);
+        ConnectionCommands.addConnection(model, source, target, null, joints);
+
+        //command.append(AddCommand.create(editingDomain, model, CONNECTIONS, connection));
+        //command.append(AddCommand.create(editingDomain, target, CONNECTOR_CONNECTIONS, connection));
+        //command.append(RemoveCommand.create(editingDomain, model, CONNECTOR, connector));
+
+        if (command.canExecute()) {
+            editingDomain.getCommandStack().execute(command);
+        }
+
     }
 }

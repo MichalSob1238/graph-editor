@@ -64,6 +64,8 @@ public class DefaultSkinController implements SkinController {
         rightOutput.setType(DefaultConnectorTypes.RIGHT_OUTPUT);
         leftInput.setType(DefaultConnectorTypes.LEFT_INPUT);
 
+        System.out.println("corrdiinates of right output: "+ rightOutput.getX() + ", " + rightOutput.getY());
+
         Commands.addNode(graphEditor.getModel(), node);
     }
 

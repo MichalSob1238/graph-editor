@@ -62,6 +62,7 @@
 							</items>
 						</Menu>
 						<MenuItem text="Transform Diagram into State Machine" onAction="#transformIntoStateMachine" />
+						<MenuItem text="Transform State Machine into Diagram" onAction="#transformIntoDiagram" />
 					</items>
 				</Menu>
 				<Menu text="Settings">

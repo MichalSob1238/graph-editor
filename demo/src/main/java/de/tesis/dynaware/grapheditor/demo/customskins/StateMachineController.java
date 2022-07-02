@@ -113,16 +113,23 @@ public class StateMachineController implements SkinController{
 
         final GConnector connector = GraphFactory.eINSTANCE.createGConnector();
         connector.setType(type);
-        node.getConnectors().add(connector);
+        final GModel model = graphEditor.getModel();
+        final CompoundCommand command = new CompoundCommand();
+        final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
+        final EReference connectors = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
+        command.append(AddCommand.create(editingDomain, node, connectors, connector));
+        if (command.canExecute()) {
+            editingDomain.getCommandStack().execute(command);
+        }
 
         return connector;
 
     }
 
-    public GConnection addConnection(GConnector source, GConnector target, String type, String description) {
+    public GConnection addStateMachineConnection(GConnector source, GConnector target, String description) {
         final GConnection connection = GraphFactory.eINSTANCE.createGConnection();
 
-        connection.setType(type);
+        connection.setType(StateMachineConstants.STATE_MACHINE_CONNECTION);
         connection.setSource(source);
         connection.setTarget(target);
         connection.setDescription(description);
