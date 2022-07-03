@@ -53,12 +53,22 @@ public class CoherencyChecker {
         boolean outputCondition = false;
         for (GConnector connector : gate.getConnectors()) {
             if (NodeTraversalUtils.isInput(connector)) {
-                if (connector.getConnections().size() > 0) {
+                for (GConnection connection : connector.getConnections()) {
                     inputs++;
+                    GNode preceedingNode = NodeTraversalUtils.getTargetNode(connection);
+                    if (!Objects.equals(preceedingNode.getSubtype(), "action")) {
+                        errorList.add("Gate Node can only be preceeded by action nodes, currently one of the connections leads to " + preceedingNode.getSubtype() + " node");
+                    }
+
                 }
             } else {
-                if (connector.getConnections().size() > 0) {
+                for (GConnection connection : connector.getConnections()) {
                     outputCondition = true;
+                    GNode preceedingNode = NodeTraversalUtils.getTargetNode(connection);
+                    String preceedingNodeSubtype = preceedingNode.getSubtype();
+                    if (Objects.equals(preceedingNodeSubtype, "action") || Objects.equals(preceedingNode.getType(), CecaDiagramConstants.GATE_NODE)) {
+                        errorList.add("Gate Node can only be leading to a disadvantage node, currently one of the connections leads to " + preceedingNodeSubtype + " node");
+                    }
                 }
             }
         }
@@ -146,7 +156,7 @@ public class CoherencyChecker {
             }
             case "target-disadvantage": {
                 //needs one input from an action or a gate
-                Optional<String> result =Optional.ofNullable(subcheckForDiagramTargetDisadvantage(node));
+                Optional<String> result = Optional.ofNullable(subcheckForDiagramTargetDisadvantage(node));
                 result.ifPresent(errorList::add);
                 break;
             }
@@ -176,7 +186,7 @@ public class CoherencyChecker {
                     String sourceNodeSubtype = NodeTraversalUtils.getSourceNode(connection).getSubtype();
                     //TODO: these cannot actually be null - you can use equals - OR do contains("disadvantage")
                     if (!Objects.equals(sourceNodeSubtype, "action")) {
-                        errors.add("Intermediate Disadvantage can only lead to an action");
+                        errors.add("Intermediate Disadvantage can only follow  an action node, currently one of the connections leads to a "+ sourceNodeSubtype +" node");
                     }
                 }
             } else {
@@ -185,7 +195,7 @@ public class CoherencyChecker {
                     String targetNodeSubtype = NodeTraversalUtils.getTargetNode(connection).getSubtype();
                     //TODO: these cannot actually be null - you can use equals
                     if (!targetNodeSubtype.equals("action")) {
-                        errors.add("Intermediate Disadvantage can only follow from an action");
+                        errors.add("Intermediate Disadvantage can only lead to an action node, , currently one of the connections leads to a" + targetNodeSubtype +" node");
                     }
                 }
             }
@@ -236,18 +246,20 @@ public class CoherencyChecker {
             if (NodeTraversalUtils.isInput(connector)) {
                 //TODO: refactor this to a function with a list of conditions
                 for (GConnection connection : connector.getConnections()) {
+                    inputCondition = true;
                     String sourceNodeSubtype = NodeTraversalUtils.getSourceNode(connection).getSubtype();
                     //TODO: these cannot actually be null - you can use equals - OR do contains("disadvantage")
                     if (Objects.equals(sourceNodeSubtype, "initial-disadvantage") || Objects.equals(sourceNodeSubtype, "intermediate-disadvantage")) {
-                        inputCondition = true;
+                        errorList.add("action node can only follw a disadvantage node, curretly one of the inputs is connected to a " + sourceNodeSubtype+ " node");
                     }
                 }
             } else {
                 for (GConnection connection : connector.getConnections()) {
+                    outputcondition = true;
                     String targetNodeSubtype = NodeTraversalUtils.getTargetNode(connection).getSubtype();
                     //TODO: these cannot actually be null - you can use equals
                     if (!targetNodeSubtype.equals("action")) {
-                        outputcondition = true;
+                        errorList.add("action node can only lead to a disadvantage or a gate node, curretly one of the outputs leads to a " + targetNodeSubtype+ " node");
                     }
                 }
             }
