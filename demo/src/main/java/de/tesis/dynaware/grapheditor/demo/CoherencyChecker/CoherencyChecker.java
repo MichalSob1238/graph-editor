@@ -166,32 +166,34 @@ public class CoherencyChecker {
 
     private List<String> subcheckForDiagramIntermediateDissadvantage(GNode node) {
         List<String> errors = new ArrayList<>();
-        boolean inputCondition = false;
-        boolean outputcondition = false;
+        boolean outputExists = false;
+        boolean inputExists = false;
         for (GConnector connector : node.getConnectors()) {
             if (NodeTraversalUtils.isInput(connector)) {
                 //TODO: refactor this to a function with a list of conditions
                 for (GConnection connection : connector.getConnections()) {
+                    inputExists = true;
                     String sourceNodeSubtype = NodeTraversalUtils.getSourceNode(connection).getSubtype();
                     //TODO: these cannot actually be null - you can use equals - OR do contains("disadvantage")
-                    if (Objects.equals(sourceNodeSubtype, "action")) {
-                        inputCondition = true;
+                    if (!Objects.equals(sourceNodeSubtype, "action")) {
+                        errors.add("Intermediate Disadvantage can only lead to an action");
                     }
                 }
             } else {
                 for (GConnection connection : connector.getConnections()) {
+                    outputExists = true;
                     String targetNodeSubtype = NodeTraversalUtils.getTargetNode(connection).getSubtype();
                     //TODO: these cannot actually be null - you can use equals
-                    if (targetNodeSubtype.equals("action")) {
-                        outputcondition = true;
+                    if (!targetNodeSubtype.equals("action")) {
+                        errors.add("Intermediate Disadvantage can only follow from an action");
                     }
                 }
             }
         }
-        if (!inputCondition) {
+        if (!inputExists) {
             errors.add("Intermediate dissadvantage must have at least one input");
         }
-        if (!outputcondition) {
+        if (!outputExists) {
             errors.add("Intermediate dissadvantage must have at least one output");
         }
         return errors;
