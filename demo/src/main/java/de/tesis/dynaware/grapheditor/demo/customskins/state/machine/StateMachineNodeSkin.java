@@ -342,7 +342,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
     }
 
     @Override
-    public void updateStatus(boolean status) {
+    public void updateStatus(List<String> status) {
 
     }
 }

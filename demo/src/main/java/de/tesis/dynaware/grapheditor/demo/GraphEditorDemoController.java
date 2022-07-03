@@ -25,16 +25,13 @@ import de.tesis.dynaware.grapheditor.window.WindowPosition;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.transform.Scale;
 import org.eclipse.emf.common.command.CompoundCommand;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
@@ -135,6 +132,7 @@ public class GraphEditorDemoController {
         titledSkinController = new TitledSkinController(graphEditor, graphEditorContainer);
         cecaSkinController = new CecaDiagramSkinController(graphEditor, graphEditorContainer);
         stateMachineController = new StateMachineController(graphEditor, graphEditorContainer);
+        coherencyChecker = new CoherencyChecker(graphEditor);
 
         activeSkinController.set(defaultSkinController);
 
@@ -142,11 +140,13 @@ public class GraphEditorDemoController {
         addActiveSkinControllerListener();
         graphEditor.setOnConnectionCreated((connection, command) -> {
             System.out.println("connection added" + connection);
+            coherencyChecker.getNotified(connection);
         });
         graphEditor.setOnConnectionRemoved((connection, command) -> {
             System.out.println("connection removed" + connection);
+            coherencyChecker.getNotified(connection);
         });
-
+        graphEditorContainer.setOnMouseClicked(event -> graphEditorContainer.requestFocus());
     }
 
     @FXML
@@ -249,9 +249,9 @@ public class GraphEditorDemoController {
     private static final double CHILD_X_OFFSET = 80;
 
     @FXML
-    public void transformIntoDiagram() throws InterruptedException {
+    public void transformIntoDiagram() {
         graphEditor.getSelectionManager().clearSelection();
-        List<GNode> rootNodes = get3Nodes();
+        List<GNode> rootNodes = getNodesWithDescription3();
 
         System.out.println("found " + rootNodes.size() + " root nodes");
         activeSkinController.set(cecaSkinController);
@@ -266,25 +266,10 @@ public class GraphEditorDemoController {
                 editingDomain.getCommandStack().execute(command);
             }
         }
-        for (GNode node : graphEditor.getModel().getNodes()) {
-            if(node.getId().equals("5")){
-                node.getConnectors().forEach(connector -> {
-                    System.out.println("Connector : " + connector);
-                    System.out.println("It's Connections: " + connector.getConnections().get(0));
-                    System.out.println("That connection's source: + " + connector.getConnections().get(0).getSource());
-                    System.out.println("That connection's Target: + " + connector.getConnections().get(0).getTarget());
-                });
-            }
-        }
         graphEditor.reload();
     }
 
-//    private void observeConnections() {
-//        graphEditor.getModel().getConnections()
-//    }
-
-
-    private List<GNode> get3Nodes() {
+    private List<GNode> getNodesWithDescription3() {
         return graphEditor.getModel().getNodes().stream()
                 .filter(node -> node.getDescription().equals("3"))
                 .collect(Collectors.toList());
@@ -410,7 +395,7 @@ public class GraphEditorDemoController {
     @FXML
     public void transformIntoStateMachine() {
         graphEditor.getSelectionManager().clearSelection();
-        List<GNode> rootNodes = get3Nodes();
+        List<GNode> rootNodes = getNodesWithDescription3();
 
         System.out.println("found " + rootNodes.size() + " root nodes");
 
@@ -460,7 +445,7 @@ public class GraphEditorDemoController {
                 System.out.println("found floating action or gate: " + actionOrGateNode);
                 return;
             }
-            String description = "";
+            String description;
             //TODO:GATE LOGIC HERE
             if (actionOrGateNode.getType().equals(CecaDiagramConstants.GATE_NODE)) {
                 if (actionOrGateNode.getSubtype().equals("or")) {
@@ -469,7 +454,7 @@ public class GraphEditorDemoController {
                     graphEditor.getSkinLookup().lookupNode(actionOrGateNode).setSelected(true);
                 }
                 if (actionOrGateNode.getSubtype().equals("and")) {
-                    ArrayList<String> descriptions = new ArrayList<String>();
+                    ArrayList<String> descriptions = new ArrayList<>();
                     List<GNode> nodePredecessors = actionOrGateInputs.stream().map(orConnector -> ((GNode) orConnector.getConnections().get(0).getSource().getParent())).collect(Collectors.toList());
                     nodePredecessors.forEach(predNode -> descriptions.add(predNode.getDescription()));
                     nodePredecessors.forEach(predNode -> onActionProcess(rootNode, predNode, String.join(" & ", descriptions)));
@@ -623,9 +608,7 @@ public class GraphEditorDemoController {
 
         initializeZoomOptions();
 
-        final ListChangeListener<? super GNode> selectedNodesListener = change -> {
-            checkConnectorButtonsToDisable();
-        };
+        final ListChangeListener<? super GNode> selectedNodesListener = change -> checkConnectorButtonsToDisable();
 
         graphEditor.getSelectionManager().getSelectedNodes().addListener(selectedNodesListener);
         checkConnectorButtonsToDisable();
@@ -688,9 +671,7 @@ public class GraphEditorDemoController {
      */
     private void addActiveSkinControllerListener() {
 
-        activeSkinController.addListener((observable, oldValue, newValue) -> {
-            handleActiveSkinControllerChange();
-        });
+        activeSkinController.addListener((observable, oldValue, newValue) -> handleActiveSkinControllerChange());
     }
 
     /**

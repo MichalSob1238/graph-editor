@@ -111,5 +111,5 @@ public abstract class GNodeSkin extends GSkin {
      */
     public abstract Point2D getConnectorPosition(GConnectorSkin connectorSkin);
 
-    public abstract void updateStatus(boolean status);
+    public abstract void updateStatus(List<String> errors);
 }

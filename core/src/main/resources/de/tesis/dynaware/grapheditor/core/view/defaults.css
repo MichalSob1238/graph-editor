@@ -9,8 +9,8 @@
 }
 
 .default-node-background {
-	-fx-fill: rgb(249,247,250);
-	-fx-opacity: 0.9;
+
+	-fx-opacity: 1;
 	-fx-stroke: null;
 	-fx-stroke-type: inside;
 	-fx-stroke-width: 1;
@@ -19,7 +19,7 @@
 }
 
 .default-node-background:selected {
-	-fx-fill: derive(rgb(249,247,250), -5%);
+
 }
 
 .default-node-selection-halo {

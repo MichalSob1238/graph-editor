@@ -120,8 +120,6 @@ public class CecaDiagramGateSkin extends GNodeSkin {
             andGateShape.getBackground().translateXProperty().bind(getRoot().widthProperty().divide(-2.0).add(andGateShape.getBackground().widthProperty().divide(2.0)));
             andGateShape.getBackground().widthProperty().bind(getRoot().widthProperty().multiply(0.9));
             andGateShape.getBackground().heightProperty().bind(getRoot().heightProperty());
-            andGateShape.getBackground().setStroke(Color.GREEN);
-            andGateShape.getBorder().setStroke(Color.GREEN);
             andGateShape.getSemiCircleBackground().radiusXProperty().bind(getRoot().widthProperty().multiply(0.1));
             andGateShape.getSemiCircleBackground().radiusYProperty().bind(andGateShape.getBackground().heightProperty().divide(2.0));
             andGateShape.getSemiCircleBackground().translateXProperty().bind(getRoot().widthProperty().divide(2.0).subtract(andGateShape.getSemiCircleBackground().radiusXProperty().divide(2.0).add(1.0)));
@@ -161,7 +159,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
     private void addSelectionListener() {
 
         selectedProperty().addListener((v, o, n) -> {
-            if (subtype == "and") {
+            if (Objects.equals(subtype, "and")) {
                 if (n) {
                     selectionHalo.setVisible(true);
                     layoutSelectionHalo();
@@ -373,7 +371,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
     }
 
     @Override
-    public void updateStatus(boolean status) {
+    public void updateStatus(List<String> status) {
 
     }
 

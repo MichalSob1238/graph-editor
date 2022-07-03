@@ -7,8 +7,6 @@ import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorT
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -17,10 +15,12 @@ import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -29,7 +29,7 @@ import javafx.scene.text.TextAlignment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 public class CecaDiagramNodeSkin extends GNodeSkin {
 
@@ -58,35 +58,57 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
     private final List<GConnectorSkin> leftConnectorSkins = new ArrayList<>();
     private EventHandler<? super MouseEvent> doubleClickedListener = getDoubleClickedListener();
     private final List<String> issuesWithNode = new ArrayList<>();
-    private final boolean isCorrect = true;
-    ObservableList<String> observableList;
+    private boolean isCorrect = true;
+    private final String defaultColor = "#ffffff";
 
     private EventHandler<MouseEvent> getDoubleClickedListener() {
         return event -> {
             if (event.getClickCount() >= 2) {
-                System.out.println("handling doubleclick");
-                System.out.println(getNode());
-                JFXTextField descriptionEditable = new JFXTextField();
-                descriptionEditable.setPrefSize(-1, -1);
-                descriptionEditable.setMinSize(title.getWidth(), title.getHeight());
-                descriptionEditable.setMaxSize(background.getWidth(), background.getHeight());
-                descriptionEditable.setTranslateX(title.getTranslateX());
-                descriptionEditable.setTranslateY(title.getTranslateY());
-                descriptionEditable.setText(title.getText());
-                title.setVisible(false);
-                getRoot().getChildren().add(descriptionEditable);
-                if (getNode().getType() != null) {
-                    descriptionEditable.positionCaret(getNode().getDescription().length());
-                }
-                descriptionEditable.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                    if (!newValue) {
-                        getNode().setDescription(descriptionEditable.getText());
-                        title.setText(descriptionEditable.getText());
-                        getRoot().getChildren().remove(descriptionEditable);
-                        setDescription();
-                        title.setVisible(true);
+                if (!isCorrect) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Issues with the node detected ");
+                    alert.setHeaderText("Node has the following issues that prevent the model from being legal");
+
+                    TextArea textArea = new TextArea();
+                    for (String issue: issuesWithNode) {
+                        textArea.appendText(issue + ".\n");
                     }
-                });
+                    textArea.setEditable(false);
+                    textArea.setWrapText(true);
+
+                    textArea.setMaxWidth(Double.MAX_VALUE);
+                    textArea.setMaxHeight(Double.MAX_VALUE);
+                    GridPane.setVgrow(textArea, Priority.ALWAYS);
+                    GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+                    alert.getDialogPane().setContent(textArea);
+
+                    alert.showAndWait();
+                } else {
+                    System.out.println("handling doubleclick");
+                    System.out.println(getNode());
+                    JFXTextField descriptionEditable = new JFXTextField();
+                    descriptionEditable.setPrefSize(-1, -1);
+                    descriptionEditable.setMinSize(title.getWidth(), title.getHeight());
+                    descriptionEditable.setMaxSize(background.getWidth(), background.getHeight());
+                    descriptionEditable.setTranslateX(title.getTranslateX());
+                    descriptionEditable.setTranslateY(title.getTranslateY());
+                    descriptionEditable.setText(title.getText());
+                    title.setVisible(false);
+                    getRoot().getChildren().add(descriptionEditable);
+                    if (getNode().getType() != null) {
+                        descriptionEditable.positionCaret(getNode().getDescription().length());
+                    }
+                    descriptionEditable.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                        if (!newValue) {
+                            getNode().setDescription(descriptionEditable.getText());
+                            title.setText(descriptionEditable.getText());
+                            getRoot().getChildren().remove(descriptionEditable);
+                            setDescription();
+                            title.setVisible(true);
+                        }
+                    });
+                }
             }
         };
     }
@@ -105,7 +127,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         title.setMinSize(width, height);
         title.setMaxSize(border.getWidth(), border.getHeight());
         title.setTextAlignment(TextAlignment.CENTER);
-        title.resize(border.getWidth(),border.getHeight());
+        title.resize(border.getWidth(), border.getHeight());
         title.setText(Optional.ofNullable(getNode().getDescription()).orElse("!!"));
         title.setFont(font);
     }
@@ -133,7 +155,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         border.getStyleClass().setAll(STYLE_CLASS_BORDER);
 
         title.setOnMouseClicked(doubleClickedListener);
-         getRoot().getChildren().addAll(border, background);
+        getRoot().getChildren().addAll(border, background);
         getRoot().getChildren().add(title);
 
         //background.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::filterMouseDragged);
@@ -300,8 +322,21 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
     }
 
     @Override
-    public void updateStatus(boolean status) {
+    public void updateStatus(List<String> status) {
+        System.out.println("updating status");
+        if (status.isEmpty()) {
+            System.out.println("true");
+            this.background.setStyle("-fx-fill:" + defaultColor + ";");
+            this.isCorrect = true;
+            this.issuesWithNode.clear();
 
+        } else {
+            System.out.println("false  status");
+            this.background.setStyle("-fx-fill:#FF4500;");
+            this.isCorrect = false;
+            this.issuesWithNode.clear();
+            this.issuesWithNode.addAll(status);
+        }
     }
 
     private double getMinorOffsetX(final GConnector connector) {

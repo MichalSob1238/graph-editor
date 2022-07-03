@@ -160,7 +160,7 @@ public class DefaultNodeSkin extends GNodeSkin {
     }
 
     @Override
-    public void updateStatus(boolean status) {
+    public void updateStatus(List<String> status) {
 
     }
 
@@ -283,10 +283,10 @@ public class DefaultNodeSkin extends GNodeSkin {
      */
     private void removeAllConnectors() {
 
-        topConnectorSkins.stream().forEach(skin -> getRoot().getChildren().remove(skin.getRoot()));
-        rightConnectorSkins.stream().forEach(skin -> getRoot().getChildren().remove(skin.getRoot()));
-        bottomConnectorSkins.stream().forEach(skin -> getRoot().getChildren().remove(skin.getRoot()));
-        leftConnectorSkins.stream().forEach(skin -> getRoot().getChildren().remove(skin.getRoot()));
+        topConnectorSkins.forEach(skin -> getRoot().getChildren().remove(skin.getRoot()));
+        rightConnectorSkins.forEach(skin -> getRoot().getChildren().remove(skin.getRoot()));
+        bottomConnectorSkins.forEach(skin -> getRoot().getChildren().remove(skin.getRoot()));
+        leftConnectorSkins.forEach(skin -> getRoot().getChildren().remove(skin.getRoot()));
     }
 
     /**

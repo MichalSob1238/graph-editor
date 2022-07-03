@@ -194,7 +194,7 @@ public class GNodeImpl extends GConnectableImpl implements GNode {
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String SUBTYPE_EDEFAULT = null;
+	protected static final String SUBTYPE_EDEFAULT = "intermediate-disadvantage";
 
 	/**
 	 * The cached value of the '{@link #getSubtype() <em>Subtype</em>}' attribute.
