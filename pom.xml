@@ -69,7 +69,8 @@
 		<module>core</module>
 		<module>demo</module>
 		<module>model</module>
-	</modules>
+        <module>cause-effect-chain-editor</module>
+    </modules>
 
 	<distributionManagement>
 		<snapshotRepository>
