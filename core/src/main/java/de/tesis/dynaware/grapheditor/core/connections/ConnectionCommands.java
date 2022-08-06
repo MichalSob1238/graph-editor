@@ -51,6 +51,7 @@ public class ConnectionCommands {
      * @param joints the list of {@link GJoint} instances to be added inside the new connection
      * @return the newly-executed {@link CompoundCommand} that added the connection
      */
+    //TODO:sometimes bugs out in State Machine mode, post-transformation especially, investigate.
     public static CompoundCommand addConnection(final GModel model, final GConnector source, final GConnector target,
             final String type, final List<GJoint> joints) {
         final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);

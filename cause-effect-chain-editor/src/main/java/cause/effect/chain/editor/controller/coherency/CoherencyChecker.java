@@ -1,14 +1,14 @@
-package de.tesis.dynaware.grapheditor.demo.CoherencyChecker;
+package cause.effect.chain.editor.controller.coherency;
 
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SkinLookup;
+import de.tesis.dynaware.grapheditor.demo.customskins.NodeTraversalUtils;
+import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
-import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConstants;
-import de.tesis.dynaware.grapheditor.demo.customskins.NodeTraversalUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +27,8 @@ public class CoherencyChecker {
 
     public void getNotified(GConnection connection) {
 
-//        updateCorrectnesStatus(NodeTraversalUtils.getSourceNode(connection));
-//        updateCorrectnesStatus(NodeTraversalUtils.getTargetNode(connection));
+        updateCorrectnesStatus(NodeTraversalUtils.getSourceNode(connection));
+        updateCorrectnesStatus(NodeTraversalUtils.getTargetNode(connection));
     }
 
     private void updateCorrectnesStatus(GNode node) {

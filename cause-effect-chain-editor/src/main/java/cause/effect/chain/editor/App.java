@@ -20,7 +20,7 @@ public class App extends Application {
     @Override
     public void start(final Stage stage) throws Exception {
 
-        final URL location = getClass().getResource("/view/GUI.fxml");
+        final URL location = getClass().getResource("/view/View.fxml");
         final FXMLLoader loader = new FXMLLoader();
         final Parent root = loader.load(location.openStream());
         final CauseEffectChainEditorController controller = loader.getController();

@@ -120,7 +120,7 @@ public class SkinManager implements SkinLookup {
 
         for (final GNode node : nodesToAdd) {
 
-            final GNodeSkin nodeSkin = skinFactory.createNodeSkin(node);
+            final GNodeSkin nodeSkin = skinFactory. createNodeSkin(node);
 
             nodeSkin.setGraphEditor(graphEditor);
             nodeSkin.getRoot().setEditorProperties(graphEditor.getProperties());

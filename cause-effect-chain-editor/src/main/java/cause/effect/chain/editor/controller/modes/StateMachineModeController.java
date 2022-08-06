@@ -1,32 +1,23 @@
-package cause.effect.chain.editor.controller.skins;
+package cause.effect.chain.editor.controller.modes;
 
-import de.tesis.dynaware.grapheditor.Commands;
-import de.tesis.dynaware.grapheditor.GraphEditor;
+import cause.effect.chain.editor.model.CauseEffectChainModel;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
-import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
 import de.tesis.dynaware.grapheditor.demo.customskins.SkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.*;
 import de.tesis.dynaware.grapheditor.model.*;
 import javafx.geometry.Side;
-import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.edit.command.AddCommand;
-import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
-import org.eclipse.emf.edit.domain.EditingDomain;
 
-import java.util.List;
-import java.util.OptionalInt;
+public class StateMachineModeController implements SkinController {
 
-public class StateMachineSkinController implements SkinController {
-
-    private final GraphEditor graphEditor;
+    private final CauseEffectChainModel graphEditor;
     private final GraphEditorContainer graphEditorContainer;
 
     private static final EReference CONNECTIONS = GraphPackage.Literals.GMODEL__CONNECTIONS;
     private static final EReference CONNECTOR_CONNECTIONS = GraphPackage.Literals.GCONNECTOR__CONNECTIONS;
 
-    public StateMachineSkinController(final GraphEditor graphEditor, final GraphEditorContainer graphEditorContainer) {
+    public StateMachineModeController(final CauseEffectChainModel graphEditor, final GraphEditorContainer graphEditorContainer) {
         this.graphEditor = graphEditor;
         this.graphEditorContainer = graphEditorContainer;
 
@@ -57,24 +48,13 @@ public class StateMachineSkinController implements SkinController {
         final double windowXOffset = graphEditorContainer.windowXProperty().get() / currentZoomFactor;
         final double windowYOffset = graphEditorContainer.windowYProperty().get() / currentZoomFactor;
 
-        final GNode node = GraphFactory.eINSTANCE.createGNode();
-        node.setType(StateMachineConstants.STATE_MACHINE_NODE);
-        node.setY(10 + windowYOffset);
+        final GNode node = graphEditor.addStateMachineNode(windowXOffset+10, windowYOffset +10, "DESCRIPTION zf");
+    }
 
-        node.setX(10 + windowXOffset);
-        node.setId(allocateNewId());
+    public GNode addNode(double X, double Y, String description) {
+        System.out.println("called add using coords node");
 
-        final GConnector input = GraphFactory.eINSTANCE.createGConnector();
-        node.getConnectors().add(input);
-        input.setType(StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
-
-        final GConnector output = GraphFactory.eINSTANCE.createGConnector();
-        node.getConnectors().add(output);
-        output.setType(StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
-
-        node.setDescription("DESCRIPTION!");
-
-        Commands.addNode(graphEditor.getModel(), node);
+        return graphEditor.addStateMachineNode(X, Y, description);
     }
 
     @Override
@@ -83,67 +63,18 @@ public class StateMachineSkinController implements SkinController {
         final String type = getType(position, input);
         System.out.println("connector type:" + type);
 
-        final GModel model = graphEditor.getModel();
-        final SkinLookup skinLookup = graphEditor.getSkinLookup();
-        final CompoundCommand command = new CompoundCommand();
-        final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
-
-        for (final GNode node : model.getNodes()) {
-
-            if (skinLookup.lookupNode(node).isSelected()) {
-                final GConnector connector = GraphFactory.eINSTANCE.createGConnector();
-                connector.setType(type);
-
-                final EReference connectors = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
-                command.append(AddCommand.create(editingDomain, node, connectors, connector));
-            }
-        }
-
-        if (command.canExecute()) {
-            editingDomain.getCommandStack().execute(command);
-        }
+        graphEditor.addStateMachineConnector(type);
     }
 
     public GConnector addConnector(GNode node, String type) {
 
-        final GConnector connector = GraphFactory.eINSTANCE.createGConnector();
-        connector.setType(type);
-        final GModel model = graphEditor.getModel();
-        final CompoundCommand command = new CompoundCommand();
-        final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
-        final EReference connectors = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
-        command.append(AddCommand.create(editingDomain, node, connectors, connector));
-        if (command.canExecute()) {
-            editingDomain.getCommandStack().execute(command);
-        }
-
+        final GConnector connector = graphEditor.addStateMachineConnector(node, type);
+        System.out.println("connector type: with type sm " + type);
         return connector;
-
     }
 
     public GConnection addStateMachineConnection(GConnector source, GConnector target, String description) {
-        final GConnection connection = GraphFactory.eINSTANCE.createGConnection();
-
-        connection.setType(StateMachineConstants.STATE_MACHINE_CONNECTION);
-        connection.setSource(source);
-        connection.setTarget(target);
-        connection.setDescription(description);
-
-        source.getConnections().add(connection);
-
-        // Set the rest of the values via EMF commands because they touch the currently-edited model.
-        GModel model = graphEditor.getModel();
-        final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
-        final CompoundCommand command = new CompoundCommand();
-
-        command.append(AddCommand.create(editingDomain, model, CONNECTIONS, connection));
-        command.append(AddCommand.create(editingDomain, target, CONNECTOR_CONNECTIONS, connection));
-        //command.append(RemoveCommand.create(editingDomain, model, CONNECTOR, connector));
-
-        if (command.canExecute()) {
-            editingDomain.getCommandStack().execute(command);
-        }
-
+        final GConnection connection = graphEditor.addStateMachineConnection(source, target, description);
         return connection;
     }
     /**
@@ -187,17 +118,17 @@ public class StateMachineSkinController implements SkinController {
     }
     @Override
     public void clearConnectors() {
-        Commands.clearConnectors(graphEditor.getModel(), graphEditor.getSelectionManager().getSelectedNodes());
+        graphEditor.clearConnectors();;
     }
 
     @Override
     public void handlePaste() {
-        graphEditor.getSelectionManager().paste();
+        graphEditor.handlePaste();
     }
 
     @Override
     public void handleSelectAll() {
-        graphEditor.getSelectionManager().selectAllNodes();
+        graphEditor.handleSelectAll();
     }
 
     @Override
@@ -210,16 +141,5 @@ public class StateMachineSkinController implements SkinController {
 
     }
 
-    private String allocateNewId() {
-
-        final List<GNode> nodes = graphEditor.getModel().getNodes();
-        final OptionalInt max = nodes.stream().mapToInt(node -> Integer.parseInt(node.getId())).max();
-
-        if (max.isPresent()) {
-            return Integer.toString(max.getAsInt() + 1);
-        } else {
-            return "1";
-        }
-    }
 }
 

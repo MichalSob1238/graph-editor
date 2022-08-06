@@ -91,7 +91,7 @@ public class ModelMemory {
      * Gets the list of nodes that need to be added.
      *
      * <p>
-     * In other words, nodes that are present in the new model state but were not present in the old model state.
+     * In other words, nodes that are present Win the new model state but were not present in the old model state.
      * </p>
      *
      * @return a list of {@link GNode} instances to be added

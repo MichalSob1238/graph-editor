@@ -496,6 +496,8 @@ public class GraphEditorDemoController {
             final GConnector input = stateMachineController.addConnector(rootNode, StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
 
             stateMachineController.addStateMachineConnection(output, input, description);
+            System.out.println("set description: " + predecessorState);
+            rootNode.setType(StateMachineConstants.STATE_MACHINE_NODE);
 
             System.out.println("new edge state: " + predecessorState);
         });

@@ -1,7 +1,7 @@
 package cause.effect.chain.editor.controller.transformations;
 
-import cause.effect.chain.editor.controller.skins.CauseActionSkinController;
-import cause.effect.chain.editor.controller.skins.StateMachineSkinController;
+import cause.effect.chain.editor.controller.modes.CauseActionModeController;
+import cause.effect.chain.editor.controller.modes.StateMachineModeController;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
 import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CauseActionDiagramSubtypes;
@@ -24,16 +24,16 @@ public class ModelTransformationController {
 
     private static final EReference NODES = GraphPackage.Literals.GMODEL__NODES;
     private static final EReference NODE_CONNECTORS = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
-    private final CauseActionSkinController causeActionSkinController;
-    private final StateMachineSkinController stateMachineController;
+    private final CauseActionModeController causeActionModeController;
+    private final StateMachineModeController stateMachineController;
     private final GraphEditor graphEditor;
 
     private static final EReference CONNECTIONS = GraphPackage.Literals.GMODEL__CONNECTIONS;
     private static final EReference CONNECTOR_CONNECTIONS = GraphPackage.Literals.GCONNECTOR__CONNECTIONS;
     private static final EReference CONNECTOR = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
 
-    public ModelTransformationController( CauseActionSkinController causeActionSkinController, StateMachineSkinController stateMachineController, GraphEditor graphEditor) {
-        this.causeActionSkinController = causeActionSkinController;
+    public ModelTransformationController(CauseActionModeController causeActionModeController, StateMachineModeController stateMachineController, GraphEditor graphEditor) {
+        this.causeActionModeController = causeActionModeController;
         this.stateMachineController = stateMachineController;
         this.graphEditor = graphEditor;
     }
@@ -226,9 +226,9 @@ public class ModelTransformationController {
                 if (conditions.size() != connections.size()) {
                     throw new RuntimeException("mismatch between # of connections and # of conditions for condition: " + conditions);
                 }
-                GNode andGate = causeActionSkinController.addAndGate(1500, 1500);
+                GNode andGate = causeActionModeController.addAndGate(1500, 1500);
                 final GConnector rootNodeInput = stateMachineController.addConnector(rootNode, DefaultConnectorTypes.LEFT_INPUT);
-                causeActionSkinController.addConnection(andGate.getConnectors().stream().filter(con -> !isInput(con.getType())).collect(Collectors.toList()).get(0), rootNodeInput);
+                causeActionModeController.addConnection(andGate.getConnectors().stream().filter(con -> !isInput(con.getType())).collect(Collectors.toList()).get(0), rootNodeInput);
                 for (int i = 0; i < conditions.size(); i++) {
                     GConnection connection = connections.get(i);
                     GNode predecessorNode = (GNode) connection.getSource().getParent();
@@ -249,9 +249,9 @@ public class ModelTransformationController {
                     break;
                 }
                 default: {
-                    GNode orGate = causeActionSkinController.addOrGate(1200, 1200, inputConnectors.size());
+                    GNode orGate = causeActionModeController.addOrGate(1200, 1200, inputConnectors.size());
                     final GConnector rootNodeInput = stateMachineController.addConnector(rootNode, DefaultConnectorTypes.LEFT_INPUT);
-                    causeActionSkinController.addConnection(orGate.getConnectors().stream().filter(con -> !isInput(con.getType())).collect(Collectors.toList()).get(0), rootNodeInput);
+                    causeActionModeController.addConnection(orGate.getConnectors().stream().filter(con -> !isInput(con.getType())).collect(Collectors.toList()).get(0), rootNodeInput);
                     orConnections.forEach(connection -> {
                         String description = connection.getDescription();
                         GNode predecessorNode = (GNode) connection.getSource().getParent();
@@ -268,7 +268,7 @@ public class ModelTransformationController {
 
     private void procesPredecesorNode(GNode rootNode, GNode predecessorNode, String description) {
         System.out.println("predecessorNode + " + predecessorNode);
-        final GNode actionNode = causeActionSkinController.addNode((predecessorNode.getX() + rootNode.getX()) / 2.0, (predecessorNode.getY() + rootNode.getY()) / 2.0, description);
+        final GNode actionNode = causeActionModeController.addNode((predecessorNode.getX() + rootNode.getX()) / 2.0, (predecessorNode.getY() + rootNode.getY()) / 2.0, description);
 
         actionNode.setDescription(description);
 
@@ -282,8 +282,8 @@ public class ModelTransformationController {
         final GConnector output = stateMachineController.addConnector(predecessorNode, DefaultConnectorTypes.RIGHT_OUTPUT);
         final GConnector input = stateMachineController.addConnector(rootNode, DefaultConnectorTypes.LEFT_INPUT);
 
-        causeActionSkinController.addConnection(output, actionNodeInput );
-        causeActionSkinController.addConnection(actionNodeOutput, input);
+        causeActionModeController.addConnection(output, actionNodeInput );
+        causeActionModeController.addConnection(actionNodeOutput, input);
 
     }
 }

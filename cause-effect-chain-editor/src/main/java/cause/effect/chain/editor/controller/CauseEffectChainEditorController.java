@@ -1,12 +1,11 @@
 package cause.effect.chain.editor.controller;
 
-import cause.effect.chain.editor.controller.skins.CauseActionSkinController;
-import cause.effect.chain.editor.controller.skins.StateMachineSkinController;
+import cause.effect.chain.editor.controller.modes.CauseActionModeController;
+import cause.effect.chain.editor.controller.modes.StateMachineModeController;
 import cause.effect.chain.editor.controller.transformations.ModelTransformationController;
+import cause.effect.chain.editor.model.CauseEffectChainModel;
 import de.tesis.dynaware.grapheditor.Commands;
-import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
-import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
 import de.tesis.dynaware.grapheditor.demo.CoherencyChecker.CoherencyChecker;
 import de.tesis.dynaware.grapheditor.demo.GraphEditorPersistence;
@@ -14,9 +13,7 @@ import de.tesis.dynaware.grapheditor.demo.customskins.SkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConnectorValidator;
 import de.tesis.dynaware.grapheditor.demo.utils.AwesomeIcon;
-import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
-import de.tesis.dynaware.grapheditor.model.GraphFactory;
 import de.tesis.dynaware.grapheditor.model.impl.GModelImpl;
 import de.tesis.dynaware.grapheditor.window.WindowPosition;
 import javafx.application.Platform;
@@ -80,14 +77,14 @@ public class CauseEffectChainEditorController {
     @FXML
     private GraphEditorContainer graphEditorContainer;
 
-    private final GraphEditor graphEditor = new DefaultGraphEditor();
+    private final CauseEffectChainModel chainModel = new CauseEffectChainModel();
     private final GraphEditorPersistence graphEditorPersistence = new GraphEditorPersistence();
 
     private Scale scaleTransform;
     private double currentZoomFactor = 1;
 
-    private CauseActionSkinController cecaSkinController;
-    private StateMachineSkinController stateMachineController;
+    private CauseActionModeController cecaSkinController;
+    private StateMachineModeController stateMachineController;
     private CoherencyChecker coherencyChecker;
     private ModelTransformationController modelTransformationController;
 
@@ -99,26 +96,24 @@ public class CauseEffectChainEditorController {
      */
     public void initialize() {
 
-        final GModel model = GraphFactory.eINSTANCE.createGModel();
 
-        graphEditor.setModel(model);
-        graphEditorContainer.setGraphEditor(graphEditor);
+        graphEditorContainer.setGraphEditor(chainModel.getGraphEditor());
         setDetouredStyle();
 
-        cecaSkinController = new CauseActionSkinController(graphEditor, graphEditorContainer);
-        stateMachineController = new StateMachineSkinController(graphEditor, graphEditorContainer);
-        coherencyChecker = new CoherencyChecker(graphEditor);
-        modelTransformationController = new ModelTransformationController(cecaSkinController, stateMachineController, graphEditor);
+        cecaSkinController = new CauseActionModeController(chainModel, graphEditorContainer);
+        stateMachineController = new StateMachineModeController(chainModel, graphEditorContainer);
+        coherencyChecker = new CoherencyChecker(chainModel.getGraphEditor());
+        modelTransformationController = new ModelTransformationController(cecaSkinController, stateMachineController, chainModel.getGraphEditor());
 
         activeSkinController.set(cecaSkinController);
 
         initializeMenuBar();
         addActiveSkinControllerListener();
-        graphEditor.setOnConnectionCreated((connection, command) -> {
+        chainModel.getGraphEditor().setOnConnectionCreated((connection, command) -> {
             System.out.println("connection added" + connection);
             coherencyChecker.getNotified(connection);
         });
-        graphEditor.setOnConnectionRemoved((connection, command) -> {
+        chainModel.getGraphEditor().setOnConnectionRemoved((connection, command) -> {
             System.out.println("connection removed" + connection);
             coherencyChecker.getNotified(connection);
         });
@@ -127,18 +122,18 @@ public class CauseEffectChainEditorController {
 
     @FXML
     public void load() {
-        graphEditorPersistence.loadFromFile(graphEditor);
+        graphEditorPersistence.loadFromFile(chainModel.getGraphEditor());
         checkSkinType();
     }
 
     @FXML
     public void save() {
-        graphEditorPersistence.saveToFile(graphEditor);
+        graphEditorPersistence.saveToFile(chainModel.getGraphEditor());
     }
 
     @FXML
     public void clearAll() {
-        Commands.clear(graphEditor.getModel());
+        Commands.clear(chainModel.getGraphEditor().getModel());
     }
 
     @FXML
@@ -148,24 +143,24 @@ public class CauseEffectChainEditorController {
 
     @FXML
     public void undo() {
-        System.out.println("AAA + " + graphEditor.getModel().getConnections());
-        System.out.println("AAA + " + ((GModelImpl) graphEditor.getModel()).connections);
-        Commands.undo(graphEditor.getModel());
+        System.out.println("AAA + " + chainModel.getGraphEditor().getModel().getConnections());
+        System.out.println("AAA + " + ((GModelImpl) chainModel.getGraphEditor().getModel()).connections);
+        Commands.undo(chainModel.getGraphEditor().getModel());
     }
 
     @FXML
     public void redo() {
-        Commands.redo(graphEditor.getModel());
+        Commands.redo(chainModel.getGraphEditor().getModel());
     }
 
     @FXML
     public void cut() {
-        graphEditor.getSelectionManager().cut();
+        chainModel.getGraphEditor().getSelectionManager().cut();
     }
 
     @FXML
     public void copy() {
-        graphEditor.getSelectionManager().copy();
+        chainModel.getGraphEditor().getSelectionManager().copy();
     }
 
     @FXML
@@ -180,7 +175,7 @@ public class CauseEffectChainEditorController {
 
     @FXML
     public void deleteSelection() {
-        graphEditor.getSelectionManager().deleteSelection();
+        chainModel.getGraphEditor().getSelectionManager().deleteSelection();
     }
 
     @FXML
@@ -235,16 +230,16 @@ public class CauseEffectChainEditorController {
     @FXML
     public void setGappedStyle() {
 
-        graphEditor.getProperties().getCustomProperties().remove(SimpleConnectionSkin.SHOW_DETOURS_KEY);
-        graphEditor.reload();
+        chainModel.getGraphEditor().getProperties().getCustomProperties().remove(SimpleConnectionSkin.SHOW_DETOURS_KEY);
+        chainModel.getGraphEditor().reload();
     }
 
     @FXML
     public void setDetouredStyle() {
 
-        final Map<String, String> customProperties = graphEditor.getProperties().getCustomProperties();
+        final Map<String, String> customProperties = chainModel.getGraphEditor().getProperties().getCustomProperties();
         customProperties.put(SimpleConnectionSkin.SHOW_DETOURS_KEY, Boolean.toString(true));
-        graphEditor.reload();
+        chainModel.getGraphEditor().reload();
     }
 
     @FXML
@@ -271,7 +266,7 @@ public class CauseEffectChainEditorController {
         scaleTransform = new Scale(currentZoomFactor, currentZoomFactor, 0, 0);
         scaleTransform.yProperty().bind(scaleTransform.xProperty());
 
-        graphEditor.getView().getTransforms().add(scaleTransform);
+        chainModel.getGraphEditor().getView().getTransforms().add(scaleTransform);
 
         final ToggleGroup skinGroup = new ToggleGroup();
         skinGroup.getToggles().addAll(cecaSkinButton, stateMachineSkinButton);
@@ -286,8 +281,8 @@ public class CauseEffectChainEditorController {
         positionGroup.getToggles().addAll(leftConnectorPositionButton, rightConnectorPositionButton);
         positionGroup.getToggles().addAll(topConnectorPositionButton, bottomConnectorPositionButton);
 
-        graphEditor.getProperties().gridVisibleProperty().bind(showGridButton.selectedProperty());
-        graphEditor.getProperties().snapToGridProperty().bind(snapToGridButton.selectedProperty());
+        chainModel.getGraphEditor().getProperties().gridVisibleProperty().bind(showGridButton.selectedProperty());
+        chainModel.getGraphEditor().getProperties().snapToGridProperty().bind(snapToGridButton.selectedProperty());
 
         minimapButton.setGraphic(AwesomeIcon.MAP.node());
 
@@ -295,7 +290,7 @@ public class CauseEffectChainEditorController {
 
         final ListChangeListener<? super GNode> selectedNodesListener = change -> checkConnectorButtonsToDisable();
 
-        graphEditor.getSelectionManager().getSelectedNodes().addListener(selectedNodesListener);
+        chainModel.getGraphEditor().getSelectionManager().getSelectedNodes().addListener(selectedNodesListener);
         checkConnectorButtonsToDisable();
     }
 
@@ -364,20 +359,20 @@ public class CauseEffectChainEditorController {
     private void handleActiveSkinControllerChange() {
 
         if (stateMachineController.equals(activeSkinController.get())) {
-            graphEditor.setConnectorValidator(new StateMachineConnectorValidator());
-            graphEditor.getSelectionManager().setConnectionSelectionPredicate(null);
+            chainModel.getGraphEditor().setConnectorValidator(new StateMachineConnectorValidator());
+            chainModel.getGraphEditor().getSelectionManager().setConnectionSelectionPredicate(null);
             stateMachineSkinButton.setSelected(true);
 
         } else {
-            graphEditor.setConnectorValidator(null);
-            graphEditor.getSelectionManager().setConnectionSelectionPredicate(null);
+            chainModel.getGraphEditor().setConnectorValidator(null);
+            chainModel.getGraphEditor().getSelectionManager().setConnectionSelectionPredicate(null);
             cecaSkinButton.setSelected(true);
         }
 
         //clearAll();
         flushCommandStack();
         checkConnectorButtonsToDisable();
-        graphEditor.getSelectionManager().clearMemory();
+        chainModel.getGraphEditor().getSelectionManager().clearMemory();
     }
 
     /**
@@ -385,9 +380,9 @@ public class CauseEffectChainEditorController {
      */
     private void checkSkinType() {
 
-        if (!graphEditor.getModel().getNodes().isEmpty()) {
+        if (!chainModel.getGraphEditor().getModel().getNodes().isEmpty()) {
 
-            final GNode firstNode = graphEditor.getModel().getNodes().get(0);
+            final GNode firstNode = chainModel.getGraphEditor().getModel().getNodes().get(0);
             final String type = firstNode.getType();
 
             if (CecaDiagramConstants.CECA_NODE.equals(type)) {
@@ -403,7 +398,7 @@ public class CauseEffectChainEditorController {
      */
     private void checkConnectorButtonsToDisable() {
 
-        final boolean nothingSelected = graphEditor.getSelectionManager().getSelectedNodes().isEmpty();
+        final boolean nothingSelected = chainModel.getGraphEditor().getSelectionManager().getSelectedNodes().isEmpty();
 
         if (nothingSelected) {
             addConnectorButton.setDisable(true);
@@ -429,7 +424,7 @@ public class CauseEffectChainEditorController {
      */
     private void flushCommandStack() {
 
-        final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(graphEditor.getModel());
+        final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(chainModel.getGraphEditor().getModel());
         if (editingDomain != null) {
             editingDomain.getCommandStack().flush();
         }
