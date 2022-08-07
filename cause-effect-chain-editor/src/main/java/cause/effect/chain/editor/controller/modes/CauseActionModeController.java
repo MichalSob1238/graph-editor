@@ -6,8 +6,8 @@ import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorT
 import de.tesis.dynaware.grapheditor.demo.customskins.SkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConnectorSkin;
 import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
-import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramGateSkin;
-import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramNodeSkin;
+import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramGateSkin;
+import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramNodeSkin;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.model.GraphPackage;
@@ -54,7 +54,7 @@ public class CauseActionModeController implements SkinController {
             selected = result.get();
         }
         System.out.println("choice box test" + selected);
-        graphEditor.addCauseActionNode(windowXOffset, windowYOffset, "DESCRIPTION!");
+        graphEditor.addCauseActionNode(windowXOffset, windowYOffset, "DESCRIPTION!", selected);
     }
 
     public GNode addNode(double X, double Y, String description) {

@@ -4,8 +4,9 @@ import cause.effect.chain.editor.controller.modes.CauseActionModeController;
 import cause.effect.chain.editor.controller.modes.StateMachineModeController;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
+import de.tesis.dynaware.grapheditor.demo.customskins.NodeTraversalUtils;
 import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CauseActionDiagramSubtypes;
-import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConstants;
+import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants;
 import de.tesis.dynaware.grapheditor.model.*;
 import org.eclipse.emf.common.command.CompoundCommand;
@@ -14,10 +15,7 @@ import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ModelTransformationController {
@@ -44,8 +42,9 @@ public class ModelTransformationController {
 
         System.out.println("found " + rootNodes.size() + " root nodes");
 
-        rootNodes.forEach(this::beginTransformationIntoStateMachine);
+        rootNodes.forEach(this::beginTransformationIntoStateMachine2);
         graphEditor.getSelectionManager().deleteSelection();
+        //TODO: also remove their skins?
         for (GNode node : graphEditor.getModel().getNodes()) {
             System.out.println("NODE: " + node + '\n' + node.getConnectors());
             node.getConnectors().removeIf(connector -> connector.getConnections().isEmpty());
@@ -53,7 +52,123 @@ public class ModelTransformationController {
         for (GNode node : graphEditor.getModel().getNodes()) {
             System.out.println("NODE: " + node + '\n' + node.getConnectors());
         }
+        for (GNode node : graphEditor.getModel().getNodes()) {
+            node.setType(StateMachineConstants.STATE_MACHINE_NODE);
+        }
+        System.out.println("==========================");
+        for (GNode node : graphEditor.getModel().getNodes()) {
+            System.out.println("NODE: " + node + '\n' + node.getConnectors());
+        }
         graphEditor.reload();
+//        ((SkinManager) graphEditor.getSkinLookup()).removeNodes(graphEditor.getModel().getNodes());
+//        ((SkinManager) graphEditor.getSkinLookup()).addNodes(graphEditor.getModel().getNodes());
+    }
+
+    //TODO: version 2 of the algorithm
+    private void beginTransformationIntoStateMachine2(GNode rootNode){
+        List<GConnector> outputConnectors = rootNode.getConnectors().stream()
+                .filter(conector -> !isInput(conector.getType()))
+                .filter(connector -> !connector.getConnections().isEmpty())
+                .collect(Collectors.toList());
+
+        System.out.println("found " + outputConnectors.size() + " outputConnectors ");
+        rootNode.setType(StateMachineConstants.STATE_MACHINE_NODE);
+
+        outputConnectors.forEach(connector -> {
+            seekCondition(rootNode, NodeTraversalUtils.getTargetNode(connector));
+        });
+    }
+
+    private void seekCondition(GNode rootNode, GNode targetNode) {
+        System.out.println("found " + targetNode + " condition ");
+        String type = targetNode.getSubtype();
+        switch (type) {
+            case CecaDiagramConstants.CONDITION:
+                System.out.println("found condition");
+                graphEditor.getSkinLookup().lookupNode(targetNode).setSelected(true);
+                seekTargetAction(rootNode,targetNode);
+                break;
+            case "and":
+                System.out.println("IMPOSSIBLE");
+                break;
+            case "or":
+                graphEditor.getSkinLookup().lookupNode(targetNode).setSelected(true);
+                List<GConnector> outputConnectors = targetNode.getConnectors().stream()
+                        .filter(conector -> !isInput(conector.getType()))
+                        .filter(connector -> !connector.getConnections().isEmpty())
+                        .collect(Collectors.toList());
+                GNode condition = NodeTraversalUtils.getTargetNode(outputConnectors.get(0));
+                seekCondition(rootNode, condition);
+                break;
+        }
+    }
+
+    private void seekTargetAction(GNode rootNode, GNode targetNode) {
+        System.out.println("found " + targetNode + " seekTargetAction ");
+        String description = targetNode.getDescription();
+        List<GConnector> outputConnectors = targetNode.getConnectors().stream()
+                .filter(conector -> !isInput(conector.getType()))
+                .filter(connector -> !connector.getConnections().isEmpty())
+                .collect(Collectors.toList());
+
+        outputConnectors.forEach(connector -> {
+            seekAction(rootNode, NodeTraversalUtils.getTargetNode(connector), description);
+        });
+
+    }
+
+    private void seekAction(GNode rootNode, GNode targetNode, String description) {
+        System.out.println("found " + targetNode + " seekAction ");
+        String type = targetNode.getSubtype();
+        switch (type) {
+            case CecaDiagramConstants.TARGET_DISADVANTAGE:
+            case CecaDiagramConstants.ACTION: {
+                final GConnector output = stateMachineController.addConnector(rootNode, StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
+                final GConnector input = stateMachineController.addConnector(targetNode, StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
+
+                stateMachineController.addStateMachineConnection(output, input, description);
+                if(!Objects.equals(targetNode.getType(), StateMachineConstants.STATE_MACHINE_NODE)) {
+                    List<GConnector> outputConnectors = targetNode.getConnectors().stream()
+                            .filter(conector -> !isInput(conector.getType()))
+                            .filter(connector -> !connector.getConnections().isEmpty())
+                            .collect(Collectors.toList());
+                    outputConnectors.forEach(connector -> seekCondition(targetNode, NodeTraversalUtils.getTargetNode(connector)));
+
+                    targetNode.setType(StateMachineConstants.STATE_MACHINE_NODE);
+                }
+                break;
+            }
+            case "and": {
+                graphEditor.getSkinLookup().lookupNode(targetNode).setSelected(true);
+
+                List<GConnector> inputConnectors = rootNode.getConnectors().stream()
+                        .filter(conector -> isInput(conector.getType()))
+                        .filter(connector -> !connector.getConnections().isEmpty())
+                        .collect(Collectors.toList());
+                ArrayList<String> descriptions = new ArrayList<>();
+
+                inputConnectors.forEach(connector -> {
+                    GNode source = (GNode) NodeTraversalUtils.getSourceNode(connector.getConnections().get(0));
+                    descriptions.add(source.getDescription());
+                });
+                String newDescription = String.join(" & ", descriptions);
+                List<GConnector> outputConnectors = targetNode.getConnectors().stream()
+                        .filter(conector -> !isInput(conector.getType()))
+                        .filter(connector -> !connector.getConnections().isEmpty())
+                        .collect(Collectors.toList());
+                outputConnectors.forEach(connector -> seekAction(rootNode, NodeTraversalUtils.getTargetNode(connector), newDescription));
+                break;
+            }
+            case "or":
+                graphEditor.getSkinLookup().lookupNode(targetNode).setSelected(true);
+                List<GConnector> outputConnectors = targetNode.getConnectors().stream()
+                        .filter(conector -> !isInput(conector.getType()))
+                        .filter(connector -> !connector.getConnections().isEmpty())
+                        .collect(Collectors.toList());
+                GNode action = NodeTraversalUtils.getTargetNode(outputConnectors.get(0));
+                seekAction(rootNode, action, description);
+                break;
+        }
     }
 
     private void beginTransformationIntoStateMachine(GNode rootNode) {

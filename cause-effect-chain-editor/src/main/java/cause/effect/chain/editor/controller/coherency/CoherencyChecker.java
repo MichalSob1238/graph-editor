@@ -4,7 +4,7 @@ import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.demo.customskins.NodeTraversalUtils;
-import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConstants;
+import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
@@ -215,7 +215,7 @@ public class CoherencyChecker {
             for (GConnection connection : connector.getConnections()) {
                 String sourceNodeSubtype = NodeTraversalUtils.getSourceNode(connection).getSubtype();
                 //TODO: these cannot actually be null - you can use equals
-                if (Objects.equals(sourceNodeSubtype, "action") || Objects.equals(sourceNodeSubtype, "AND") || Objects.equals(sourceNodeSubtype, "OR")) {
+                if (Objects.equals(sourceNodeSubtype, CecaDiagramConstants.CONDITION) || Objects.equals(sourceNodeSubtype, "AND") || Objects.equals(sourceNodeSubtype, "OR")) {
                     return null;
                 }
             }
@@ -230,7 +230,7 @@ public class CoherencyChecker {
             for (GConnection connection : connector.getConnections()) {
                 String targetNodeSubtype = NodeTraversalUtils.getTargetNode(connection).getSubtype();
                 //TODO: these cannot actually be null - you can use equals
-                if (Objects.equals(targetNodeSubtype, "action") || Objects.equals(targetNodeSubtype, "AND") || Objects.equals(targetNodeSubtype, "OR")) {
+                if (Objects.equals(targetNodeSubtype, CecaDiagramConstants.CONDITION) || Objects.equals(targetNodeSubtype, "AND") || Objects.equals(targetNodeSubtype, "OR")) {
                     return null;
                 }
             }
@@ -258,7 +258,7 @@ public class CoherencyChecker {
                     outputcondition = true;
                     String targetNodeSubtype = NodeTraversalUtils.getTargetNode(connection).getSubtype();
                     //TODO: these cannot actually be null - you can use equals
-                    if (!targetNodeSubtype.equals("action")) {
+                    if (!targetNodeSubtype.equals(CecaDiagramConstants.CONDITION)) {
                         errorList.add("action node can only lead to a disadvantage or a gate node, curretly one of the outputs leads to a " + targetNodeSubtype+ " node");
                     }
                 }

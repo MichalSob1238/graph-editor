@@ -4,12 +4,11 @@ import de.tesis.dynaware.grapheditor.*;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionCommands;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
-import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConstants;
+import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConnectionSkin;
 import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineTailSkin;
 import de.tesis.dynaware.grapheditor.model.*;
-import javafx.geometry.Side;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.edit.command.AddCommand;
@@ -60,6 +59,7 @@ public class CauseEffectChainModel {
         node.setType(CecaDiagramConstants.CECA_NODE);
         node.setDescription(description);
 
+
         Commands.addNode(graphEditor.getModel(), node);
 
         return node;
@@ -84,6 +84,7 @@ public class CauseEffectChainModel {
         node.setDescription(description);
 
         Commands.addNode(graphEditor.getModel(), node);
+        System.out.println(node);
         return node;
     }
 
@@ -221,6 +222,14 @@ public class CauseEffectChainModel {
         node.getConnectors().add(output);
         output.setType(DefaultConnectorTypes.RIGHT_OUTPUT);
 
+        final GConnector input = GraphFactory.eINSTANCE.createGConnector();
+        node.getConnectors().add(input);
+        input.setType(DefaultConnectorTypes.LEFT_INPUT);
+
+        final GConnector input2 = GraphFactory.eINSTANCE.createGConnector();
+        node.getConnectors().add(input2);
+        input2.setType(DefaultConnectorTypes.LEFT_INPUT);
+
         node.setType(CecaDiagramConstants.GATE_NODE);
         node.setSubtype("and");
         node.setDescription("DESCRIPTION2!");
@@ -273,4 +282,56 @@ public class CauseEffectChainModel {
     public void setTailSkin(String stateMachineLeftInputConnector, Class<StateMachineTailSkin> stateMachineTailSkinClass) {
         graphEditor.setTailSkin(stateMachineLeftInputConnector, stateMachineTailSkinClass);
     }
+
+    public void addCauseActionNode(double X, double Y, String description, String subtype) {
+
+        final GNode node = GraphFactory.eINSTANCE.createGNode();
+        node.setY(10 + Y);
+
+        node.setX(10 + X);
+        node.setId(allocateNewId());
+
+        node.setType(CecaDiagramConstants.CECA_NODE);
+        node.setDescription(description);
+        node.setSubtype(subtype);
+        addInitialConnectors(node);
+
+        Commands.addNode(graphEditor.getModel(), node);
+
+    }
+
+    private void addInitialConnectors(GNode node){
+        System.out.println("adding connectors");
+        switch (node.getSubtype()){
+            case CecaDiagramConstants.CAUSE_ACTION_ROOT: {
+                final GConnector output = GraphFactory.eINSTANCE.createGConnector();
+                node.getConnectors().add(output);
+                output.setType(DefaultConnectorTypes.RIGHT_OUTPUT);
+                break;
+            }
+            case CecaDiagramConstants.TARGET_DISADVANTAGE: {
+                final GConnector input = GraphFactory.eINSTANCE.createGConnector();
+                node.getConnectors().add(input);
+                input.setType(DefaultConnectorTypes.LEFT_INPUT);
+                break;
+            }
+            case CecaDiagramConstants.CONDITION:
+            case CecaDiagramConstants.ACTION: {
+                final GConnector input = GraphFactory.eINSTANCE.createGConnector();
+                node.getConnectors().add(input);
+                input.setType(DefaultConnectorTypes.LEFT_INPUT);
+
+                final GConnector output = GraphFactory.eINSTANCE.createGConnector();
+                node.getConnectors().add(output);
+                output.setType(DefaultConnectorTypes.RIGHT_OUTPUT);
+                break;
+            }
+            default:
+                System.out.println("NODE MUST HAVE A SUBTYPE");
+                break;
+        }
+
+    }
+
+
 }

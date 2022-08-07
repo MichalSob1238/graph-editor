@@ -7,7 +7,7 @@ import cause.effect.chain.editor.model.CauseEffectChainModel;
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
-import de.tesis.dynaware.grapheditor.demo.CoherencyChecker.CoherencyChecker;
+import cause.effect.chain.editor.controller.coherency.CoherencyChecker;
 import de.tesis.dynaware.grapheditor.demo.GraphEditorPersistence;
 import de.tesis.dynaware.grapheditor.demo.customskins.SkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConstants;

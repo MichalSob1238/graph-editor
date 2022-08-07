@@ -14,6 +14,10 @@ public class NodeTraversalUtils {
         return getSourceNode(connection.getSource(), connection.getTarget());
     }
 
+    public static GNode getTargetNode(GConnector connector) {
+        return (GNode) connector.getConnections().get(0).getTarget().getParent();
+    }
+
     public static GNode getTargetNode(GConnector source, GConnector target) {
         GConnector input = isInput(source) ? source : target;
         return (GNode) input.getParent();

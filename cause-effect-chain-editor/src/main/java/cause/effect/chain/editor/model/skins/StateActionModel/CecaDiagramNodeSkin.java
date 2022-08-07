@@ -26,9 +26,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 public class CecaDiagramNodeSkin extends GNodeSkin {
@@ -48,6 +46,13 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
     private final Rectangle selectionHalo = new Rectangle();
     private final Rectangle background = new Rectangle();
+
+    private static final Map<String , String> colours = new HashMap<String , String>() {{
+        put(CecaDiagramConstants.CAUSE_ACTION_ROOT,  "#B2BEB5"  );
+        put(CecaDiagramConstants.TARGET_DISADVANTAGE, "#B2BEB5");
+        put(CecaDiagramConstants.CONDITION,   "#89CFF0");
+        put(CecaDiagramConstants.ACTION,   "#50C878");
+    }};
 
 
     private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
@@ -162,6 +167,20 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
         addSelectionHalo();
         addSelectionListener();
+        updateColour();
+    }
+
+    private void updateColour() {
+        if (issuesWithNode.isEmpty()) {
+            System.out.println("true");
+            this.background.setStyle("-fx-fill:" + colours.get(getNode().getSubtype()) + ";");
+            this.isCorrect = true;
+
+        } else {
+            System.out.println("false on create status");
+            this.background.setStyle("-fx-fill:#FF4500;");
+            this.isCorrect = false;
+        }
     }
 
     @Override
@@ -326,7 +345,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         System.out.println("updating status");
         if (status.isEmpty()) {
             System.out.println("true");
-            this.background.setStyle("-fx-fill:" + defaultColor + ";");
+            this.background.setStyle("-fx-fill:" + colours.get(getNode().getSubtype()) + ";");
             this.isCorrect = true;
             this.issuesWithNode.clear();
 
