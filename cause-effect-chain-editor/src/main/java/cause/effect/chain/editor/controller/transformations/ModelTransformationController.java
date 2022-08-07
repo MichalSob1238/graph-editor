@@ -38,7 +38,7 @@ public class ModelTransformationController {
 
     public void transformIntoStateMachine() {
         graphEditor.getSelectionManager().clearSelection();
-        List<GNode> rootNodes = getNodesWithDescription3();
+        List<GNode> rootNodes = getRootCauseNodes();
 
         System.out.println("found " + rootNodes.size() + " root nodes");
 
@@ -64,7 +64,6 @@ public class ModelTransformationController {
 //        ((SkinManager) graphEditor.getSkinLookup()).addNodes(graphEditor.getModel().getNodes());
     }
 
-    //TODO: version 2 of the algorithm
     private void beginTransformationIntoStateMachine2(GNode rootNode){
         List<GConnector> outputConnectors = rootNode.getConnectors().stream()
                 .filter(conector -> !isInput(conector.getType()))
@@ -141,7 +140,7 @@ public class ModelTransformationController {
             case "and": {
                 graphEditor.getSkinLookup().lookupNode(targetNode).setSelected(true);
 
-                List<GConnector> inputConnectors = rootNode.getConnectors().stream()
+                List<GConnector> inputConnectors = targetNode.getConnectors().stream()
                         .filter(conector -> isInput(conector.getType()))
                         .filter(connector -> !connector.getConnections().isEmpty())
                         .collect(Collectors.toList());
@@ -151,7 +150,9 @@ public class ModelTransformationController {
                     GNode source = (GNode) NodeTraversalUtils.getSourceNode(connector.getConnections().get(0));
                     descriptions.add(source.getDescription());
                 });
+
                 String newDescription = String.join(" & ", descriptions);
+                System.out.println("descriptions: " + newDescription);
                 List<GConnector> outputConnectors = targetNode.getConnectors().stream()
                         .filter(conector -> !isInput(conector.getType()))
                         .filter(connector -> !connector.getConnections().isEmpty())
@@ -254,6 +255,11 @@ public class ModelTransformationController {
     private List<GNode> getTargetDisadvantageNodes() {
         return graphEditor.getModel().getNodes().stream()
                 .filter(node -> node.getSubtype().equals(CauseActionDiagramSubtypes.TARGET_DISADVANTAGE))
+                .collect(Collectors.toList());
+    }
+    private List<GNode> getRootCauseNodes() {
+        return graphEditor.getModel().getNodes().stream()
+                .filter(node -> node.getSubtype().equals(CecaDiagramConstants.CAUSE_ACTION_ROOT))
                 .collect(Collectors.toList());
     }
 
