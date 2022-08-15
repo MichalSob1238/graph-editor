@@ -149,13 +149,13 @@ public class DefaultGraphEditor implements GraphEditor {
 
     @Override
     public void setOnConnectionCreated(final BiConsumer<GConnection, CompoundCommand> consumer) {
-        System.out.println("called setOnConnectionCreated in default graph editor");
+        //System.out.println("called setOnConnectionCreated in default graph editor");
         connectionEventManager.setOnConnectionCreated(consumer);
     }
 
     @Override
     public void setOnConnectionRemoved(final BiConsumer<GConnection, CompoundCommand> consumer) {
-        System.out.println("called setOnConnectionRemoved in default graph editor");
+        //System.out.println("called setOnConnectionRemoved in default graph editor");
         connectionEventManager.setOnConnectionRemoved(consumer);
     }
 
@@ -166,7 +166,7 @@ public class DefaultGraphEditor implements GraphEditor {
 
         modelProperty.addListener((observable, oldValue, newValue) -> {
             controller.setModel(newValue);
-            System.out.println("changed in addmodel");
+            //System.out.println("changed in addmodel");
         });
     }
 

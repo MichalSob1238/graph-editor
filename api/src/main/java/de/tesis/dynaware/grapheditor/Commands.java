@@ -272,9 +272,9 @@ public class Commands {
         final EditingDomain editingDomain = getEditingDomain(model);
 
         if (editingDomain != null && editingDomain.getCommandStack().canUndo()) {
-            System.out.println("undo command");
-            System.out.println("stack: " + editingDomain.getCommandStack());
-            System.out.println("MRC: " + editingDomain.getCommandStack().getMostRecentCommand().getAffectedObjects());
+            //System.out.println("undo command");
+            //System.out.println("stack: " + editingDomain.getCommandStack());
+            //System.out.println("MRC: " + editingDomain.getCommandStack().getMostRecentCommand().getAffectedObjects());
             editingDomain.getCommandStack().undo();
         }
     }

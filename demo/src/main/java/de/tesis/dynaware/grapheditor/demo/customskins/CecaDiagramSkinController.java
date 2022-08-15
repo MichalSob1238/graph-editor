@@ -41,7 +41,7 @@ public class CecaDiagramSkinController implements SkinController {
 
     @Override
     public void addNode(double currentZoomFactor) {
-        System.out.println("called add node");
+        ////System.out.println("called add node");
         final double windowXOffset = graphEditorContainer.windowXProperty().get() / currentZoomFactor;
         final double windowYOffset = graphEditorContainer.windowYProperty().get() / currentZoomFactor;
 
@@ -66,7 +66,7 @@ public class CecaDiagramSkinController implements SkinController {
     }
 
     public GNode addNode(double X, double Y, String description) {
-        System.out.println("called add using coords node");
+        ////System.out.println("called add using coords node");
 
         final GNode node = GraphFactory.eINSTANCE.createGNode();
         node.setY(Y);
@@ -174,7 +174,7 @@ public class CecaDiagramSkinController implements SkinController {
 
     @Override
     public void addAndGate(double currentZoomFactor) {
-        System.out.println("called and gate");
+        ////System.out.println("called and gate");
         final double windowXOffset = graphEditorContainer.windowXProperty().get() / currentZoomFactor;
         final double windowYOffset = graphEditorContainer.windowYProperty().get() / currentZoomFactor;
 
@@ -204,7 +204,7 @@ public class CecaDiagramSkinController implements SkinController {
     }
 
     public GNode addAndGate(double X, double Y) {
-        System.out.println("called and gate");
+        ////System.out.println("called and gate");
 
         final GNode node = GraphFactory.eINSTANCE.createGNode();
         node.setY(Y);
@@ -225,7 +225,7 @@ public class CecaDiagramSkinController implements SkinController {
 
     @Override
     public void addOrGate(double currentZoomFactor) {
-        System.out.println("called or gate");
+        ////System.out.println("called or gate");
         final double windowXOffset = graphEditorContainer.windowXProperty().get() / currentZoomFactor;
         final double windowYOffset = graphEditorContainer.windowYProperty().get() / currentZoomFactor;
 
@@ -255,7 +255,7 @@ public class CecaDiagramSkinController implements SkinController {
     }
 
     public GNode addOrGate(double X, double Y, int inputs) {
-        System.out.println("called or gate");
+        ////System.out.println("called or gate");
 
         final GNode node = GraphFactory.eINSTANCE.createGNode();
         node.setY(Y);
@@ -306,7 +306,7 @@ public class CecaDiagramSkinController implements SkinController {
 //        );
 //
 //        final List<Point2D> jointPositions = graphEditor.getSkinLookup().lookupTail(source).allocateJointPositions();
-//        System.out.println("jointPositions " + jointPositions);
+//        //System.out.println("jointPositions " + jointPositions);
         final List<GJoint> joints = new ArrayList<>();
 //        for (final Point2D position : jointPositions) {
 //            final GJoint joint = GraphFactory.eINSTANCE.createGJoint();
@@ -323,7 +323,7 @@ public class CecaDiagramSkinController implements SkinController {
         joint2.setX((((GNode) target.getParent()).getX()+ ((GNode) source.getParent()).getX())/2.0);
         joint2.setY(((GNode) target.getParent()).getX());
         joints.add(joint2);
-        System.out.println("JOINTS " + joints);
+        ////System.out.println("JOINTS " + joints);
         ConnectionCommands.addConnection(model, source, target, null, joints);
 
         //command.append(AddCommand.create(editingDomain, model, CONNECTIONS, connection));

@@ -89,7 +89,7 @@ public class CauseEffectChainModel {
         node.setDescription(description);
 
         Commands.addNode(graphEditor.getModel(), node);
-        System.out.println(node);
+        ////System.out.printlnprintln(node);
         return node;
     }
 
@@ -216,7 +216,7 @@ public class CauseEffectChainModel {
     }
 
     public GNode addConditionActionAndGate(double X, double Y) {
-        System.out.println("called and gate");
+        ////System.out.printlnprintln("called and gate");
 
         final GNode node = GraphFactory.eINSTANCE.createGNode();
         node.setY(Y);
@@ -271,7 +271,7 @@ public class CauseEffectChainModel {
         joint2.setX((((GNode) target.getParent()).getX()+ ((GNode) source.getParent()).getX())/2.0);
         joint2.setY(((GNode) target.getParent()).getX());
         joints.add(joint2);
-        System.out.println("JOINTS " + joints);
+        ////System.out.printlnprintln("JOINTS " + joints);
         ConnectionCommands.addConnection(model, source, target, null, joints);
 
         if (command.canExecute()) {
@@ -288,7 +288,7 @@ public class CauseEffectChainModel {
         graphEditor.setTailSkin(stateMachineLeftInputConnector, stateMachineTailSkinClass);
     }
 
-    public void addCauseActionNode(double X, double Y, String description, String subtype) {
+    public GNode addCauseActionNode(double X, double Y, String description, String subtype) {
 
         final GNode node = GraphFactory.eINSTANCE.createGNode();
         node.setY(10 + Y);
@@ -303,10 +303,12 @@ public class CauseEffectChainModel {
 
         Commands.addNode(graphEditor.getModel(), node);
 
+        return node;
+
     }
 
     private void addInitialConnectors(GNode node){
-        System.out.println("adding connectors");
+        ////System.out.printlnprintln("adding connectors");
         switch (node.getSubtype()){
             case CecaDiagramConstants.CAUSE_ACTION_ROOT: {
                 final GConnector output = GraphFactory.eINSTANCE.createGConnector();
@@ -332,7 +334,7 @@ public class CauseEffectChainModel {
                 break;
             }
             default:
-                System.out.println("NODE MUST HAVE A SUBTYPE");
+                ////System.out.printlnprintln("NODE MUST HAVE A SUBTYPE");
                 break;
         }
 

@@ -39,12 +39,12 @@ public class StateMachineModeController implements SkinController {
         graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_BOTTOM_OUTPUT_CONNECTOR, StateMachineTailSkin.class);
         graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_TOP_OUTPUT_CONNECTOR, StateMachineTailSkin.class);
         graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_LEFT_OUTPUT_CONNECTOR, StateMachineTailSkin.class);
-        System.out.println("CREATING SM CONTROLLER");
+        ////System.out.println("CREATING SM CONTROLLER");
     }
 
     @Override
     public void addNode(double currentZoomFactor) {
-        System.out.println("called add node");
+        ////System.out.println("called add node");
         final double windowXOffset = graphEditorContainer.windowXProperty().get() / currentZoomFactor;
         final double windowYOffset = graphEditorContainer.windowYProperty().get() / currentZoomFactor;
 
@@ -52,7 +52,7 @@ public class StateMachineModeController implements SkinController {
     }
 
     public GNode addNode(double X, double Y, String description) {
-        System.out.println("called add using coords node");
+        ////System.out.println("called add using coords node");
 
         return graphEditor.addStateMachineNode(X, Y, description);
     }
@@ -61,7 +61,7 @@ public class StateMachineModeController implements SkinController {
     public void addConnector(final Side position, final boolean input) {
 
         final String type = getType(position, input);
-        System.out.println("connector type:" + type);
+        ////System.out.println("connector type:" + type);
 
         graphEditor.addStateMachineConnector(type);
     }
@@ -69,7 +69,7 @@ public class StateMachineModeController implements SkinController {
     public GConnector addConnector(GNode node, String type) {
 
         final GConnector connector = graphEditor.addStateMachineConnector(node, type);
-        System.out.println("connector type: with type sm " + type);
+        ////System.out.println("connector type: with type sm " + type);
         return connector;
     }
 

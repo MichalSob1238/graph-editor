@@ -63,7 +63,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
     private EventHandler<MouseEvent> getDoubleClickedListener() {
         return event -> {
             if (event.getClickCount() >= 2) {
-                System.out.println("handling doubleclick");
+                ////System.out.println("handling doubleclick");
                 JFXTextField descriptionEditable = new JFXTextField();
                 descriptionEditable.setPrefSize(-1, -1);
                 descriptionEditable.setMinSize(description.getWidth(), description.getHeight());
@@ -91,7 +91,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
 
     //TODO: customise
     public void setDescription() {
-        System.out.println("setting description");
+        ////System.out.println("setting description");
         final Text text = new Text(getNode().getDescription());
         new Scene(new Group(text));
         text.applyCss();
@@ -127,7 +127,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
 
             getRoot().getChildren().addAll(andGateShape.getBackgroundComponents());
         } else {
-            System.out.println("not and");
+            ////System.out.println("not and");
             orGateShape.getBackground().translateXProperty().bind(getRoot().widthProperty().divide(-2.0).add(orGateShape.getBackground().widthProperty().divide(2.0)).add(orGateShape.getSemiCircleBackgroundFront().radiusXProperty().divide(2.0)).add(1));
             orGateShape.getBackground().widthProperty().bind(getRoot().widthProperty().multiply(0.4));
             orGateShape.getBackground().heightProperty().bind(getRoot().heightProperty());
@@ -143,7 +143,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
         }
 
         description.setText("description!");
-        System.out.println("setting description");
+        ////System.out.println("setting description");
         description.setAlignment(Pos.CENTER);
         description.setVisible(true);
         description.setOnMouseClicked(doubleClickedListener);

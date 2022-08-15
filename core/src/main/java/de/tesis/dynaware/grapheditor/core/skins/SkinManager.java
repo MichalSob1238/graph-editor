@@ -127,8 +127,8 @@ public class SkinManager implements SkinLookup {
             nodeSkin.initialize();
 
             nodeSkins.put(node, nodeSkin);
-            System.out.println("nodeSkins in manager: " + nodeSkins);
-            System.out.println(nodeSkin.getRoot() == null);
+            ////System.out.printlnprintln("nodeSkins in manager: " + nodeSkins);
+            ////System.out.printlnprintln(nodeSkin.getRoot() == null);
 
             addConnectors(node);
         }

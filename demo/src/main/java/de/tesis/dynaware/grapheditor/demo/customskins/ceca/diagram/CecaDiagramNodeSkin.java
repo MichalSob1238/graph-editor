@@ -83,8 +83,8 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
                     alert.showAndWait();
                 } else {
-                    System.out.println("handling doubleclick");
-                    System.out.println(getNode());
+                    ////System.out.println("handling doubleclick");
+                    ////System.out.println(getNode());
                     JFXTextField descriptionEditable = new JFXTextField();
                     descriptionEditable.setPrefSize(-1, -1);
                     descriptionEditable.setMinSize(title.getWidth(), title.getHeight());
@@ -113,7 +113,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
     //TODO: customise
     public void setDescription() {
-        System.out.println("setting description");
+        ////System.out.println("setting description");
         final Text text = new Text(getNode().getDescription());
         new Scene(new Group(text));
         text.applyCss();
@@ -145,7 +145,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
 
         title.setText(node.getDescription());
-        System.out.println("ceca setting title");
+        ////System.out.println("ceca setting title");
         title.setAlignment(Pos.CENTER);
         title.setVisible(true);
 
@@ -321,15 +321,15 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
     @Override
     public void updateStatus(List<String> status) {
-        System.out.println("updating status");
+        ////System.out.println("updating status");
         if (status.isEmpty()) {
-            System.out.println("true");
+            ////System.out.println("true");
             this.background.setStyle("-fx-fill:" + defaultColor + ";");
             this.isCorrect = true;
             this.issuesWithNode.clear();
 
         } else {
-            System.out.println("false  status");
+            ////System.out.println("false  status");
             this.background.setStyle("-fx-fill:#FF4500;");
             this.isCorrect = false;
             this.issuesWithNode.clear();

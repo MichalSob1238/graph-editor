@@ -52,7 +52,7 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
 
         text.setText("TEXT " + getConnection().getDescription());
         text.setManaged(false);
-        System.out.println("SMCON");
+        ////System.out.println("SMCON");
         text.setOnMouseClicked(doubleClickedListener);
         background.setManaged(false);
         getConnection().getTarget().getParent();
@@ -105,7 +105,7 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
                 TextInputDialog td = new TextInputDialog();
                 td.showAndWait();
                 getConnection().setDescription(td.getEditor().getText());
-                System.out.println("set description to + "  + getConnection().getDescription());
+                ////System.out.println("set description to + "  + getConnection().getDescription());
                 text.setText(getConnection().getDescription());
             }
         };

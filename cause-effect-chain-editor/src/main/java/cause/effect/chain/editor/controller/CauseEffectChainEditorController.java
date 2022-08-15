@@ -116,11 +116,11 @@ public class CauseEffectChainEditorController {
         initializeMenuBar();
         addActiveSkinControllerListener();
         chainModel.getGraphEditor().setOnConnectionCreated((connection, command) -> {
-            System.out.println("connection added" + connection);
+            //System.out.println("connection added" + connection);
             coherencyChecker.getNotified(connection);
         });
         chainModel.getGraphEditor().setOnConnectionRemoved((connection, command) -> {
-            System.out.println("connection removed" + connection);
+            //System.out.println("connection removed" + connection);
             coherencyChecker.getNotified(connection);
         });
         graphEditorContainer.setOnMouseClicked(event -> graphEditorContainer.requestFocus());
@@ -149,8 +149,8 @@ public class CauseEffectChainEditorController {
 
     @FXML
     public void undo() {
-        System.out.println("AAA + " + chainModel.getGraphEditor().getModel().getConnections());
-        System.out.println("AAA + " + ((GModelImpl) chainModel.getGraphEditor().getModel()).connections);
+        //System.out.println("AAA + " + chainModel.getGraphEditor().getModel().getConnections());
+        //System.out.println("AAA + " + ((GModelImpl) chainModel.getGraphEditor().getModel()).connections);
         Commands.undo(chainModel.getGraphEditor().getModel());
     }
 

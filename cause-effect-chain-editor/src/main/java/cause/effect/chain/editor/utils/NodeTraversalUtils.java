@@ -5,6 +5,8 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
 
+import java.util.stream.Collectors;
+
 public class NodeTraversalUtils {
     public static GNode getTargetNode(GConnection connection) {
         return getTargetNode(connection.getSource(), connection.getTarget());
@@ -22,6 +24,14 @@ public class NodeTraversalUtils {
     public static GNode getSourceNode(GConnector source, GConnector target) {
         GConnector output = isInput(source) ? target : source;
         return (GNode) output.getParent();
+    }
+
+    public static GConnector getNodeInput(GNode node) {
+        return node.getConnectors().stream().filter(NodeTraversalUtils::isInput).collect(Collectors.toList()).get(0);
+    }
+
+    public static GConnector getNodeOutput(GNode node) {
+        return node.getConnectors().stream().filter(connector -> !isInput(connector)).collect(Collectors.toList()).get(0);
     }
 
     public static boolean isInput(GConnector connector) {

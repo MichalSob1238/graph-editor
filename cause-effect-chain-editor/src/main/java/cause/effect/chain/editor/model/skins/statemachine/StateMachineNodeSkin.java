@@ -88,7 +88,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
         getRoot().getChildren().addAll(border, background);
 
         title.setText("title!");
-        System.out.println("setting title");
+        ////System.out.println("setting title");
         title.setAlignment(Pos.CENTER);
         title.setVisible(true);
         title.setOnMouseClicked(doubleClickedListener);
@@ -234,8 +234,8 @@ public class StateMachineNodeSkin extends GNodeSkin {
                 alert.getDialogPane().getButtonTypes().add(buttonTypeOk);
 
 
-                System.out.println("State Machine handling doubleclick");
-                System.out.println(getNode());
+                ////System.out.println("State Machine handling doubleclick");
+                ////System.out.println(getNode());
                 JFXTextField descriptionEditable = new JFXTextField();
                 descriptionEditable.setPrefSize(-1, -1);
                 descriptionEditable.setMinSize(title.getWidth(), title.getHeight());
@@ -298,8 +298,8 @@ public class StateMachineNodeSkin extends GNodeSkin {
                 node.setDescription("avoid state description");
 
                 Commands.addNode(getGraphEditor().getModel(), node);
-                System.out.println("created avoid node" + node);
-                System.out.println("alert node connectors: + " + node.getConnectors() );
+                ////System.out.println("created avoid node" + node);
+                ////System.out.println("alert node connectors: + " + node.getConnectors() );
 
                 addStateMachineConnection(output,input, "avoidance");
 
@@ -332,8 +332,8 @@ public class StateMachineNodeSkin extends GNodeSkin {
                 node.setDescription("avoid state description");
 
                 Commands.addNode(getGraphEditor().getModel(), node);
-                System.out.println("created counteract node" + node);
-                System.out.println("alert node connectors: + " + node.getConnectors() );
+                ////System.out.println("created counteract node" + node);
+                ////System.out.println("alert node connectors: + " + node.getConnectors() );
 
                 addStateMachineConnection(output, rootInput,"conteract");
                 addStateMachineConnection(rootOutput,input, "conteract");
@@ -370,7 +370,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
             selected = result.get();
         }
-        System.out.println("connection selected: " + selected);
+        ////System.out.println("connection selected: " + selected);
         int i = 0;
         while (i < inputConnections.size()) {
             GConnection selectedCon = inputConnections.get(i);
@@ -403,8 +403,8 @@ public class StateMachineNodeSkin extends GNodeSkin {
         node.setDescription("alert state description");
 
         Commands.addNode(getGraphEditor().getModel(), node);
-        System.out.println("created alert node" + node);
-        System.out.println("alert node connectors: + " + node.getConnectors() );
+        ////System.out.println("created alert node" + node);
+        ////System.out.println("alert node connectors: + " + node.getConnectors() );
 
         GConnector sourceConnector = selectedCon.getSource();
         GConnector targetConnector = selectedCon.getTarget();
@@ -444,7 +444,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
     
     //TODO: customise
     public void setDescription() {
-        System.out.println("setting description");
+        ////System.out.println("setting description");
         final Text text = new Text(getNode().getDescription());
         new Scene(new Group(text));
         text.applyCss();

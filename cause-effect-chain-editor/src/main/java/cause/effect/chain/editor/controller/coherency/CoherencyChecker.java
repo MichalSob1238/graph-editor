@@ -167,7 +167,7 @@ public class CoherencyChecker {
                 break;
             }
             default: {
-                System.out.println("Default case in coherency checker");
+                //System.out.println("Default case in coherency checker");
             }
         }
 
