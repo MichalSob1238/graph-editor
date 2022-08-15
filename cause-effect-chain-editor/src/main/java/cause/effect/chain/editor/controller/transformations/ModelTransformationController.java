@@ -3,6 +3,7 @@ package cause.effect.chain.editor.controller.transformations;
 import cause.effect.chain.editor.controller.modes.CauseActionModeController;
 import cause.effect.chain.editor.controller.modes.StateMachineModeController;
 import de.tesis.dynaware.grapheditor.GraphEditor;
+import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
 import de.tesis.dynaware.grapheditor.demo.customskins.NodeTraversalUtils;
 import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CauseActionDiagramSubtypes;
@@ -44,24 +45,25 @@ public class ModelTransformationController {
 
         rootNodes.forEach(this::beginTransformationIntoStateMachine2);
         graphEditor.getSelectionManager().deleteSelection();
+        //((DefaultGraphEditor) graphEditor).getController().reloadView();
+        System.out.println("added this");
         //TODO: also remove their skins?
         for (GNode node : graphEditor.getModel().getNodes()) {
             System.out.println("NODE: " + node + '\n' + node.getConnectors());
             node.getConnectors().removeIf(connector -> connector.getConnections().isEmpty());
         }
-        for (GNode node : graphEditor.getModel().getNodes()) {
-            System.out.println("NODE: " + node + '\n' + node.getConnectors());
-        }
-        for (GNode node : graphEditor.getModel().getNodes()) {
-            node.setType(StateMachineConstants.STATE_MACHINE_NODE);
-        }
-        System.out.println("==========================");
-        for (GNode node : graphEditor.getModel().getNodes()) {
-            System.out.println("NODE: " + node + '\n' + node.getConnectors());
-        }
-        graphEditor.reload();
-//        ((SkinManager) graphEditor.getSkinLookup()).removeNodes(graphEditor.getModel().getNodes());
-//        ((SkinManager) graphEditor.getSkinLookup()).addNodes(graphEditor.getModel().getNodes());
+//        for (GNode node : graphEditor.getModel().getNodes()) {
+//            System.out.println("NODE: " + node + '\n' + node.getConnectors());
+//        }
+//        for (GNode node : graphEditor.getModel().getNodes()) {
+//            node.setType(StateMachineConstants.STATE_MACHINE_NODE);
+//        }
+//        System.out.println("==========================");
+//        for (GNode node : graphEditor.getModel().getNodes()) {
+//            System.out.println("NODE: " + node + '\n' + node.getConnectors());
+//        }
+//        graphEditor.reload();
+        ((DefaultGraphEditor) graphEditor).getController().setModel(graphEditor.getModel());
     }
 
     private void beginTransformationIntoStateMachine2(GNode rootNode){

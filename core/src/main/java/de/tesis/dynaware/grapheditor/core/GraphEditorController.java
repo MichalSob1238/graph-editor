@@ -48,13 +48,13 @@ public class GraphEditorController {
     private final SkinManager skinManager;
     private final GraphEditorView view;
 
-    private final CommandStackListener commandStackListener;
-    private final ModelEditingManager modelEditingManager;
-    private final ModelLayoutUpdater modelLayoutUpdater;
-    private final ModelMemory modelMemory;
+    final CommandStackListener commandStackListener;
+    final ModelEditingManager modelEditingManager;
+    final ModelLayoutUpdater modelLayoutUpdater;
+    public final ModelMemory modelMemory;
 
-    private final ConnectionLayouter connectionLayouter;
-    private final ConnectorDragManager connectorDragManager;
+    final ConnectionLayouter connectionLayouter;
+    final ConnectorDragManager connectorDragManager;
 
     private final DefaultSelectionManager selectionManager;
 
@@ -190,7 +190,7 @@ public class GraphEditorController {
      * Uses the skin manager to create skins for the current model, and adds the skin instances to the view.
      * </p>
      */
-    private void reloadView() {
+    public void reloadView() {
 
         cleanUpView();
         updateSkinManager();
@@ -244,10 +244,13 @@ public class GraphEditorController {
     /**
      * Updates the skin manager, adding and removing skin instances according to what the {@link ModelMemory} specifies.
      */
-    private void updateSkinManager() {
+    public void updateSkinManager() {
 
-        skinManager.addNodes(modelMemory.getNodesToAdd());
+        System.out.println("nodes to add was " + modelMemory.getNodesToAdd());
+        System.out.println("nodes to remove was " + modelMemory.getNodesToRemove());
+
         skinManager.removeNodes(modelMemory.getNodesToRemove());
+        skinManager.addNodes(modelMemory.getNodesToAdd());
         skinManager.updateNodes(modelMemory.getNodesToUpdate());
         skinManager.removeConnectors(modelMemory.getConnectorsToRemove());
 

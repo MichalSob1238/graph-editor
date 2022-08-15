@@ -31,22 +31,22 @@ import de.tesis.dynaware.grapheditor.model.GNode;
  */
 public class ModelMemory {
 
-    private final List<GNode> oldNodes = new ArrayList<>();
-    private final Map<GNode, List<GConnector>> oldConnectors = new HashMap<>();
-    private final List<GConnection> oldConnections = new ArrayList<>();
-    private final Map<GConnection, List<GJoint>> oldJoints = new HashMap<>();
+    public final List<GNode> oldNodes = new ArrayList<>();
+    public final Map<GNode, List<GConnector>> oldConnectors = new HashMap<>();
+    public final List<GConnection> oldConnections = new ArrayList<>();
+    public final Map<GConnection, List<GJoint>> oldJoints = new HashMap<>();
 
-    private final List<GNode> nodesToAdd = new ArrayList<>();
-    private final List<GNode> nodesToRemove = new ArrayList<>();
-    private final List<GNode> nodesToUpdate = new ArrayList<>();
+    public final List<GNode> nodesToAdd = new ArrayList<>();
+    public final List<GNode> nodesToRemove = new ArrayList<>();
+    public final List<GNode> nodesToUpdate = new ArrayList<>();
 
-    private final List<GConnector> connectorsToRemove = new ArrayList<>();
+    public final List<GConnector> connectorsToRemove = new ArrayList<>();
 
-    private final List<GConnection> connectionsToAdd = new ArrayList<>();
-    private final List<GConnection> connectionsToRemove = new ArrayList<>();
+    public final List<GConnection> connectionsToAdd = new ArrayList<>();
+    public final List<GConnection> connectionsToRemove = new ArrayList<>();
 
-    private final Map<GConnection, List<GJoint>> jointsToAdd = new HashMap<>();
-    private final Map<GConnection, List<GJoint>> jointsToRemove = new HashMap<>();
+    public final Map<GConnection, List<GJoint>> jointsToAdd = new HashMap<>();
+    public final Map<GConnection, List<GJoint>> jointsToRemove = new HashMap<>();
 
     /**
      * Sets the new model state.
@@ -193,7 +193,7 @@ public class ModelMemory {
     /**
      * Clears all lists and maps that contain information about elements to be added, removed, and updated.
      */
-    private void clearAll() {
+    public void clearAll() {
 
         nodesToAdd.clear();
         nodesToRemove.clear();
@@ -210,7 +210,7 @@ public class ModelMemory {
      *
      * @param model the new {@link GModel} state
      */
-    private void findNodes(final GModel model) {
+    public void findNodes(final GModel model) {
 
         nodesToAdd.addAll(model.getNodes());
         nodesToAdd.removeAll(oldNodes);
@@ -224,7 +224,7 @@ public class ModelMemory {
      *
      * @param model the new {@link GModel} state
      */
-    private void findConnectors(final GModel model) {
+    public void findConnectors(final GModel model) {
 
         for (final GNode node : oldNodes) {
             if (!nodesToRemove.contains(node)) {
@@ -250,7 +250,7 @@ public class ModelMemory {
      *
      * @param model the new {@link GModel} state
      */
-    private void findConnections(final GModel model) {
+    public void findConnections(final GModel model) {
 
         connectionsToAdd.addAll(model.getConnections());
         connectionsToAdd.removeAll(oldConnections);
@@ -264,7 +264,7 @@ public class ModelMemory {
      *
      * @param model the new {@link GModel} state
      */
-    private void findJoints(final GModel model) {
+    public void findJoints(final GModel model) {
 
         for (final GConnection connection : oldConnections) {
             jointsToRemove.put(connection, new ArrayList<>(oldJoints.get(connection)));
@@ -296,9 +296,9 @@ public class ModelMemory {
      * present at the time of the call.
      * </p>
      *
-     * @param a {@link GModel} instance
+     * @param model {@link GModel} instance
      */
-    private void rememberOldElements(final GModel model) {
+    public void rememberOldElements(final GModel model) {
 
         oldNodes.clear();
         oldConnections.clear();

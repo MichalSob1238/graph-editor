@@ -127,9 +127,16 @@ public class SkinManager implements SkinLookup {
             nodeSkin.initialize();
 
             nodeSkins.put(node, nodeSkin);
+            System.out.println("nodeSkins in manager: " + nodeSkins);
+            System.out.println(nodeSkin.getRoot() == null);
 
             addConnectors(node);
         }
+    }
+
+    public void swapNodeSkin(final List<GNode> nodesToAdd) {
+        removeNodes(nodesToAdd);
+        addNodes(nodesToAdd);
     }
 
     /**
@@ -356,5 +363,17 @@ public class SkinManager implements SkinLookup {
         }
 
         connectionSkins.get(connection).setJointSkins(connectionJointSkins);
+    }
+
+    public void addNode(GNode node) {
+        final GNodeSkin nodeSkin = skinFactory. createNodeSkin(node);
+
+        nodeSkin.setGraphEditor(graphEditor);
+        nodeSkin.getRoot().setEditorProperties(graphEditor.getProperties());
+        nodeSkin.initialize();
+
+        nodeSkins.put(node, nodeSkin);
+
+        addConnectors(node);
     }
 }

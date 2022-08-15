@@ -315,7 +315,9 @@ public class ConnectorDragManager {
         if (checkCreatable(connector)) {
 
             sourceConnector = connector;
-            skinLookup.lookupConnector(connector).getRoot().startFullDrag();
+            skinLookup.lookupConnector(connector)
+                    .getRoot()
+                    .startFullDrag();
             tailManager.create(connector, event);
 
         } else if (checkRemovable(connector)) {

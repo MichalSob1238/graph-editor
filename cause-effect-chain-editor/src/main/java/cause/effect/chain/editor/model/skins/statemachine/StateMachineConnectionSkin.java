@@ -1,7 +1,7 @@
-package cause.effect.chain.editor.model.skins.statemachine.machine;
+package cause.effect.chain.editor.model.skins.statemachine;
 
-import cause.effect.chain.editor.model.skins.statemachine.machine.utils.LineNode;
-import cause.effect.chain.editor.model.skins.statemachine.machine.utils.LineUtils;
+import cause.effect.chain.editor.model.skins.statemachine.utils.LineNode;
+import cause.effect.chain.editor.model.skins.statemachine.utils.LineUtils;
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.model.GConnection;
@@ -28,9 +28,14 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
     private final Group selectionHalo = new Group(haloFirstSide, haloSecondSide);
     private final LineNode line = new LineNode();
     private final LineNode background = new LineNode();
+    private final LineNode line2 = new LineNode();
+    private final LineNode background2 = new LineNode();
+    private final LineNode line3 = new LineNode();
+    private final LineNode background3 = new LineNode();
     private Text text = new Text("some text");
-    private final Group root = new Group(background,selectionHalo, line, text);
+    private final Group root = new Group(background,selectionHalo, line, line2, background2, line3, background3, text);
     private EventHandler<? super MouseEvent> doubleClickedListener = getDoubleClickedListener();
+    private boolean isBlocked = false;
 
     private List<Point2D> points;
 
@@ -69,6 +74,19 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
             LineUtils.draw(background, start, end, OFFSET_FROM_CONNECTOR);
 
             this.points = points;
+        }
+        if (true)
+        {
+            final Point2D start = points.get(0);
+            final Point2D end = points.get(1);
+            final Point2D newStart = new Point2D((start.getX() + end.getX())/2.0 -20 , (start.getY() + end.getY())/2.0 - 20);
+            final Point2D newEnd = new Point2D((start.getX() + end.getX())/2.0 + 20 , (start.getY() + end.getY())/2.0 + 20);
+            LineUtils.draw(line2, newStart, newEnd, OFFSET_FROM_CONNECTOR);
+            LineUtils.draw(background2, newStart, newEnd, OFFSET_FROM_CONNECTOR);
+            final Point2D newStart2 = new Point2D((start.getX() + end.getX())/2.0 - 20 , (start.getY() + end.getY())/2.0 + 20);
+            final Point2D newEnd2 = new Point2D((start.getX() + end.getX())/2.0  + 20 , (start.getY() + end.getY())/2.0 - 20);
+            LineUtils.draw(line3, newStart2, newEnd2, OFFSET_FROM_CONNECTOR);
+            LineUtils.draw(background3, newStart2, newEnd2, OFFSET_FROM_CONNECTOR);
         }
         text.setVisible(true);
         double x = points.get(0).getX()/2.0 + points.get(1).getX()/2;

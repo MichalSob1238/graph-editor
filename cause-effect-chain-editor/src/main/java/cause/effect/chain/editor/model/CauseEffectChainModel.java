@@ -2,12 +2,13 @@ package cause.effect.chain.editor.model;
 
 import de.tesis.dynaware.grapheditor.*;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
+import de.tesis.dynaware.grapheditor.core.GraphEditorController;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionCommands;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
 import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
-import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConnectionSkin;
-import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants;
-import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineTailSkin;
+import cause.effect.chain.editor.model.skins.statemachine.StateMachineConnectionSkin;
+import cause.effect.chain.editor.model.skins.statemachine.StateMachineConstants;
+import cause.effect.chain.editor.model.skins.statemachine.StateMachineTailSkin;
 import de.tesis.dynaware.grapheditor.model.*;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EReference;
@@ -30,7 +31,11 @@ public class CauseEffectChainModel {
         graphEditor.setModel(model);
     }
 
-    public GraphEditor getGraphEditor() {return graphEditor;}
+    public DefaultGraphEditor getGraphEditor() {return  (DefaultGraphEditor) graphEditor;}
+
+    public GraphEditorController getGraphEditorController() {
+        return getGraphEditor().getController();
+    }
 
     public void setNodeSkin(final String type, final Class<? extends GNodeSkin> skin) {
         graphEditor.setNodeSkin(type, skin);

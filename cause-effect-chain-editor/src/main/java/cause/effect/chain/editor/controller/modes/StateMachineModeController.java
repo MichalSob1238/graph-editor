@@ -4,7 +4,7 @@ import cause.effect.chain.editor.model.CauseEffectChainModel;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
 import de.tesis.dynaware.grapheditor.demo.customskins.SkinController;
-import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.*;
+import cause.effect.chain.editor.model.skins.statemachine.*;
 import de.tesis.dynaware.grapheditor.model.*;
 import javafx.geometry.Side;
 import org.eclipse.emf.ecore.EReference;

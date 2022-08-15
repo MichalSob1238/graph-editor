@@ -4,8 +4,7 @@ import cause.effect.chain.editor.controller.modes.CauseActionModeController;
 import cause.effect.chain.editor.controller.modes.StateMachineModeController;
 import cause.effect.chain.editor.controller.transformations.ModelTransformationController;
 import cause.effect.chain.editor.model.CauseEffectChainModel;
-import de.tesis.dynaware.grapheditor.Commands;
-import de.tesis.dynaware.grapheditor.GraphEditorContainer;
+import de.tesis.dynaware.grapheditor.*;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
 import cause.effect.chain.editor.controller.coherency.CoherencyChecker;
 import de.tesis.dynaware.grapheditor.demo.GraphEditorPersistence;
@@ -86,16 +85,23 @@ public class CauseEffectChainEditorController {
     private CauseActionModeController cecaSkinController;
     private StateMachineModeController stateMachineController;
     private CoherencyChecker coherencyChecker;
-    private ModelTransformationController modelTransformationController;
 
+    private ModelTransformationController modelTransformationController;
+    public static CauseEffectChainEditorController instance;
 
     private final ObjectProperty<SkinController> activeSkinController = new SimpleObjectProperty<>();
+
+    public CauseEffectChainEditorController() {
+        if (instance == null) {
+            instance = this;
+        }
+    }
+
 
     /**
      * Called by JavaFX when FXML is loaded.
      */
     public void initialize() {
-
 
         graphEditorContainer.setGraphEditor(chainModel.getGraphEditor());
         setDetouredStyle();
@@ -199,6 +205,9 @@ public class CauseEffectChainEditorController {
     public void transformIntoStateMachine() {
         setStateMachineSkin();
         modelTransformationController.transformIntoStateMachine();
+//        ArrayList<GNode> list = new ArrayList<>(chainModel.getGraphEditor().getModel().getNodes());
+//        chainModel.getGraphEditor().getSkinManager().swapNodeSkin(list);
+//        chainModel.getGraphEditor().reload();
         }
 
 
@@ -430,6 +439,9 @@ public class CauseEffectChainEditorController {
         }
     }
 
+    public CauseEffectChainModel getModel() {
+        return this.chainModel;
+    }
     /**
      * Gets the side corresponding to the currently selected connector position in the menu.
      *

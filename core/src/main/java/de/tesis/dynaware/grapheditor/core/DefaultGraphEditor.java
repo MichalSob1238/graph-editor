@@ -37,7 +37,7 @@ import org.eclipse.emf.common.util.EList;
  */
 public class DefaultGraphEditor implements GraphEditor {
 
-    private final SkinManager skinManager;
+    public final SkinManager skinManager;
     private final ConnectionEventManager connectionEventManager;
 
     private final GraphEditorController controller;
@@ -66,6 +66,11 @@ public class DefaultGraphEditor implements GraphEditor {
     @Override
     public void setNodeSkin(final String type, final Class<? extends GNodeSkin> skin) {
         skinManager.setNodeSkin(type, skin);
+    }
+
+
+    public GraphEditorController getController() {
+        return controller;
     }
 
     @Override
@@ -131,6 +136,10 @@ public class DefaultGraphEditor implements GraphEditor {
     @Override
     public SkinLookup getSkinLookup() {
         return skinManager;
+    }
+
+    public SkinManager getSkinManager( ) {
+        return this.skinManager;
     }
 
     @Override

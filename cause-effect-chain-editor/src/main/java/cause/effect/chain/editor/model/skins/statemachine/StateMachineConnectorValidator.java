@@ -1,4 +1,4 @@
-package cause.effect.chain.editor.model.skins.statemachine.machine;
+package cause.effect.chain.editor.model.skins.statemachine;
 
 import de.tesis.dynaware.grapheditor.GConnectorValidator;
 import de.tesis.dynaware.grapheditor.model.GConnector;

@@ -1,4 +1,4 @@
-package cause.effect.chain.editor.model.skins.statemachine.machine;
+package cause.effect.chain.editor.model.skins.statemachine;
 
 public class StateMachineConstants {
     public static final String STATE_MACHINE_NODE = "state-machine-diagram-node";

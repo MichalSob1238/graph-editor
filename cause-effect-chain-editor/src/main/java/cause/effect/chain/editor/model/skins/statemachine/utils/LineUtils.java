@@ -1,4 +1,4 @@
-package cause.effect.chain.editor.model.skins.statemachine.machine.utils;
+package cause.effect.chain.editor.model.skins.statemachine.utils;
 
 import javafx.geometry.Point2D;
 

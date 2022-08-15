@@ -1,4 +1,4 @@
-package cause.effect.chain.editor.model.skins.statemachine.machine.utils;
+package cause.effect.chain.editor.model.skins.statemachine.utils;
 
 import de.tesis.dynaware.grapheditor.utils.Arrow;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;

@@ -1,7 +1,7 @@
-package cause.effect.chain.editor.model.skins.statemachine.machine;
+package cause.effect.chain.editor.model.skins.statemachine;
 
-import cause.effect.chain.editor.model.skins.statemachine.machine.utils.LineNode;
-import cause.effect.chain.editor.model.skins.statemachine.machine.utils.LineUtils;
+import cause.effect.chain.editor.model.skins.statemachine.utils.LineNode;
+import cause.effect.chain.editor.model.skins.statemachine.utils.LineUtils;
 import de.tesis.dynaware.grapheditor.GTailSkin;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import javafx.geometry.Point2D;
@@ -62,7 +62,7 @@ public class StateMachineTailSkin extends GTailSkin {
      * @param end the end point (tip) of the arrow
      */
     private void drawLine(final Point2D start, final Point2D end) {
-        System.out.println("drawing line in a tail skin");
+        //System.out.println("drawing line in a tail skin");
 
         if (getConnector().getType().equals(StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR)) {
             LineUtils.draw(line, start, end, OFFSET_DISTANCE);

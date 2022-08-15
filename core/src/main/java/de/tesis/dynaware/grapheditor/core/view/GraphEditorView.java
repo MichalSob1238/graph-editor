@@ -96,7 +96,11 @@ public class GraphEditorView extends Region {
      * @param nodeSkin the {@link GNodeSkin} instance to be added
      */
     public void add(final GNodeSkin nodeSkin) {
-        nodeLayer.getChildren().add(nodeSkin.getRoot());
+        nodeLayer
+                .getChildren()
+                .add(
+                        nodeSkin.getRoot()
+                );
     }
 
     /**

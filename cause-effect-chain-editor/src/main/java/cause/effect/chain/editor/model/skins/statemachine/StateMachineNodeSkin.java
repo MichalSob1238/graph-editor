@@ -1,13 +1,17 @@
-package cause.effect.chain.editor.model.skins.statemachine.machine;
+package cause.effect.chain.editor.model.skins.statemachine;
 
+import cause.effect.chain.editor.model.CauseEffectChainModel;
 import com.jfoenix.controls.JFXTextField;
+import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
+import de.tesis.dynaware.grapheditor.core.connections.ConnectionCommands;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
-import de.tesis.dynaware.grapheditor.model.GConnector;
-import de.tesis.dynaware.grapheditor.model.GNode;
+import de.tesis.dynaware.grapheditor.demo.customskins.NodeTraversalUtils;
+import de.tesis.dynaware.grapheditor.model.*;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.css.PseudoClass;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -15,16 +19,25 @@ import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
+import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.domain.EditingDomain;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class StateMachineNodeSkin extends GNodeSkin {
 
@@ -54,6 +67,8 @@ public class StateMachineNodeSkin extends GNodeSkin {
     private final List<GConnectorSkin> bottomConnectorSkins = new ArrayList<>();
     private final List<GConnectorSkin> leftConnectorSkins = new ArrayList<>();
 
+    private static final EReference CONNECTIONS = GraphPackage.Literals.GMODEL__CONNECTIONS;
+    private static final EReference CONNECTOR_CONNECTIONS = GraphPackage.Literals.GCONNECTOR__CONNECTIONS;
 
     private EventHandler<? super MouseEvent> doubleClickedListener = getDoubleClickedListener();
 
@@ -199,7 +214,28 @@ public class StateMachineNodeSkin extends GNodeSkin {
     private EventHandler<MouseEvent> getDoubleClickedListener() {
         return event -> {
             if (event.getClickCount() >= 2) {
+
+                showNodeInformation();
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Node Status");
+                alert.setHeaderText("Node has the following issues that prevent the model from being legal");
+
+                Label label1 = new Label("Name: ");
+               TextField text1 = new TextField();
+                TextField text2 = new TextField();
+
+                GridPane grid = new GridPane();
+                grid.add(label1, 1, 1);
+                grid.add(text1, 2, 1);
+                grid.add(text2, 2, 2);
+                alert.getDialogPane().setContent(grid);
+                ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+                alert.getDialogPane().getButtonTypes().add(buttonTypeOk);
+
+
                 System.out.println("State Machine handling doubleclick");
+                System.out.println(getNode());
                 JFXTextField descriptionEditable = new JFXTextField();
                 descriptionEditable.setPrefSize(-1, -1);
                 descriptionEditable.setMinSize(title.getWidth(), title.getHeight());
@@ -225,6 +261,187 @@ public class StateMachineNodeSkin extends GNodeSkin {
         };
     }
 
+    private void showNodeInformation() {
+
+        GridPane grid = new GridPane();
+        Label label1 = new Label("Description: ");
+        TextField text1 = new TextField();
+        grid.add(label1, 1, 1);
+        grid.add(text1, 2, 1);
+        Button avoid = new Button("avoid");
+        Button warn = new Button("warn");
+        Button counteract = new Button("Counteract");
+        warn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                Stage stage = (Stage) warn.getScene().getWindow();
+                stage.close();
+                handleWarnButton();
+            }
+        });
+
+        avoid.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                final GNode node = GraphFactory.eINSTANCE.createGNode();
+                node.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_NODE);
+                node.setY(getRoot().getLayoutY() + 50);
+
+                node.setX(getRoot().getLayoutX() + getRoot().getWidth() + 10);
+                node.setId(allocateNewId());
+
+                final GConnector input = GraphFactory.eINSTANCE.createGConnector();
+                input.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
+                node.getConnectors().add(input);
+                final GConnector output = GraphFactory.eINSTANCE.createGConnector();
+                output.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
+                getNode().getConnectors().add(output);
+
+                node.setDescription("avoid state description");
+
+                Commands.addNode(getGraphEditor().getModel(), node);
+                System.out.println("created avoid node" + node);
+                System.out.println("alert node connectors: + " + node.getConnectors() );
+
+                addStateMachineConnection(output,input, "avoidance");
+
+            }
+        });
+
+        counteract.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                final GNode node = GraphFactory.eINSTANCE.createGNode();
+                node.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_NODE);
+                node.setY(getRoot().getLayoutY() + 50);
+
+                node.setX(getRoot().getLayoutX());
+                node.setId(allocateNewId());
+
+                final GConnector input = GraphFactory.eINSTANCE.createGConnector();
+                input.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_BOTTOM_INPUT_CONNECTOR);
+                node.getConnectors().add(input);
+                final GConnector output = GraphFactory.eINSTANCE.createGConnector();
+                output.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_BOTTOM_OUTPUT_CONNECTOR);
+                node.getConnectors().add(output);
+
+
+                final GConnector rootOutput = GraphFactory.eINSTANCE.createGConnector();
+                rootOutput.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_TOP_OUTPUT_CONNECTOR);
+                getNode().getConnectors().add(rootOutput);
+                final GConnector rootInput = GraphFactory.eINSTANCE.createGConnector();
+                rootInput.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_TOP_INPUT_CONNECTOR);
+                getNode().getConnectors().add(rootInput);
+                node.setDescription("avoid state description");
+
+                Commands.addNode(getGraphEditor().getModel(), node);
+                System.out.println("created counteract node" + node);
+                System.out.println("alert node connectors: + " + node.getConnectors() );
+
+                addStateMachineConnection(output, rootInput,"conteract");
+                addStateMachineConnection(rootOutput,input, "conteract");
+            }
+        });
+
+        grid.add(avoid,1,2);
+        grid.add(warn,2,2);
+        grid.add(counteract,3,2);
+
+        Scene scene = new Scene(grid);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+
+        stage.showAndWait();
+    }
+
+    private void handleWarnButton() {
+        List<GConnection> inputConnections = getNode().getConnectors().stream()
+                .filter(NodeTraversalUtils::isInput)
+                .map(GConnector::getConnections)
+                .map(con -> con.get(0))
+                .collect(Collectors.toList());
+
+        List<String> descriptions = inputConnections.stream().map(GConnection::getDescription).collect(Collectors.toList());
+
+        ChoiceDialog dialog = new ChoiceDialog(descriptions.get(0),descriptions);
+        dialog.setTitle("Chose which transition to warn of");
+        dialog.setHeaderText("Select your choice");
+        Optional<String> result = dialog.showAndWait();
+        String selected = descriptions.get(0);
+
+        if (result.isPresent()) {
+
+            selected = result.get();
+        }
+        System.out.println("connection selected: " + selected);
+        int i = 0;
+        while (i < inputConnections.size()) {
+            GConnection selectedCon = inputConnections.get(i);
+            if (Objects.equals(selectedCon.getDescription(), selected))
+            {
+                addAlertState(selected, selectedCon);
+                break;
+            }
+            ++i;
+        }
+    }
+
+    private void addAlertState(String selected, GConnection selectedCon) {
+        final GNode node = GraphFactory.eINSTANCE.createGNode();
+        node.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_NODE);
+        node.setY(getRoot().getLayoutY());
+
+        node.setX(getRoot().getLayoutX() - getRoot().getWidth() - 10);
+        node.setId(allocateNewId());
+
+        final GConnector input = GraphFactory.eINSTANCE.createGConnector();
+        input.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
+        node.getConnectors().add(input);
+
+        final GConnector output = GraphFactory.eINSTANCE.createGConnector();
+        output.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
+        node.getConnectors().add(output);
+
+
+        node.setDescription("alert state description");
+
+        Commands.addNode(getGraphEditor().getModel(), node);
+        System.out.println("created alert node" + node);
+        System.out.println("alert node connectors: + " + node.getConnectors() );
+
+        GConnector sourceConnector = selectedCon.getSource();
+        GConnector targetConnector = selectedCon.getTarget();
+
+        ConnectionCommands.removeConnection(getGraphEditor().getModel(), selectedCon);
+
+        addStateMachineConnection(output,targetConnector, selected);
+        addStateMachineConnection(sourceConnector,input, selected);
+        return;
+    }
+
+    private String allocateNewId() {
+
+        final List<GNode> nodes = getGraphEditor().getModel().getNodes();
+        final OptionalInt max = nodes.stream().mapToInt(node -> Integer.parseInt(node.getId())).max();
+
+        if (max.isPresent()) {
+            return Integer.toString(max.getAsInt() + 1);
+        } else {
+            return "1";
+        }
+    }
+
+    public GConnector addStateMachineConnector(GNode node, String type) {
+        final GConnector connector = GraphFactory.eINSTANCE.createGConnector();
+        connector.setType(type);
+        final GModel model = getGraphEditor().getModel();
+        final CompoundCommand command = new CompoundCommand();
+        final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
+        final EReference connectors = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
+        command.append(AddCommand.create(editingDomain, node, connectors, connector));
+        if (command.canExecute()) {
+            editingDomain.getCommandStack().execute(command);
+        }
+        return connector;
+    }
+    
     //TODO: customise
     public void setDescription() {
         System.out.println("setting description");
@@ -342,4 +559,31 @@ public class StateMachineNodeSkin extends GNodeSkin {
     public void updateStatus(List<String> status) {
 
     }
+
+    public GConnection addStateMachineConnection(GConnector source, GConnector target, String description) {
+        final GConnection connection = GraphFactory.eINSTANCE.createGConnection();
+
+        connection.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_CONNECTION);
+        connection.setSource(source);
+        connection.setTarget(target);
+        connection.setDescription(description);
+
+        source.getConnections().add(connection);
+
+        // Set the rest of the values via EMF commands because they touch the currently-edited model.
+        GModel model = getGraphEditor().getModel();
+        final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
+        final CompoundCommand command = new CompoundCommand();
+
+        command.append(AddCommand.create(editingDomain, model, CONNECTIONS, connection));
+        command.append(AddCommand.create(editingDomain, target, CONNECTOR_CONNECTIONS, connection));
+        //command.append(RemoveCommand.create(editingDomain, model, CONNECTOR, connector));
+
+        if (command.canExecute()) {
+            editingDomain.getCommandStack().execute(command);
+        }
+
+        return connection;
+    }
+
 }

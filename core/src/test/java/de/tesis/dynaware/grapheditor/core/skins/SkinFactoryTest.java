@@ -70,6 +70,7 @@ public class SkinFactoryTest {
 
         assertNull(skinFactory.createNodeSkin(null));
         assertTrue(skinFactory.createNodeSkin(NODE) instanceof DefaultNodeSkin);
+        assertTrue(skinFactory.createNodeSkin(NODE) instanceof DefaultNodeSkin);
 
         NODE.setType(NODE_TYPE);
 
