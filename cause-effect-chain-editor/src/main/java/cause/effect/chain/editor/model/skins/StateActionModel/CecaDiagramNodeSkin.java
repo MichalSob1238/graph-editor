@@ -63,9 +63,9 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
     private final List<GConnectorSkin> rightConnectorSkins = new ArrayList<>();
     private final List<GConnectorSkin> bottomConnectorSkins = new ArrayList<>();
     private final List<GConnectorSkin> leftConnectorSkins = new ArrayList<>();
-    private EventHandler<? super MouseEvent> doubleClickedListener = getDoubleClickedListener2();
+    private EventHandler<? super MouseEvent> doubleClickedListener = getDoubleClickedListener();
     private final List<String> issuesWithNode = new ArrayList<>();
-    private boolean isCorrect = true;
+    public boolean isCorrect = true;
     private final String defaultColor = "#ffffff";
 
     private EventHandler<MouseEvent> getDoubleClickedListener() {
@@ -92,7 +92,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
                     alert.showAndWait();
                 } else {
-                    ////System.out.println("handling doubleclick");
+                    System.out.println("handling doubleclick ceca node");
                     ////System.out.println(getNode());
                     JFXTextField descriptionEditable = new JFXTextField();
                     descriptionEditable.setPrefSize(-1, -1);
@@ -120,17 +120,11 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         };
     }
 
-    private EventHandler<MouseEvent> getDoubleClickedListener2() {
+    private EventHandler<MouseEvent> changeToStateMachineListener() {
         return event -> {
             if (event.getClickCount() >= 2) {
-                ////System.out.println("Doubleclick registered");
                 getNode().setType(StateMachineConstants.STATE_MACHINE_NODE);
-                //System.out.println(getNode());
-//            ((DefaultGraphEditor) getGraphEditor()).getController().modelMemory.nodesToAdd.add(getNode());
-                //((DefaultGraphEditor) getGraphEditor()).getController().modelMemory.nodesToRemove.add(getNode());
                 ((DefaultGraphEditor) getGraphEditor()).getController().setModel(getGraphEditor().getModel());
-                //((DefaultGraphEditor) getGraphEditor()).getController().reloadView();
-               ////System.out.println( getGraphEditor().getSkinLookup().lookupNode(getNode()));
             }
         };
     }

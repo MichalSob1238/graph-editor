@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="ASCII"?>
+<graph:GModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:graph="http://de.tesis.dynaware.grapheditor.model/1.0">
+  <nodes id="1" type="ceca-node" x="1290.0" y="946.0" width="59.0" height="44.0" description="r1" subtype="root-cause">
+    <connectors type="right-output" connections="//@connections.0"/>
+  </nodes>
+  <nodes id="2" type="ceca-node" x="1293.0" y="1025.0" width="58.0" height="44.0" description="r2" subtype="root-cause">
+    <connectors type="right-output" connections="//@connections.1"/>
+  </nodes>
+  <nodes id="3" type="ceca-node" x="1437.0" y="943.0" width="60.0" height="52.0" description="c1" subtype="condition">
+    <connectors type="left-input" connections="//@connections.0"/>
+    <connectors type="right-output" connections="//@connections.2"/>
+  </nodes>
+  <nodes id="4" type="ceca-node" x="1439.0" y="1021.0" width="57.0" height="52.0" description="c2" subtype="condition">
+    <connectors type="left-input" connections="//@connections.1"/>
+    <connectors type="right-output" connections="//@connections.3"/>
+  </nodes>
+  <nodes id="5" type="gate-node" x="1589.0" y="971.0" width="88.0" height="69.0" description="OR" subtype="or">
+    <connectors type="left-input" connections="//@connections.2"/>
+    <connectors type="left-input" connections="//@connections.3"/>
+    <connectors type="right-output" connections="//@connections.4"/>
+  </nodes>
+  <nodes id="6" type="ceca-node" x="1729.0" y="969.0" width="77.0" height="67.0" description="a1" subtype="action">
+    <connectors type="left-input" connections="//@connections.4"/>
+    <connectors type="right-output" connections="//@connections.5"/>
+  </nodes>
+  <nodes id="7" type="ceca-node" x="1860.0" y="978.0" width="50.0" height="48.0" description="c4" subtype="condition">
+    <connectors type="left-input" connections="//@connections.5"/>
+    <connectors type="right-output" connections="//@connections.6"/>
+  </nodes>
+  <nodes id="8" type="ceca-node" x="2102.0" y="1041.0" width="78.0" height="59.0" description="t1" subtype="target-disadvantage">
+    <connectors type="left-input" connections="//@connections.8"/>
+  </nodes>
+  <nodes id="9" type="ceca-node" x="1291.0" y="1108.0" width="60.0" height="46.0" description="r3" subtype="root-cause">
+    <connectors type="right-output" connections="//@connections.10"/>
+  </nodes>
+  <nodes id="10" type="ceca-node" x="1586.0" y="1144.0" width="77.0" height="58.0" description="c3" subtype="condition">
+    <connectors type="left-input" connections="//@connections.12"/>
+    <connectors type="right-output" connections="//@connections.13"/>
+  </nodes>
+  <nodes id="12" type="ceca-node" x="1293.0" y="1176.0" width="57.0" height="50.0" description="r4" subtype="root-cause">
+    <connectors type="right-output" connections="//@connections.11"/>
+  </nodes>
+  <nodes id="16" type="ceca-node" x="1853.0" y="1092.0" width="52.0" height="50.0" description="c5" subtype="condition">
+    <connectors type="left-input" connections="//@connections.9"/>
+    <connectors type="right-output" connections="//@connections.7"/>
+  </nodes>
+  <nodes id="19" type="gate-node" x="1987.0" y="1041.0" width="66.0" height="61.0" description="AND" subtype="and">
+    <connectors type="right-output" connections="//@connections.8"/>
+    <connectors type="left-input" connections="//@connections.6"/>
+    <connectors type="left-input" connections="//@connections.7"/>
+  </nodes>
+  <nodes id="21" type="ceca-node" x="1718.0" y="1148.0" width="60.0" height="55.0" description="a2" subtype="action">
+    <connectors type="left-input" connections="//@connections.13"/>
+    <connectors type="right-output" connections="//@connections.9"/>
+  </nodes>
+  <nodes id="22" type="gate-node" x="1434.0" y="1138.0" width="90.0" height="73.0" description="OR" subtype="or">
+    <connectors type="left-input" connections="//@connections.10"/>
+    <connectors type="left-input" connections="//@connections.11"/>
+    <connectors type="right-output" connections="//@connections.12"/>
+  </nodes>
+  <connections source="//@nodes.0/@connectors.0" target="//@nodes.2/@connectors.0">
+    <joints x="1358.0" y="969.0"/>
+    <joints x="1358.0" y="970.0"/>
+  </connections>
+  <connections source="//@nodes.1/@connectors.0" target="//@nodes.3/@connectors.0">
+    <joints x="1296.0" y="1048.0"/>
+    <joints x="1296.0" y="1048.0"/>
+  </connections>
+  <connections source="//@nodes.2/@connectors.1" target="//@nodes.4/@connectors.0">
+    <joints x="1545.0" y="970.0"/>
+    <joints x="1545.0" y="995.0"/>
+  </connections>
+  <connections source="//@nodes.3/@connectors.1" target="//@nodes.4/@connectors.1">
+    <joints x="1543.0" y="1048.0"/>
+    <joints x="1543.0" y="1018.0"/>
+  </connections>
+  <connections source="//@nodes.4/@connectors.2" target="//@nodes.5/@connectors.0">
+    <joints x="1714.0" y="1006.0"/>
+    <joints x="1714.0" y="1003.0"/>
+  </connections>
+  <connections source="//@nodes.5/@connectors.1" target="//@nodes.6/@connectors.0">
+    <joints x="1847.0" y="1003.0"/>
+    <joints x="1847.0" y="1003.0"/>
+  </connections>
+  <connections source="//@nodes.6/@connectors.1" target="//@nodes.12/@connectors.1">
+    <joints x="1940.0" y="1003.0"/>
+    <joints x="1940.0" y="1062.0"/>
+  </connections>
+  <connections source="//@nodes.11/@connectors.1" target="//@nodes.12/@connectors.2">
+    <joints x="1956.0" y="1118.0"/>
+    <joints x="1956.0" y="1083.0"/>
+  </connections>
+  <connections source="//@nodes.12/@connectors.0" target="//@nodes.7/@connectors.0">
+    <joints x="2160.0" y="1072.0"/>
+    <joints x="2160.0" y="1071.0"/>
+  </connections>
+  <connections source="//@nodes.13/@connectors.1" target="//@nodes.11/@connectors.0">
+    <joints x="1809.0" y="1176.0"/>
+    <joints x="1809.0" y="1118.0"/>
+  </connections>
+  <connections source="//@nodes.8/@connectors.0" target="//@nodes.14/@connectors.0">
+    <joints x="1395.0" y="1132.0"/>
+    <joints x="1395.0" y="1163.0"/>
+  </connections>
+  <connections source="//@nodes.10/@connectors.0" target="//@nodes.14/@connectors.1">
+    <joints x="1405.0" y="1202.0"/>
+    <joints x="1405.0" y="1188.0"/>
+  </connections>
+  <connections source="//@nodes.14/@connectors.2" target="//@nodes.9/@connectors.0">
+    <joints x="1575.0" y="1175.0"/>
+    <joints x="1575.0" y="1174.0"/>
+  </connections>
+  <connections source="//@nodes.9/@connectors.1" target="//@nodes.13/@connectors.0">
+    <joints x="1765.0" y="1174.0"/>
+    <joints x="1765.0" y="1176.0"/>
+  </connections>
+</graph:GModel>

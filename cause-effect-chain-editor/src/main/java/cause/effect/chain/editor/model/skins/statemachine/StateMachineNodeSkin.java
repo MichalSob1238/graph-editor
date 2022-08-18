@@ -1,6 +1,7 @@
 package cause.effect.chain.editor.model.skins.statemachine;
 
 import cause.effect.chain.editor.model.CauseEffectChainModel;
+import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
 import com.jfoenix.controls.JFXTextField;
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
@@ -70,6 +71,15 @@ public class StateMachineNodeSkin extends GNodeSkin {
     private static final EReference CONNECTIONS = GraphPackage.Literals.GMODEL__CONNECTIONS;
     private static final EReference CONNECTOR_CONNECTIONS = GraphPackage.Literals.GCONNECTOR__CONNECTIONS;
 
+    private static final Map<String , String> colours = new HashMap<String , String>() {{
+        put(StateMachineConstants.ROOT_CAUSE,  "#B2BEB5"  );
+        put(StateMachineConstants.TARGET_DISADVANTAGE, "#B2BEB5");
+        put(StateMachineConstants.INTERMEDIATE_DISADVANTAGE,   "#50C878");
+    }};
+
+    private final List<String> issuesWithNode = new ArrayList<>();
+    private boolean isCorrect = true;
+
     private EventHandler<? super MouseEvent> doubleClickedListener = getDoubleClickedListener();
 
     /**
@@ -87,7 +97,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
         getRoot().getChildren().addAll(border, background);
 
-        title.setText("title!");
+        title.setText(getNode().getDescription());
         ////System.out.println("setting title");
         title.setAlignment(Pos.CENTER);
         title.setVisible(true);
@@ -100,7 +110,9 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
         addSelectionHalo();
         addSelectionListener();
+        updateColour();
     }
+
 
     private void addSelectionListener() {
         selectedProperty().addListener((v, o, n) -> {
@@ -151,6 +163,19 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
             selectionHalo.setStrokeDashOffset(HALO_CORNER_SIZE);
             selectionHalo.getStrokeDashArray().setAll(cornerLength, yGap, cornerLength, xGap);
+        }
+    }
+
+    private void updateColour() {
+        if (issuesWithNode.isEmpty()) {
+            //System.out.println("true");
+            this.background.setStyle("-fx-fill:" + colours.get(getNode().getSubtype()) + ";");
+            this.isCorrect = true;
+
+        } else {
+            //System.out.println("false on create status");
+            this.background.setStyle("-fx-fill:#FF4500;");
+            this.isCorrect = false;
         }
     }
 
@@ -214,7 +239,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
     private EventHandler<MouseEvent> getDoubleClickedListener() {
         return event -> {
             if (event.getClickCount() >= 2) {
-
+                System.out.println("State Machine handling doubleclick");
                 showNodeInformation();
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -234,7 +259,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
                 alert.getDialogPane().getButtonTypes().add(buttonTypeOk);
 
 
-                ////System.out.println("State Machine handling doubleclick");
+                ////
                 ////System.out.println(getNode());
                 JFXTextField descriptionEditable = new JFXTextField();
                 descriptionEditable.setPrefSize(-1, -1);
@@ -557,7 +582,20 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
     @Override
     public void updateStatus(List<String> status) {
+        //System.out.println("updating status");
+        if (status.isEmpty()) {
+            //System.out.println("true");
+            this.background.setStyle("-fx-fill:" + colours.get(getNode().getSubtype()) + ";");
+            this.isCorrect = true;
+            this.issuesWithNode.clear();
 
+        } else {
+            //System.out.println("false  status");
+            this.background.setStyle("-fx-fill:#FF4500;");
+            this.isCorrect = false;
+            this.issuesWithNode.clear();
+            this.issuesWithNode.addAll(status);
+        }
     }
 
     public GConnection addStateMachineConnection(GConnector source, GConnector target, String description) {

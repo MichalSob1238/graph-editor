@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ASCII"?>
+<graph:GModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:graph="http://de.tesis.dynaware.grapheditor.model/1.0">
+  <nodes id="1" type="ceca-node" x="1105.0" y="955.0" width="58.0" height="52.0" description="r1" subtype="root-cause">
+    <connectors type="right-output" connections="//@connections.0"/>
+  </nodes>
+  <nodes id="2" type="ceca-node" x="1349.0" y="958.0" width="66.0" height="50.0" description="a1" subtype="action">
+    <connectors type="left-input" connections="//@connections.1"/>
+    <connectors type="right-output" connections="//@connections.2"/>
+  </nodes>
+  <nodes id="3" type="ceca-node" x="1224.0" y="959.0" width="61.0" height="48.0" description="c1" subtype="condition">
+    <connectors type="left-input" connections="//@connections.0"/>
+    <connectors type="right-output" connections="//@connections.1"/>
+  </nodes>
+  <nodes id="4" type="ceca-node" x="1475.0" y="959.0" width="66.0" height="53.0" description="c2" subtype="condition">
+    <connectors type="left-input" connections="//@connections.2"/>
+    <connectors type="right-output" connections="//@connections.3"/>
+  </nodes>
+  <nodes id="5" type="ceca-node" x="1587.0" y="958.0" width="50.0" height="54.0" description="t1" subtype="target-disadvantage">
+    <connectors type="left-input" connections="//@connections.3"/>
+  </nodes>
+  <connections source="//@nodes.0/@connectors.0" target="//@nodes.2/@connectors.0">
+    <joints x="1226.0" y="982.0"/>
+    <joints x="1226.0" y="984.0"/>
+  </connections>
+  <connections source="//@nodes.2/@connectors.1" target="//@nodes.1/@connectors.0">
+    <joints x="1313.0" y="984.0"/>
+    <joints x="1313.0" y="984.0"/>
+  </connections>
+  <connections source="//@nodes.1/@connectors.1" target="//@nodes.3/@connectors.0">
+    <joints x="1487.0" y="984.0"/>
+    <joints x="1487.0" y="986.0"/>
+  </connections>
+  <connections source="//@nodes.3/@connectors.1" target="//@nodes.4/@connectors.0">
+    <joints x="1618.0" y="986.0"/>
+    <joints x="1618.0" y="986.0"/>
+  </connections>
+</graph:GModel>

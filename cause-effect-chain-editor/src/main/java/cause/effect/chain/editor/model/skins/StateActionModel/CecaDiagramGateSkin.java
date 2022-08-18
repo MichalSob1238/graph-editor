@@ -141,7 +141,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
             getRoot().getChildren().addAll(orGateShape.getBackgroundComponents());
         }
 
-        description.setText("description!");
+        description.setText(subtype);
         ////System.out.println("setting description");
         description.setAlignment(Pos.CENTER);
         description.setVisible(true);

@@ -50,9 +50,8 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
         line.setManaged(false);
         line.getStyleClass().setAll(STYLE_CLASS);
 
-        text.setText("TEXT " + getConnection().getDescription());
+        text.setText(getConnection().getDescription());
         text.setManaged(false);
-        ////System.out.println("SMCON");
         text.setOnMouseClicked(doubleClickedListener);
         background.setManaged(false);
         getConnection().getTarget().getParent();
@@ -75,7 +74,7 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
 
             this.points = points;
         }
-        if (true)
+        if (false)
         {
             final Point2D start = points.get(0);
             final Point2D end = points.get(1);

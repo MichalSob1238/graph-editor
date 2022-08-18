@@ -143,7 +143,7 @@ public class GraphEditorDemoController {
             coherencyChecker.getNotified(connection);
         });
         graphEditor.setOnConnectionRemoved((connection, command) -> {
-            ////System.out.println("connection removed" + connection);
+            System.out.println("connection removed" + connection);
             coherencyChecker.getNotified(connection);
         });
         graphEditorContainer.setOnMouseClicked(event -> graphEditorContainer.requestFocus());

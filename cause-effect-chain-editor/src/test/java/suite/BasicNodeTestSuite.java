@@ -1,4 +1,4 @@
-package node;
+package suite;
 
 import cause.effect.chain.editor.controller.CauseEffectChainEditorController;
 import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
@@ -36,7 +36,7 @@ public class BasicNodeTestSuite extends BaseTest {
 
     @Test
     public void addActionTest() throws InterruptedException {
-        addNodeTest("action");
+        addNodeTest("action"); addNodeTest("root-cause");
         Assert.assertEquals(CauseEffectChainEditorController.instance.getModel().getGraphEditor().getModel().getNodes().size(), 1);
         Assert.assertEquals(CauseEffectChainEditorController.instance.getModel().getGraphEditor().getModel().getNodes().get(0).getType(), CecaDiagramConstants.CECA_NODE);
     }

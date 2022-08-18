@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ASCII"?>
+<graph:GModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:graph="http://de.tesis.dynaware.grapheditor.model/1.0">
+  <nodes id="1" type="ceca-node" x="1114.0" y="909.0" description="DESCRIPTION!" subtype="root-cause">
+    <connectors type="right-output"/>
+  </nodes>
+  <nodes id="2" type="ceca-node" x="1419.0" y="912.0" description="DESCRIPTION!" subtype="condition">
+    <connectors type="left-input"/>
+    <connectors type="right-output"/>
+  </nodes>
+</graph:GModel>

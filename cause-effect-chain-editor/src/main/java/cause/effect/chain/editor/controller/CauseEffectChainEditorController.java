@@ -84,7 +84,7 @@ public class CauseEffectChainEditorController {
 
     private CauseActionModeController cecaSkinController;
     private StateMachineModeController stateMachineController;
-    private CoherencyChecker coherencyChecker;
+    public CoherencyChecker coherencyChecker;
 
     private ModelTransformationController modelTransformationController;
     public static CauseEffectChainEditorController instance;

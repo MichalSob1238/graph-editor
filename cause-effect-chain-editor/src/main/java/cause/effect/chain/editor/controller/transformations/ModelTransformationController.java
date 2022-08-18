@@ -8,7 +8,7 @@ import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorT
 import de.tesis.dynaware.grapheditor.demo.customskins.NodeTraversalUtils;
 import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CauseActionDiagramSubtypes;
 import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
-import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants;
+import cause.effect.chain.editor.model.skins.statemachine.StateMachineConstants;
 import de.tesis.dynaware.grapheditor.model.*;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EReference;
@@ -122,6 +122,7 @@ public class ModelTransformationController {
         ////System.out.println("found " + targetNode + " seekAction ");
         String type = targetNode.getSubtype();
         switch (type) {
+            case StateMachineConstants.INTERMEDIATE_DISADVANTAGE:
             case CecaDiagramConstants.TARGET_DISADVANTAGE:
             case CecaDiagramConstants.ACTION: {
                 final GConnector output = stateMachineController.addConnector(rootNode, StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
@@ -136,6 +137,12 @@ public class ModelTransformationController {
                     outputConnectors.forEach(connector -> seekCondition(targetNode, NodeTraversalUtils.getTargetNode(connector)));
 
                     targetNode.setType(StateMachineConstants.STATE_MACHINE_NODE);
+                    if (type.equals(CecaDiagramConstants.ACTION)) {
+                        targetNode.setSubtype(StateMachineConstants.INTERMEDIATE_DISADVANTAGE);
+                    } else
+                    {
+                        targetNode.setSubtype(StateMachineConstants.TARGET_DISADVANTAGE);
+                    }
                 }
                 break;
             }

@@ -74,6 +74,20 @@ public class GraphEditorPersistence {
         }
     }
 
+    public void loadFromFile(final GraphEditor graphEditor, File file) {
+
+        final Scene scene = graphEditor.getView().getScene();
+
+        if (scene != null) {
+
+            if (file != null) {
+                loadModel(file, graphEditor);
+            } else {
+                System.out.println("GODDAMNIT");
+            }
+        }
+    }
+
     /**
      * Loads the sample saved in the <b>sample.graph</b> file.
      *
@@ -167,7 +181,7 @@ public class GraphEditorPersistence {
      * @param file the {@link File} the model state will be saved in
      * @param model the {@link GModel} to be saved
      */
-    private void saveModel(final File file, final GModel model) {
+    public void saveModel(final File file, final GModel model) {
 
         String absolutePath = file.getAbsolutePath();
         if (!absolutePath.endsWith(FILE_EXTENSION)) {
