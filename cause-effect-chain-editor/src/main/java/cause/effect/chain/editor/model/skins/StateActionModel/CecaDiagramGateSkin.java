@@ -370,8 +370,8 @@ public class CecaDiagramGateSkin extends GNodeSkin {
     }
 
     @Override
-    public void updateStatus(List<String> status) {
-
+    public int updateStatus(List<String> status) {
+        return status.size();
     }
 
     private void filterMouseDragged(final MouseEvent event) {

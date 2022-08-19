@@ -581,7 +581,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
     }
 
     @Override
-    public void updateStatus(List<String> status) {
+    public int updateStatus(List<String> status) {
         //System.out.println("updating status");
         if (status.isEmpty()) {
             //System.out.println("true");
@@ -596,6 +596,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
             this.issuesWithNode.clear();
             this.issuesWithNode.addAll(status);
         }
+        return status.size();
     }
 
     public GConnection addStateMachineConnection(GConnector source, GConnector target, String description) {

@@ -31,20 +31,19 @@ public class CoherencyChecker {
         updateCorrectnesStatus(NodeTraversalUtils.getTargetNode(connection));
     }
 
-    private void updateCorrectnesStatus(GNode node) {
+    private int updateCorrectnesStatus(GNode node) {
         GNodeSkin sourceNodeSkin = skinLookup.lookupNode(node);
 
         switch (node.getType()) {
             case CecaDiagramConstants.CECA_NODE:
-                sourceNodeSkin.updateStatus(checkForDiagramNode(node));
-                break;
+                return sourceNodeSkin.updateStatus(checkForDiagramNode(node));
             case StateMachineConstants.STATE_MACHINE_NODE:
-                sourceNodeSkin.updateStatus(checkForStateMachineNode(node));
-                break;
+                return sourceNodeSkin.updateStatus(checkForStateMachineNode(node));
             case CecaDiagramConstants.GATE_NODE:
-                sourceNodeSkin.updateStatus(checkForGateNode(node));
-                break;
+                return sourceNodeSkin.updateStatus(checkForGateNode(node));
         }
+        ;
+        return 0;
     }
 
     private List<String> checkForGateNode(GNode gate) {
@@ -59,7 +58,6 @@ public class CoherencyChecker {
                     if (!Objects.equals(preceedingNode.getSubtype(), "action")) {
                         errorList.add("Gate Node can only be preceeded by action nodes, currently one of the connections leads to " + preceedingNode.getSubtype() + " node");
                     }
-
                 }
             } else {
                 for (GConnection connection : connector.getConnections()) {
@@ -142,10 +140,17 @@ public class CoherencyChecker {
     private List<String> checkForDiagramNode(GNode node) {
         List<String> errorList = new ArrayList<>();
         switch (node.getSubtype()) {
-            case "initial-state": {
+            case CecaDiagramConstants.CAUSE_ACTION_ROOT: {
                 //has to have at least 1 output (input is blocked by system) and the following tile must be action
                 Optional<String> result = Optional.ofNullable(checkForInitialState(node));
+                //TODO: check output
                 result.ifPresent(errorList::add);
+                break;
+            }
+            case "condition": {
+                //Has to have at least one connected input leading to "initial-state" or "intermediate-dissadvantage" and at least one output leading to not-action
+                List<String> errors = checkForCondition(node);
+                errorList.addAll(errors);
                 break;
             }
             case "action": {
@@ -160,17 +165,59 @@ public class CoherencyChecker {
                 result.ifPresent(errorList::add);
                 break;
             }
-            case "intermediate-disadvantage": {
-                //needs at least one input and one output, leading to actions each
-                List<String> errors = subcheckForDiagramIntermediateDissadvantage(node);
-                errorList.addAll(errors);
-                break;
-            }
             default: {
-                //System.out.println("Default case in coherency checker");
+                System.out.println("Default case in coherency checker");
             }
         }
 
+        return errorList;
+    }
+
+    private List<String> checkForCondition(GNode node) {
+        List<String> errorList = new ArrayList<>();
+        boolean inputCondition = false;
+        boolean outputcondition = false;
+        for (GConnector connector : node.getConnectors()) {
+            if (NodeTraversalUtils.isInput(connector)) {
+                //TODO: refactor this to a function with a list of conditions
+                for (GConnection connection : connector.getConnections()) {
+                    inputCondition = true;
+                    String sourceNodeSubtype = NodeTraversalUtils.getSourceNode(connection).getSubtype();
+                    //TODO: these cannot actually be null - you can use equals - OR do contains("disadvantage")
+                    if (Objects.equals(sourceNodeSubtype, "initial-disadvantage") || Objects.equals(sourceNodeSubtype, "intermediate-disadvantage")) {
+                        errorList.add("action node can only follow a disadvantage node, currently one of the inputs is connected to a " + sourceNodeSubtype + " node");
+                    }
+                    switch (sourceNodeSubtype) {
+                        case CecaDiagramConstants.CONDITION: {
+                            System.out.println("bad stuff");
+                            break;
+                        }
+                        case "and":
+                        case "or":
+                        case CecaDiagramConstants.CAUSE_ACTION_ROOT:
+                        case CecaDiagramConstants.TARGET_DISADVANTAGE:
+                        case CecaDiagramConstants.ACTION: {
+                            System.out.println("good stuff");
+                        }
+                    }
+                }
+            } else {
+                for (GConnection connection : connector.getConnections()) {
+                    outputcondition = true;
+                    String targetNodeSubtype = NodeTraversalUtils.getTargetNode(connection).getSubtype();
+                    //TODO: these cannot actually be null - you can use equals
+                    if (targetNodeSubtype.equals(CecaDiagramConstants.CONDITION)) {
+                        errorList.add("Condition cannot lead to another condition node\n");
+                    }
+                }
+            }
+        }
+        if (!inputCondition) {
+            errorList.add("Condition must have at least one input");
+        }
+        if (!outputcondition) {
+            errorList.add("Condition must have at least one output");
+        }
         return errorList;
     }
 
@@ -186,7 +233,7 @@ public class CoherencyChecker {
                     String sourceNodeSubtype = NodeTraversalUtils.getSourceNode(connection).getSubtype();
                     //TODO: these cannot actually be null - you can use equals - OR do contains("disadvantage")
                     if (!Objects.equals(sourceNodeSubtype, "action")) {
-                        errors.add("Intermediate Disadvantage can only follow  an action node, currently one of the connections leads to a "+ sourceNodeSubtype +" node");
+                        errors.add("Intermediate Disadvantage can only follow  an action node, currently one of the connections leads to a " + sourceNodeSubtype + " node");
                     }
                 }
             } else {
@@ -195,7 +242,7 @@ public class CoherencyChecker {
                     String targetNodeSubtype = NodeTraversalUtils.getTargetNode(connection).getSubtype();
                     //TODO: these cannot actually be null - you can use equals
                     if (!targetNodeSubtype.equals("action")) {
-                        errors.add("Intermediate Disadvantage can only lead to an action node, , currently one of the connections leads to a" + targetNodeSubtype +" node");
+                        errors.add("Intermediate Disadvantage can only lead to an action node, , currently one of the connections leads to a" + targetNodeSubtype + " node");
                     }
                 }
             }
@@ -230,12 +277,12 @@ public class CoherencyChecker {
             for (GConnection connection : connector.getConnections()) {
                 String targetNodeSubtype = NodeTraversalUtils.getTargetNode(connection).getSubtype();
                 //TODO: these cannot actually be null - you can use equals
-                if (Objects.equals(targetNodeSubtype, CecaDiagramConstants.CONDITION) || Objects.equals(targetNodeSubtype, "AND") || Objects.equals(targetNodeSubtype, "OR")) {
+                if (Objects.equals(targetNodeSubtype, CecaDiagramConstants.CONDITION) || Objects.equals(targetNodeSubtype, "OR")) {
                     return null;
                 }
             }
         }
-        return "Initial state must have an output";
+        return "Initial state must have an output leading to a condition or an OR gate";
     }
 
     private List<String> checkForAction(GNode node) {
@@ -248,18 +295,37 @@ public class CoherencyChecker {
                 for (GConnection connection : connector.getConnections()) {
                     inputCondition = true;
                     String sourceNodeSubtype = NodeTraversalUtils.getSourceNode(connection).getSubtype();
-                    //TODO: these cannot actually be null - you can use equals - OR do contains("disadvantage")
-                    if (Objects.equals(sourceNodeSubtype, "initial-disadvantage") || Objects.equals(sourceNodeSubtype, "intermediate-disadvantage")) {
-                        errorList.add("action node can only follw a disadvantage node, curretly one of the inputs is connected to a " + sourceNodeSubtype+ " node");
+                    System.out.println("source for node " + node + " has subtype " + sourceNodeSubtype);
+                    switch (sourceNodeSubtype) {
+                        case CecaDiagramConstants.ACTION:
+                        case CecaDiagramConstants.CAUSE_ACTION_ROOT: {
+                            errorList.add("action node can only follow a condition node or a gate. Currently one of the inputs is connected to a " + sourceNodeSubtype + " node");
+                            break;
+                        }
+                        case "and":
+                        case CecaDiagramConstants.CONDITION:
+                        case "or": {
+                            break;
+                        }
+
                     }
                 }
             } else {
                 for (GConnection connection : connector.getConnections()) {
                     outputcondition = true;
                     String targetNodeSubtype = NodeTraversalUtils.getTargetNode(connection).getSubtype();
-                    //TODO: these cannot actually be null - you can use equals
-                    if (!targetNodeSubtype.equals(CecaDiagramConstants.CONDITION)) {
-                        errorList.add("action node can only lead to a disadvantage or a gate node, curretly one of the outputs leads to a " + targetNodeSubtype+ " node");
+                    switch (targetNodeSubtype) {
+                        case CecaDiagramConstants.ACTION:
+                        case CecaDiagramConstants.TARGET_DISADVANTAGE: {
+                            errorList.add("action node can only lead to a condition node or an OR gate. Currently one of the inputs is connected to a " + targetNodeSubtype + " node");
+                            break;
+                        }
+                        case "and":
+                        case CecaDiagramConstants.CONDITION:
+                        case "or": {
+                            break;
+                        }
+
                     }
                 }
             }

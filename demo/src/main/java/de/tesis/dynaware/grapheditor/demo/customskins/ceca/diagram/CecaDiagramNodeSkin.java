@@ -320,7 +320,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
     }
 
     @Override
-    public void updateStatus(List<String> status) {
+    public int updateStatus(List<String> status) {
         ////System.out.println("updating status");
         if (status.isEmpty()) {
             ////System.out.println("true");
@@ -335,6 +335,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
             this.issuesWithNode.clear();
             this.issuesWithNode.addAll(status);
         }
+        return status.size();
     }
 
     private double getMinorOffsetX(final GConnector connector) {

@@ -38,7 +38,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
     private final List<GConnectorSkin> bottomConnectorSkins = new ArrayList<>();
     private final List<GConnectorSkin> leftConnectorSkins = new ArrayList<>();
 
-    private final  AndGateShape andGateShape = new AndGateShape();
+    private final AndGateShape andGateShape = new AndGateShape();
     private final OrGateShape orGateShape = new OrGateShape();
 
     private final Rectangle border = new Rectangle();
@@ -103,7 +103,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
         description.setMinSize(width, height);
         description.setMaxSize(border.getWidth(), border.getHeight());
         description.setTextAlignment(TextAlignment.CENTER);
-        description.resize(border.getWidth(),border.getHeight());
+        description.resize(border.getWidth(), border.getHeight());
         description.setText(Optional.ofNullable(getNode().getDescription()).orElse("!!"));
         description.setFont(font);
     }
@@ -271,6 +271,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
         layoutSelectionHalo();
 
     }
+
     private void layoutSelectionHalo() {
 
         if (selectionHalo.isVisible()) {
@@ -371,8 +372,8 @@ public class CecaDiagramGateSkin extends GNodeSkin {
     }
 
     @Override
-    public void updateStatus(List<String> status) {
-
+    public int updateStatus(List<String> status) {
+        return 0;
     }
 
     private void filterMouseDragged(final MouseEvent event) {

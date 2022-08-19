@@ -20,14 +20,19 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
 
+import javax.tools.Tool;
 import java.util.*;
 
 
@@ -47,6 +52,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
     private static final double MINOR_NEGATIVE_OFFSET = -3;
 
     private final Rectangle selectionHalo = new Rectangle();
+    private final Rectangle errorHalo = new Rectangle();
     private final Rectangle background = new Rectangle();
 
     private static final Map<String , String> colours = new HashMap<String , String>() {{
@@ -170,15 +176,36 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         background.getStyleClass().setAll(STYLE_CLASS_BACKGROUND);
         border.getStyleClass().setAll(STYLE_CLASS_BORDER);
 
+
+
         title.setOnMouseClicked(doubleClickedListener);
         getRoot().getChildren().addAll(border, background);
         getRoot().getChildren().add(title);
 
-        //background.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::filterMouseDragged);
+        Tooltip t = new Tooltip("A very long and complicated thext that does not fit reasonably in one screen, A very long and complicated thext that does not fit reasonably in one screen");
+        t.setShowDelay(Duration.seconds(0.0));
+        t.setPrefWidth(200);
+        t.setWrapText(true);
+        System.out.println(t.getText());
+
+        getRoot().getChildren().forEach(mhm -> Tooltip.install(mhm, t));
 
         addSelectionHalo();
+        addErrorHalo();
         addSelectionListener();
         updateColour();
+    }
+
+    private void addErrorHalo() {
+        getRoot().getChildren().add(errorHalo);
+
+        errorHalo.setManaged(false);
+        errorHalo.setMouseTransparent(false);
+        errorHalo.setVisible(false);
+
+        errorHalo.setLayoutX(-HALO_OFFSET);
+        errorHalo.setLayoutY(-HALO_OFFSET);
+        errorHalo.getStyleClass().add("default-node-error-halo");
     }
 
     private void updateColour() {
@@ -189,7 +216,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
         } else {
             //System.out.println("false on create status");
-            this.background.setStyle("-fx-fill:#FF4500;");
+            //this.background.setStyle("-fx-fill:#FF4500;");
             this.isCorrect = false;
         }
     }
@@ -267,6 +294,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
     public void layoutConnectors() {
         layoutAllConnectors();
         layoutSelectionHalo();
+        layoutErrorHalo();
 
     }
 
@@ -352,21 +380,23 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
     }
 
     @Override
-    public void updateStatus(List<String> status) {
+    public int updateStatus(List<String> status) {
         //System.out.println("updating status");
         if (status.isEmpty()) {
             //System.out.println("true");
             this.background.setStyle("-fx-fill:" + colours.get(getNode().getSubtype()) + ";");
             this.isCorrect = true;
             this.issuesWithNode.clear();
+            errorHalo.setVisible(false);
 
         } else {
-            //System.out.println("false  status");
-            this.background.setStyle("-fx-fill:#FF4500;");
             this.isCorrect = false;
             this.issuesWithNode.clear();
             this.issuesWithNode.addAll(status);
+            errorHalo.setVisible(true);
+            layoutErrorHalo();
         }
+        return status.size();
     }
 
     private double getMinorOffsetX(final GConnector connector) {
@@ -403,6 +433,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         selectionHalo.setLayoutY(-HALO_OFFSET);
         selectionHalo.getStyleClass().add(STYLE_CLASS_SELECTION_HALO);
 
+
     }
 
     private void layoutSelectionHalo() {
@@ -418,6 +449,22 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
             selectionHalo.setStrokeDashOffset(HALO_CORNER_SIZE);
             selectionHalo.getStrokeDashArray().setAll(cornerLength, yGap, cornerLength, xGap);
+        }
+    }
+
+    private void layoutErrorHalo() {
+
+        if (errorHalo.isVisible()) {
+
+            errorHalo.setWidth(border.getWidth() + 2 * HALO_OFFSET);
+            errorHalo.setHeight(border.getHeight() + 2 * HALO_OFFSET);
+
+            final double cornerLength = 2 * HALO_CORNER_SIZE;
+            final double xGap = border.getWidth() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
+            final double yGap = border.getHeight() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
+
+            errorHalo.setStrokeDashOffset(-HALO_CORNER_SIZE);
+            errorHalo.getStrokeDashArray().setAll( yGap, cornerLength, xGap, cornerLength);
         }
     }
 

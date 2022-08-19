@@ -29,6 +29,14 @@
 	-fx-fill: null;
 }
 
+.default-node-error-halo {
+	-fx-stroke-width: 2;
+	-fx-stroke: red;
+	-fx-stroke-type: inside;
+	-fx-stroke-line-cap: butt;
+	-fx-fill: null;
+}
+
 .default-connector {
 	-fx-stroke: darkslategrey;
 	-fx-stroke-type: inside;

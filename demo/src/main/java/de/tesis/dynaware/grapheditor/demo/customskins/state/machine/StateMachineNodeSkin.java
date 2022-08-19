@@ -354,7 +354,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
     }
 
     @Override
-    public void updateStatus(List<String> status) {
-
+    public int updateStatus(List<String> status) {
+        return status.size();
     }
 }
