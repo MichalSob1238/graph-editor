@@ -31,6 +31,7 @@ public class ResizableBox extends DraggableBox {
 
     private double lastWidth;
     private double lastHeight;
+    public boolean isCircle;
 
     private RectangleMouseRegion lastMouseRegion;
 
@@ -256,38 +257,38 @@ public class ResizableBox extends DraggableBox {
     private void handleResize(final double x, final double y) {
 
         switch (lastMouseRegion) {
-        case NORTHEAST:
-            handleResizeNorth(y);
-            handleResizeEast(x);
-            break;
-        case NORTHWEST:
-            handleResizeNorth(y);
-            handleResizeWest(x);
-            break;
-        case SOUTHEAST:
-            handleResizeSouth(y);
-            handleResizeEast(x);
-            break;
-        case SOUTHWEST:
-            handleResizeSouth(y);
-            handleResizeWest(x);
-            break;
-        case NORTH:
-            handleResizeNorth(y);
-            break;
-        case SOUTH:
-            handleResizeSouth(y);
-            break;
-        case EAST:
-            handleResizeEast(x);
-            break;
-        case WEST:
-            handleResizeWest(x);
-            break;
-        case INSIDE:
-            break;
-        case OUTSIDE:
-            break;
+            case NORTHEAST:
+                handleResizeNorth(y);
+                handleResizeEast(x);
+                break;
+            case NORTHWEST:
+                handleResizeNorth(y);
+                handleResizeWest(x);
+                break;
+            case SOUTHEAST:
+                handleResizeSouth(y);
+                handleResizeEast(x);
+                break;
+            case SOUTHWEST:
+                handleResizeSouth(y);
+                handleResizeWest(x);
+                break;
+            case NORTH:
+                handleResizeNorth(y);
+                break;
+            case SOUTH:
+                handleResizeSouth(y);
+                break;
+            case EAST:
+                handleResizeEast(x);
+                break;
+            case WEST:
+                handleResizeWest(x);
+                break;
+            case INSIDE:
+                break;
+            case OUTSIDE:
+                break;
         }
     }
 
@@ -456,7 +457,6 @@ public class ResizableBox extends DraggableBox {
      *
      * @param x the x cursor position
      * @param y the y cursor position
-     *
      * @return the {@link RectangleMouseRegion} that the cursor is located in
      */
     private RectangleMouseRegion getMouseRegion(final double x, final double y) {
@@ -467,31 +467,100 @@ public class ResizableBox extends DraggableBox {
         if (x < 0 || y < 0 || x > width || y > height) {
             return RectangleMouseRegion.OUTSIDE;
         }
-
+        //System.out.println("not outside");
+        //System.out.println("("+ x + "," + y + ")");
         final boolean isNorth = y < resizeBorderTolerance;
         final boolean isSouth = y > height - resizeBorderTolerance;
         final boolean isEast = x > width - resizeBorderTolerance;
         final boolean isWest = x < resizeBorderTolerance;
 
-        if (isNorth && isEast) {
-            return RectangleMouseRegion.NORTHEAST;
-        } else if (isNorth && isWest) {
-            return RectangleMouseRegion.NORTHWEST;
-        } else if (isSouth && isEast) {
-            return RectangleMouseRegion.SOUTHEAST;
-        } else if (isSouth && isWest) {
-            return RectangleMouseRegion.SOUTHWEST;
-        } else if (isNorth) {
-            return RectangleMouseRegion.NORTH;
-        } else if (isSouth) {
-            return RectangleMouseRegion.SOUTH;
-        } else if (isEast) {
-            return RectangleMouseRegion.EAST;
-        } else if (isWest) {
-            return RectangleMouseRegion.WEST;
+        Point2D middle = new Point2D(width/2, height/2);
+        Point2D ourPiunt = new Point2D(x,y);
+        double dist = middle.distance(ourPiunt);
+        boolean isInCircle = dist <= Math.sqrt(width/2*width/2 + height/2*height/2) && dist >= Math.sqrt(width/2*width/2*0.2 + height/2*height/2*0.2);
+        double radius = Math.sqrt(x * x + y * y);
+        //final boolean isInCircle = radius < Math.sqrt(width*width + height*height) && radius > Math.sqrt(width*width*0.6 + height*height*0.6) ;
+        //System.out.println("isInCircle " + isInCircle);
+        boolean isNE = x > width/2 && y > height/2;
+        boolean isSE = !(x > width/2) && y > height/2;
+        boolean isSW = !(x > width/2) && !(y > height/2);
+        boolean isNW = x > width/2 && !(y > height/2);
+        if (isCircle) {
+            if (isInCircle & isNE) {
+                //System.out.println("SOUTHEAST");
+                return RectangleMouseRegion.SOUTHEAST;
+            } else if (isInCircle & isSW ) {
+                //System.out.println("NORTHWEST");
+                return RectangleMouseRegion.NORTHWEST;
+            } else if (isInCircle & isSE) {
+                //System.out.println("SOUTHWEST");
+                return RectangleMouseRegion.SOUTHWEST;
+            } else if (isInCircle & isNW) {
+                //System.out.println("NORTHEAST");
+                return RectangleMouseRegion.NORTHEAST;
+            } else {
+                //System.out.println("INSIDE");
+                return RectangleMouseRegion.INSIDE;
+            }
         } else {
-            return RectangleMouseRegion.INSIDE;
+            if (isNorth && isEast) {
+                //System.out.println("NORTHEAST");
+                return RectangleMouseRegion.NORTHEAST;
+            } else if (isNorth && isWest) {
+                //System.out.println("NORTHWEST");
+                return RectangleMouseRegion.NORTHWEST;
+            } else if (isSouth && isEast) {
+                //System.out.println("SOUTHEAST");
+                return RectangleMouseRegion.SOUTHEAST;
+            } else if (isSouth && isWest) {
+                //System.out.println("SOUTHWEST");
+                return RectangleMouseRegion.SOUTHWEST;
+            } else if (isNorth) {
+                //System.out.println("NORTH");
+                return RectangleMouseRegion.NORTH;
+            } else if (isSouth) {
+                //System.out.println("SOUTH");
+                return RectangleMouseRegion.SOUTH;
+            } else if (isEast) {
+                //System.out.println("EAST");
+                return RectangleMouseRegion.EAST;
+            } else if (isWest) {
+                //System.out.println("WEST");
+                return RectangleMouseRegion.WEST;
+            } else {
+                //System.out.println("INSIDE");
+                return RectangleMouseRegion.INSIDE;
+            }
         }
+
+//        if (isNorth && isEast) {
+//            System.out.println("NORTHEAST");
+//            return RectangleMouseRegion.NORTHEAST;
+//        } else if (isNorth && isWest) {
+//            System.out.println("NORTHWEST");
+//            return RectangleMouseRegion.NORTHWEST;
+//        } else if (isSouth && isEast) {
+//            System.out.println("SOUTHEAST");
+//            return RectangleMouseRegion.SOUTHEAST;
+//        } else if (isSouth && isWest) {
+//            System.out.println("SOUTHWEST");
+//            return RectangleMouseRegion.SOUTHWEST;
+//        } else if (isNorth) {
+//            System.out.println("NORTH");
+//            return RectangleMouseRegion.NORTH;
+//        } else if (isSouth) {
+//            System.out.println("SOUTH");
+//            return RectangleMouseRegion.SOUTH;
+//        } else if (isEast) {
+//            System.out.println("EAST");
+//            return RectangleMouseRegion.EAST;
+//        } else if (isWest) {
+//            System.out.println("WEST");
+//            return RectangleMouseRegion.WEST;
+//        } else {
+//            System.out.println("INSIDE");
+//            return RectangleMouseRegion.INSIDE;
+//        }
     }
 
     /**
@@ -508,37 +577,37 @@ public class ResizableBox extends DraggableBox {
 
         switch (mouseRegion) {
 
-        case NORTHEAST:
-            setCursor(Cursor.NE_RESIZE);
-            break;
-        case NORTHWEST:
-            setCursor(Cursor.NW_RESIZE);
-            break;
-        case SOUTHEAST:
-            setCursor(Cursor.SE_RESIZE);
-            break;
-        case SOUTHWEST:
-            setCursor(Cursor.SW_RESIZE);
-            break;
-        case NORTH:
-            setCursor(Cursor.N_RESIZE);
-            break;
-        case SOUTH:
-            setCursor(Cursor.S_RESIZE);
-            break;
-        case EAST:
-            setCursor(Cursor.E_RESIZE);
-            break;
-        case WEST:
-            setCursor(Cursor.W_RESIZE);
-            break;
-        case INSIDE:
-            // Set to null instead of Cursor.DEFAULT so it doesn't overwrite cursor settings of parent.
-            setCursor(null);
-            break;
-        case OUTSIDE:
-            setCursor(null);
-            break;
+            case NORTHEAST:
+                setCursor(Cursor.NE_RESIZE);
+                break;
+            case NORTHWEST:
+                setCursor(Cursor.NW_RESIZE);
+                break;
+            case SOUTHEAST:
+                setCursor(Cursor.SE_RESIZE);
+                break;
+            case SOUTHWEST:
+                setCursor(Cursor.SW_RESIZE);
+                break;
+            case NORTH:
+                setCursor(Cursor.N_RESIZE);
+                break;
+            case SOUTH:
+                setCursor(Cursor.S_RESIZE);
+                break;
+            case EAST:
+                setCursor(Cursor.E_RESIZE);
+                break;
+            case WEST:
+                setCursor(Cursor.W_RESIZE);
+                break;
+            case INSIDE:
+                // Set to null instead of Cursor.DEFAULT so it doesn't overwrite cursor settings of parent.
+                setCursor(null);
+                break;
+            case OUTSIDE:
+                setCursor(null);
+                break;
         }
     }
 

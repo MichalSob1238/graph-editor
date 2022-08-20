@@ -152,11 +152,13 @@ public class CauseEffectChainEditorController {
         //System.out.println("AAA + " + chainModel.getGraphEditor().getModel().getConnections());
         //System.out.println("AAA + " + ((GModelImpl) chainModel.getGraphEditor().getModel()).connections);
         Commands.undo(chainModel.getGraphEditor().getModel());
+        chainModel.getGraphEditor().getModel().getNodes().forEach(coherencyChecker::updateCorrectnesStatus);
     }
 
     @FXML
     public void redo() {
         Commands.redo(chainModel.getGraphEditor().getModel());
+        chainModel.getGraphEditor().getModel().getNodes().forEach(coherencyChecker::updateCorrectnesStatus);
     }
 
     @FXML
@@ -199,12 +201,14 @@ public class CauseEffectChainEditorController {
     public void transformIntoDiagram() {
         activeSkinController.set(cecaSkinController);
         modelTransformationController.transformIntoCauseActionDiagram();
+        flushCommandStack();
     }
 
     @FXML
     public void transformIntoStateMachine() {
         setStateMachineSkin();
         modelTransformationController.transformIntoStateMachine();
+        flushCommandStack();
 //        ArrayList<GNode> list = new ArrayList<>(chainModel.getGraphEditor().getModel().getNodes());
 //        chainModel.getGraphEditor().getSkinManager().swapNodeSkin(list);
 //        chainModel.getGraphEditor().reload();
@@ -431,7 +435,7 @@ public class CauseEffectChainEditorController {
     /**
      * Flushes the command stack, so that the undo/redo history is cleared.
      */
-    private void flushCommandStack() {
+    public void flushCommandStack() {
 
         final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(chainModel.getGraphEditor().getModel());
         if (editingDomain != null) {

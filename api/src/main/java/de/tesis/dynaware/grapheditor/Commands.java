@@ -275,6 +275,8 @@ public class Commands {
             //System.out.println("undo command");
             //System.out.println("stack: " + editingDomain.getCommandStack());
             //System.out.println("MRC: " + editingDomain.getCommandStack().getMostRecentCommand().getAffectedObjects());
+            editingDomain.getCommandStack().getMostRecentCommand().getResult();
+
             editingDomain.getCommandStack().undo();
         }
     }

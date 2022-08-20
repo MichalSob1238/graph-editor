@@ -11,6 +11,8 @@ import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorT
 import de.tesis.dynaware.grapheditor.demo.customskins.NodeTraversalUtils;
 import de.tesis.dynaware.grapheditor.model.*;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
+import de.tesis.dynaware.grapheditor.utils.ResizableBox;
+import javafx.application.Platform;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -25,6 +27,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -57,9 +60,10 @@ public class StateMachineNodeSkin extends GNodeSkin {
     private final Rectangle selectionHalo = new Rectangle();
     private final Rectangle background = new Rectangle();
 
-    private static final String STYLE_CLASS_BACKGROUND = "and-node-background";
+    private static final String STYLE_CLASS_BACKGROUND = "sm-node-background";
     private static final String STYLE_CLASS_SELECTION_HALO = "default-node-selection-halo";
-    private static final String STYLE_CLASS_BORDER = "default-node-border";
+    private static final String STYLE_CLASS_BORDER = "sm-node-border";
+    JFXTextField descriptionEditable = new JFXTextField();
 
     private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
 
@@ -80,6 +84,8 @@ public class StateMachineNodeSkin extends GNodeSkin {
     private final List<String> issuesWithNode = new ArrayList<>();
     private boolean isCorrect = true;
 
+    public Tooltip tooltip = new Tooltip("");
+
     private EventHandler<? super MouseEvent> doubleClickedListener = getDoubleClickedListener();
 
     /**
@@ -90,6 +96,9 @@ public class StateMachineNodeSkin extends GNodeSkin {
     public StateMachineNodeSkin(GNode node) {
         super(node);
 
+        getRoot().isCircle = true;
+        System.out.println(getRoot().getHeight() + ", " + getRoot().getWidth());
+        System.out.println(getRoot().getHeight() + ", " + getRoot().getWidth());
         border.widthProperty().bind(getRoot().widthProperty());
         border.heightProperty().bind(getRoot().heightProperty());
         background.widthProperty().bind(border.widthProperty().subtract(border.strokeWidthProperty().multiply(2)));
@@ -164,6 +173,16 @@ public class StateMachineNodeSkin extends GNodeSkin {
             selectionHalo.setStrokeDashOffset(HALO_CORNER_SIZE);
             selectionHalo.getStrokeDashArray().setAll(cornerLength, yGap, cornerLength, xGap);
         }
+    }
+
+    private boolean requestFocusOrDieTrying(Node node) {
+        Platform.runLater(() -> {
+            if (!node.isFocused()) {
+                node.requestFocus();
+                requestFocusOrDieTrying(node);
+            }
+        });
+        return true;
     }
 
     private void updateColour() {
@@ -259,9 +278,8 @@ public class StateMachineNodeSkin extends GNodeSkin {
                 alert.getDialogPane().getButtonTypes().add(buttonTypeOk);
 
 
-                ////
+                System.out.println("handling doubleclick SM node");
                 ////System.out.println(getNode());
-                JFXTextField descriptionEditable = new JFXTextField();
                 descriptionEditable.setPrefSize(-1, -1);
                 descriptionEditable.setMinSize(title.getWidth(), title.getHeight());
                 descriptionEditable.setMaxSize(background.getWidth(), background.getHeight());
@@ -270,15 +288,19 @@ public class StateMachineNodeSkin extends GNodeSkin {
                 descriptionEditable.setText(title.getText());
                 title.setVisible(false);
                 getRoot().getChildren().add(descriptionEditable);
-                if (getNode().getType() != null) {
-                    descriptionEditable.positionCaret(getNode().getDescription().length());
-                }
+                descriptionEditable.selectAll();
+                Font font = new Font("Arial", 17);
+                descriptionEditable.setFont(font);
+
+                boolean foc = requestFocusOrDieTrying(descriptionEditable);
                 descriptionEditable.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                    if (!newValue) {
+                    if (foc &&!newValue) {
+                        System.out.println("in focused new value");
                         getNode().setDescription(descriptionEditable.getText());
                         title.setText(descriptionEditable.getText());
                         getRoot().getChildren().remove(descriptionEditable);
                         setDescription();
+                        tooltip.setText(descriptionEditable.getText());
                         title.setVisible(true);
                     }
                 });

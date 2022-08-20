@@ -10,6 +10,7 @@ import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CauseActionDi
 import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
 import cause.effect.chain.editor.model.skins.statemachine.StateMachineConstants;
 import de.tesis.dynaware.grapheditor.model.*;
+import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.edit.command.RemoveCommand;
@@ -64,6 +65,7 @@ public class ModelTransformationController {
 //        }
 //        graphEditor.reload();
         ((DefaultGraphEditor) graphEditor).getController().setModel(graphEditor.getModel());
+
     }
 
     private void beginTransformationIntoStateMachine2(GNode rootNode){

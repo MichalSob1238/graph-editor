@@ -9,7 +9,12 @@ import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachine
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -21,6 +26,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -34,6 +40,8 @@ import javafx.util.Duration;
 
 import javax.tools.Tool;
 import java.util.*;
+
+import static java.lang.Thread.sleep;
 
 
 public class CecaDiagramNodeSkin extends GNodeSkin {
@@ -54,12 +62,13 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
     private final Rectangle selectionHalo = new Rectangle();
     private final Rectangle errorHalo = new Rectangle();
     private final Rectangle background = new Rectangle();
+    JFXTextField descriptionEditable = new JFXTextField();
 
-    private static final Map<String , String> colours = new HashMap<String , String>() {{
-        put(CecaDiagramConstants.CAUSE_ACTION_ROOT,  "#B2BEB5"  );
+    private static final Map<String, String> colours = new HashMap<String, String>() {{
+        put(CecaDiagramConstants.CAUSE_ACTION_ROOT, "#B2BEB5");
         put(CecaDiagramConstants.TARGET_DISADVANTAGE, "#B2BEB5");
-        put(CecaDiagramConstants.CONDITION,   "#89CFF0");
-        put(CecaDiagramConstants.ACTION,   "#50C878");
+        put(CecaDiagramConstants.CONDITION, "#89CFF0");
+        put(CecaDiagramConstants.ACTION, "#50C878");
     }};
 
 
@@ -72,7 +81,9 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
     private EventHandler<? super MouseEvent> doubleClickedListener = getDoubleClickedListener();
     private final List<String> issuesWithNode = new ArrayList<>();
     public boolean isCorrect = true;
-    private final String defaultColor = "#ffffff";
+
+
+    public Tooltip tooltip = new Tooltip("");
 
     private EventHandler<MouseEvent> getDoubleClickedListener() {
         return event -> {
@@ -83,7 +94,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
                     alert.setHeaderText("Node has the following issues that prevent the model from being legal");
 
                     TextArea textArea = new TextArea();
-                    for (String issue: issuesWithNode) {
+                    for (String issue : issuesWithNode) {
                         textArea.appendText(issue + ".\n");
                     }
                     textArea.setEditable(false);
@@ -100,7 +111,6 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
                 } else {
                     System.out.println("handling doubleclick ceca node");
                     ////System.out.println(getNode());
-                    JFXTextField descriptionEditable = new JFXTextField();
                     descriptionEditable.setPrefSize(-1, -1);
                     descriptionEditable.setMinSize(title.getWidth(), title.getHeight());
                     descriptionEditable.setMaxSize(background.getWidth(), background.getHeight());
@@ -109,23 +119,36 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
                     descriptionEditable.setText(title.getText());
                     title.setVisible(false);
                     getRoot().getChildren().add(descriptionEditable);
-                    if (getNode().getType() != null) {
-                        descriptionEditable.positionCaret(getNode().getDescription().length());
-                    }
+                    descriptionEditable.selectAll();
+                    Font font = new Font("Arial", 17);
+                    descriptionEditable.setFont(font);
+
+                    boolean foc = requestFocusOrDieTrying(descriptionEditable);
                     descriptionEditable.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                        if (!newValue) {
+                        if (foc &&!newValue) {
+                            System.out.println("in focused new value");
                             getNode().setDescription(descriptionEditable.getText());
                             title.setText(descriptionEditable.getText());
                             getRoot().getChildren().remove(descriptionEditable);
                             setDescription();
+                            tooltip.setText(descriptionEditable.getText());
                             title.setVisible(true);
                         }
                     });
+
                 }
             }
         };
     }
-
+    private boolean requestFocusOrDieTrying(Node node) {
+        Platform.runLater(() -> {
+            if (!node.isFocused()) {
+                node.requestFocus();
+                requestFocusOrDieTrying(node);
+            }
+        });
+        return true;
+    }
     private EventHandler<MouseEvent> changeToStateMachineListener() {
         return event -> {
             if (event.getClickCount() >= 2) {
@@ -137,19 +160,12 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
     //TODO: customise
     public void setDescription() {
-        //System.out.println("setting description");
-        final Text text = new Text(getNode().getDescription());
-        new Scene(new Group(text));
-        text.applyCss();
-        final double width = Math.max(50, text.getLayoutBounds().getWidth());
-        final double height = Math.max(20, text.getLayoutBounds().getHeight());
-
         Font font = new Font("Arial", 17);
 
-        title.setMinSize(width, height);
         title.setMaxSize(border.getWidth(), border.getHeight());
         title.setTextAlignment(TextAlignment.CENTER);
-        title.resize(border.getWidth(), border.getHeight());
+        title.setWrapText(true);
+
         title.setText(Optional.ofNullable(getNode().getDescription()).orElse("!!"));
         title.setFont(font);
     }
@@ -172,28 +188,62 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         //System.out.println("ceca setting title");
         title.setAlignment(Pos.CENTER);
         title.setVisible(true);
+        Font font = new Font("Arial", 17);
+        title.setFont(font);
 
         background.getStyleClass().setAll(STYLE_CLASS_BACKGROUND);
         border.getStyleClass().setAll(STYLE_CLASS_BORDER);
 
 
-
         title.setOnMouseClicked(doubleClickedListener);
+        background.setOnMouseClicked(doubleClickedListener);
         getRoot().getChildren().addAll(border, background);
         getRoot().getChildren().add(title);
 
-        Tooltip t = new Tooltip("A very long and complicated thext that does not fit reasonably in one screen, A very long and complicated thext that does not fit reasonably in one screen");
-        t.setShowDelay(Duration.seconds(0.0));
-        t.setPrefWidth(200);
-        t.setWrapText(true);
-        System.out.println(t.getText());
+        tooltip.setShowDelay(Duration.seconds(1.0));
+        System.out.println(getNode().getDescription().length());
+        System.out.println(tooltip.getPrefWidth());
+        tooltip.setWrapText(true);
+        tooltip.setMaxWidth(200);
+        tooltip.setMaxWidth(600);
+        Font font2 = new Font("Arial", 13);
+        tooltip.setFont(font2);
 
-        getRoot().getChildren().forEach(mhm -> Tooltip.install(mhm, t));
+        getRoot().getChildren().forEach(mhm -> Tooltip.install(mhm, tooltip));
+        title.setAlignment(Pos.CENTER);
 
+        title.setVisible(true);
         addSelectionHalo();
         addErrorHalo();
         addSelectionListener();
         updateColour();
+        addInitialError();
+    }
+
+    private void addInitialError() {
+        String subtype = getNode().getSubtype();
+        List<String> status = new ArrayList<>();
+        switch (subtype) {
+            case CecaDiagramConstants.ACTION:{
+                status.add("Action node must have at least one input.");
+                status.add("Action node must have at least one output.");
+                break;
+            }
+            case CecaDiagramConstants.CONDITION:{
+                status.add("Condition node must have at least one input.");
+                status.add("Condition node must have at least one output.");
+                break;
+            }
+            case CecaDiagramConstants.TARGET_DISADVANTAGE:{
+                status.add("Target disadvantage node must have at least one input.");
+                break;
+            }
+            case CecaDiagramConstants.CAUSE_ACTION_ROOT:{
+                status.add("Root cause node must have at least one output.");
+                break;
+            }
+        }
+        updateStatus(status);
     }
 
     private void addErrorHalo() {
@@ -298,10 +348,6 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
     }
 
-    public boolean isInput(String type) {
-        return type.contains("input");
-    }
-
     void addSelectionListener() {
 
         selectedProperty().addListener((v, o, n) -> {
@@ -388,6 +434,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
             this.isCorrect = true;
             this.issuesWithNode.clear();
             errorHalo.setVisible(false);
+            tooltip.setText(getNode().getDescription());
 
         } else {
             this.isCorrect = false;
@@ -395,6 +442,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
             this.issuesWithNode.addAll(status);
             errorHalo.setVisible(true);
             layoutErrorHalo();
+            tooltip.setText(String.join("\n", issuesWithNode));
         }
         return status.size();
     }
@@ -464,7 +512,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
             final double yGap = border.getHeight() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
 
             errorHalo.setStrokeDashOffset(-HALO_CORNER_SIZE);
-            errorHalo.getStrokeDashArray().setAll( yGap, cornerLength, xGap, cornerLength);
+            errorHalo.getStrokeDashArray().setAll(yGap, cornerLength, xGap, cornerLength);
         }
     }
 
