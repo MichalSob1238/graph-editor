@@ -431,6 +431,7 @@ public class CauseEffectChainEditorController {
      */
 
     private void checkTransformToDisable() {
+        System.out.println("checking to disable, active is " + activeSkinController.get() + "and equals gives me" + cecaSkinController.equals(activeSkinController.get()) );
 
          if (cecaSkinController.equals(activeSkinController.get())) {
              transformIntoCauseAction.setDisable(true);
