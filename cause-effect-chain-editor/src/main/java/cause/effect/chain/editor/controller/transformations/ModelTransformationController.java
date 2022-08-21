@@ -2,18 +2,16 @@ package cause.effect.chain.editor.controller.transformations;
 
 import cause.effect.chain.editor.controller.modes.CauseActionModeController;
 import cause.effect.chain.editor.controller.modes.StateMachineModeController;
-import cause.effect.chain.editor.model.skins.statemachine.StateMachineConnectionSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionCommands;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
 import de.tesis.dynaware.grapheditor.demo.customskins.NodeTraversalUtils;
 import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CauseActionDiagramSubtypes;
-import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
+import cause.effect.chain.editor.model.skins.CauseActionModel.CecaDiagramConstants;
 import cause.effect.chain.editor.model.skins.statemachine.StateMachineConstants;
 import de.tesis.dynaware.grapheditor.model.*;
 import javafx.scene.control.Alert;
-import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.edit.command.RemoveCommand;
@@ -306,7 +304,7 @@ public class ModelTransformationController {
             node.setSubtype(CecaDiagramConstants.TARGET_DISADVANTAGE);
             node.setType(CecaDiagramConstants.CECA_NODE);
         });
-        System.out.println("found " + rootNodes.size() + " root nodes");
+        //System.out.println("found " + rootNodes.size() + " root nodes");
         try {
             rootNodes.forEach(this::beginTransformationIntoDiagram);
         } catch (Exception e) {
@@ -431,7 +429,7 @@ public class ModelTransformationController {
                 if (conditions.size() != connections.size()) {
                     throw new RuntimeException("mismatch between # of connections and # of conditions for condition: " + conditions);
                 }
-                GNode andGate = causeActionModeController.addAndGate(1500, 1500);
+                GNode andGate = causeActionModeController.addAndGate(rootNode.getX() - rootNode.getWidth() - 10, rootNode.getY());
                 final GConnector rootNodeInput = stateMachineController.addConnector(rootNode, DefaultConnectorTypes.LEFT_INPUT);
                 causeActionModeController.addConnection(andGate.getConnectors().stream().filter(con -> !isInput(con.getType())).collect(Collectors.toList()).get(0), rootNodeInput);
                 for (int i = 0; i < conditions.size(); i++) {
@@ -454,7 +452,7 @@ public class ModelTransformationController {
                     break;
                 }
                 default: {
-                    GNode orGate = causeActionModeController.addOrGate(1200, 1200, inputConnectors.size());
+                    GNode orGate = causeActionModeController.addOrGate(rootNode.getX() - rootNode.getWidth() - 10, rootNode.getY(), inputConnectors.size());
                     final GConnector rootNodeInput = stateMachineController.addConnector(rootNode, DefaultConnectorTypes.LEFT_INPUT);
                     causeActionModeController.addConnection(orGate.getConnectors().stream().filter(con -> !isInput(con.getType())).collect(Collectors.toList()).get(0), rootNodeInput);
                     orConnections.forEach(connection -> {
@@ -473,7 +471,7 @@ public class ModelTransformationController {
 
     private void procesPredecesorNode(GNode rootNode, GNode predecessorNode, String description) {
         ////System.out.println("predecessorNode + " + predecessorNode);
-        final GNode conditionNode = causeActionModeController.addConditionNode((predecessorNode.getX() + rootNode.getX()) / 2.0, (predecessorNode.getY() + rootNode.getY()) / 2.0, description);
+        final GNode conditionNode = causeActionModeController.addConditionNode((predecessorNode.getX() + rootNode.getX())/2 , (predecessorNode.getY() + rootNode.getY())/2 , description);
 
         conditionNode.setDescription(description);
 

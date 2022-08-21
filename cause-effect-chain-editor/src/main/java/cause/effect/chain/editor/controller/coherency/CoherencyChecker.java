@@ -4,7 +4,7 @@ import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.SkinLookup;
 import de.tesis.dynaware.grapheditor.demo.customskins.NodeTraversalUtils;
-import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
+import cause.effect.chain.editor.model.skins.CauseActionModel.CecaDiagramConstants;
 import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
@@ -23,7 +23,7 @@ public class CoherencyChecker {
     }
 
     public void getNotified(GConnection connection) {
-        System.out.println("got notified for connection " + connection);
+        //System.out.println("got notified for connection " + connection);
         updateCorrectnesStatus(NodeTraversalUtils.getSourceNode(connection));
         updateCorrectnesStatus(NodeTraversalUtils.getTargetNode(connection));
     }
@@ -215,7 +215,6 @@ public class CoherencyChecker {
                 break;
             }
             case "condition": {
-                //Has to have at least one connected input leading to "initial-state" or "intermediate-dissadvantage" and at least one output leading to not-action
                 List<String> errors = checkForCondition(node);
                 errorList.addAll(errors);
                 break;
@@ -233,7 +232,7 @@ public class CoherencyChecker {
                 break;
             }
             default: {
-                System.out.println("Default case in coherency checker");
+                //System.out.println("Default case in coherency checker");
             }
         }
 
@@ -252,11 +251,11 @@ public class CoherencyChecker {
                     String sourceNodeSubtype = NodeTraversalUtils.getSourceNode(connection).getSubtype();
                     //TODO: these cannot actually be null - you can use equals - OR do contains("disadvantage")
                     if (Objects.equals(sourceNodeSubtype, "initial-disadvantage") || Objects.equals(sourceNodeSubtype, "intermediate-disadvantage")) {
-                        errorList.add("Action node can only follow a disadvantage node, currently one of the inputs is connected to a " + sourceNodeSubtype + " node");
+                        errorList.add("Condition node can only follow a disadvantage node, currently one of the inputs is connected to a " + sourceNodeSubtype + " node");
                     }
                     switch (sourceNodeSubtype) {
                         case CecaDiagramConstants.CONDITION: {
-                            System.out.println("bad stuff");
+                            errorList.add("Condition node canot be connected to another condition node");
                             break;
                         }
                         case "and":
@@ -264,7 +263,7 @@ public class CoherencyChecker {
                         case CecaDiagramConstants.CAUSE_ACTION_ROOT:
                         case CecaDiagramConstants.TARGET_DISADVANTAGE:
                         case CecaDiagramConstants.ACTION: {
-                            System.out.println("good stuff");
+                            //System.out.println("good stuff");
                         }
                     }
                 }
@@ -331,6 +330,8 @@ public class CoherencyChecker {
                 //TODO: these cannot actually be null - you can use equals
                 if (Objects.equals(sourceNodeSubtype, CecaDiagramConstants.CONDITION) || Objects.equals(sourceNodeSubtype, "and") || Objects.equals(sourceNodeSubtype, "or")) {
                     return null;
+                } else {
+                    return "Target Disadvantage cannot be led to by an " + sourceNodeSubtype;
                 }
             }
         }
@@ -338,7 +339,7 @@ public class CoherencyChecker {
     }
 
     private String checkForInitialState(GNode node) {
-        System.out.println("check initial state");
+        //System.out.println("check initial state");
         for (GConnector connector : node.getConnectors()) {
             //TODO: check for null pointer error
             System.out.println("check connector " + connector + " in initial state");
@@ -364,7 +365,7 @@ public class CoherencyChecker {
                 for (GConnection connection : connector.getConnections()) {
                     inputCondition = true;
                     String sourceNodeSubtype = NodeTraversalUtils.getSourceNode(connection).getSubtype();
-                    System.out.println("source for node " + node + " has subtype " + sourceNodeSubtype);
+                    //System.out.println("source for node " + node + " has subtype " + sourceNodeSubtype);
                     switch (sourceNodeSubtype) {
                         case CecaDiagramConstants.ACTION:
                         case CecaDiagramConstants.CAUSE_ACTION_ROOT: {
@@ -385,7 +386,7 @@ public class CoherencyChecker {
                     switch (targetNodeSubtype) {
                         case CecaDiagramConstants.ACTION:
                         case CecaDiagramConstants.TARGET_DISADVANTAGE: {
-                            errorList.add("action node can only lead to a condition node or an OR gate. Currently one of the inputs is connected to a " + targetNodeSubtype + " node");
+                            errorList.add("action node can only lead to a condition node or an OR gate. Currently one of the outputs is connected to a " + targetNodeSubtype + " node");
                             break;
                         }
                         case "and":

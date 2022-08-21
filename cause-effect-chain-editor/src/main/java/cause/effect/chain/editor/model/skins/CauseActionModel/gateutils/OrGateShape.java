@@ -1,4 +1,4 @@
-package cause.effect.chain.editor.model.skins.StateActionModel.gateutils;
+package cause.effect.chain.editor.model.skins.CauseActionModel.gateutils;
 
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.ArcType;

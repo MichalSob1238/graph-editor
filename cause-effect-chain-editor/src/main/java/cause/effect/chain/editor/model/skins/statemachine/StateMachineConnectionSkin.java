@@ -98,7 +98,7 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
         LineUtils.draw(background3, newStart2, newEnd2, OFFSET_FROM_CONNECTOR);
         adjustBlockVisibility();
         text.setVisible(true);
-        Font font = new Font("Arial", 17);
+        Font font = new Font("Arial", 11);
         text.setFont(font);
 
 //        textFlow.setVisible(true);

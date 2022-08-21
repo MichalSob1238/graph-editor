@@ -1,15 +1,12 @@
 package suite;
 
 import cause.effect.chain.editor.controller.CauseEffectChainEditorController;
-import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
+import cause.effect.chain.editor.model.skins.CauseActionModel.CecaDiagramConstants;
 import cause.effect.chain.editor.utils.NodeTraversalUtils;
 import de.tesis.dynaware.grapheditor.model.GNode;
-import javafx.application.Platform;
-import javafx.scene.input.KeyCode;
 import org.junit.Assert;
 import org.junit.Test;
 import org.testfx.api.FxRobot;
-import org.testfx.util.WaitForAsyncUtils;
 
 public class PerformanceTestSuite extends BaseTest {
 

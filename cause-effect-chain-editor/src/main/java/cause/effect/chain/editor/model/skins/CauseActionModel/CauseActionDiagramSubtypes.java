@@ -1,4 +1,4 @@
-package cause.effect.chain.editor.model.skins.StateActionModel;
+package cause.effect.chain.editor.model.skins.CauseActionModel;
 
 public class CauseActionDiagramSubtypes {
     public static final String TARGET_DISADVANTAGE = "target-disadvantage";

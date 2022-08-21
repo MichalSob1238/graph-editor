@@ -36,34 +36,18 @@
 						<MenuItem text="Add Node" onAction="#addNode" accelerator="Shortcut+N"/>
 						<MenuItem text="Add And Gate" onAction="#addAndGate"/>
 						<MenuItem text="Add Or Gate" onAction="#addOrGate" />
-						<MenuItem text="Add Connector" fx:id="addConnectorButton" onAction="#addConnector" accelerator="Shortcut+E"/>
-						<MenuItem text="Clear Connectors" fx:id="clearConnectorsButton" onAction="#clearConnectors" accelerator="Shortcut+W"/>
-						<Menu fx:id="connectorTypeMenu" text="Connector Type">
-							<items>
-								<RadioMenuItem fx:id="inputConnectorTypeButton" text="Input" selected="true"/>
-								<RadioMenuItem fx:id="outputConnectorTypeButton" text="Output"/>
-							</items>
-						</Menu>
-						<Menu fx:id="connectorPositionMenu" text="Connector Position">
-							<items>
-								<RadioMenuItem fx:id="leftConnectorPositionButton" text="Left" selected="true"/>
-								<RadioMenuItem fx:id="rightConnectorPositionButton" text="Right"/>
-								<RadioMenuItem fx:id="topConnectorPositionButton" text="Top"/>
-								<RadioMenuItem fx:id="bottomConnectorPositionButton" text="Bottom"/>
-							</items>
-						</Menu>
-						<MenuItem text="Transform Diagram into State Machine" onAction="#transformIntoStateMachine" />
-						<MenuItem text="Transform State Machine into Diagram" onAction="#transformIntoDiagram" />
+						<MenuItem text="Transform Diagram into State Machine" fx:id="transformIntoCauseAction" onAction="#transformIntoStateMachine" />
+						<MenuItem text="Transform State Machine into Diagram" fx:id="transformIntoStateMachine"  onAction="#transformIntoDiagram" />
 					</items>
 				</Menu>
 				<Menu text="Settings">
 					<items>
 						<RadioMenuItem fx:id="showGridButton" text="Show Grid" />
 						<RadioMenuItem fx:id="snapToGridButton" text="Snap to Grid" />
-						<Menu text="Skin Type">
+						<Menu text="Change Model">
 							<items>
-								<RadioMenuItem fx:id="cecaSkinButton" text="CecaDiagram" onAction="#setCecaSkin"/>
-								<RadioMenuItem fx:id="stateMachineSkinButton" text="StateMachineDiagram" onAction="#setStateMachineSkinControler"/>
+								<MenuItem fx:id="cecaSkinButton" text="CecaDiagram" onAction="#setCecaSkin"/>
+								<MenuItem fx:id="stateMachineSkinButton" text="StateMachineDiagram" onAction="#setStateMachineSkinControler"/>
 							</items>
 						</Menu>
 						<!-- Added blank spaces to force menu to be wider. -->

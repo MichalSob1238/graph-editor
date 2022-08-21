@@ -1,13 +1,11 @@
 package suite;
 
 import cause.effect.chain.editor.controller.CauseEffectChainEditorController;
-import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
+import cause.effect.chain.editor.model.skins.CauseActionModel.CecaDiagramConstants;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
 import org.junit.Assert;
 import org.junit.Test;
-import suite.BaseTest;
 
 public class BasicNodeTestSuite extends BaseTest {
 

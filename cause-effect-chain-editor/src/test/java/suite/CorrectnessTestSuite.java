@@ -1,15 +1,13 @@
 package suite;
 
 import cause.effect.chain.editor.controller.CauseEffectChainEditorController;
-import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramNodeSkin;
-import de.tesis.dynaware.grapheditor.GNodeSkin;
+import cause.effect.chain.editor.model.skins.CauseActionModel.CecaDiagramNodeSkin;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionCommands;
 import de.tesis.dynaware.grapheditor.demo.GraphEditorPersistence;
 import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GModel;
 import de.tesis.dynaware.grapheditor.model.GNode;
 import javafx.application.Platform;
-import org.eclipse.emf.common.command.CompoundCommand;
 import org.junit.Assert;
 import org.junit.Test;
 

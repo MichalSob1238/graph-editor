@@ -1,7 +1,5 @@
 package cause.effect.chain.editor.model.skins.statemachine;
 
-import cause.effect.chain.editor.model.CauseEffectChainModel;
-import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
 import com.jfoenix.controls.JFXTextField;
 import de.tesis.dynaware.grapheditor.Commands;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
@@ -11,27 +9,21 @@ import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorT
 import de.tesis.dynaware.grapheditor.demo.customskins.NodeTraversalUtils;
 import de.tesis.dynaware.grapheditor.model.*;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
-import de.tesis.dynaware.grapheditor.utils.ResizableBox;
 import javafx.application.Platform;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
-import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -43,7 +35,6 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class StateMachineNodeSkin extends GNodeSkin {
 
@@ -116,7 +107,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
         title.setVisible(true);
         title.setOnMouseClicked(doubleClickedListener);
         background.setOnMouseClicked(doubleClickedListener);
-        Font font = new Font("Arial", 17);
+        Font font = new Font("Arial", 11);
         title.setFont(font);
         title.setWrapText(true);
 
@@ -363,7 +354,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
                     title.setVisible(false);
                     getRoot().getChildren().add(descriptionEditable);
                     descriptionEditable.selectAll();
-                    Font font = new Font("Arial", 17);
+                    Font font = new Font("Arial", 11);
                     descriptionEditable.setFont(font);
 
                     boolean foc = requestFocusOrDieTrying(descriptionEditable);
@@ -659,7 +650,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
     //TODO: customise
     public void setDescription() {
         ////System.out.println("setting description");
-        Font font = new Font("Arial", 17);
+        Font font = new Font("Arial", 11);
 
         title.setMaxSize(border.getWidth(), border.getHeight());
         title.setTextAlignment(TextAlignment.CENTER);

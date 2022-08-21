@@ -69,7 +69,7 @@
 					<items>
 						<RadioMenuItem fx:id="showGridButton" text="Show Grid" />
 						<RadioMenuItem fx:id="snapToGridButton" text="Snap to Grid" />
-						<Menu text="Skin Type">
+						<Menu text="Change Model">
 							<items>
 								<RadioMenuItem fx:id="defaultSkinButton" text="Default" onAction="#setDefaultSkin" selected="true"/>
 								<RadioMenuItem fx:id="treeSkinButton" text="Tree" onAction="#setTreeSkin"/>

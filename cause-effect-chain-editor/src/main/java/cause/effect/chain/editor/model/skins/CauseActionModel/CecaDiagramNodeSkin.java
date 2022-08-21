@@ -1,37 +1,27 @@
-package cause.effect.chain.editor.model.skins.StateActionModel;
+package cause.effect.chain.editor.model.skins.CauseActionModel;
 
 import com.jfoenix.controls.JFXTextField;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
-import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
-import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants;
 import de.tesis.dynaware.grapheditor.model.*;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
-import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import org.eclipse.emf.common.command.CompoundCommand;
@@ -40,7 +30,6 @@ import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
-import javax.tools.Tool;
 import java.util.*;
 
 import static java.lang.Thread.sleep;
@@ -91,7 +80,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         return event -> {
             if (event.getButton().compareTo(MouseButton.SECONDARY) == 0)
             {
-                System.out.println("State Machine handling rightclick");
+                //System.out.println("State Machine handling rightclick");
                 showNodeInformation();
             }
             else
@@ -117,7 +106,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
                     alert.showAndWait();
                 } else {
-                    System.out.println("handling doubleclick ceca node");
+                    //System.out.println("handling doubleclick ceca node");
                     ////System.out.println(getNode());
                     descriptionEditable.setPrefSize(-1, -1);
                     descriptionEditable.setMinSize(title.getWidth(), title.getHeight());
@@ -128,13 +117,13 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
                     title.setVisible(false);
                     getRoot().getChildren().add(descriptionEditable);
                     descriptionEditable.selectAll();
-                    Font font = new Font("Arial", 17);
+                    Font font = new Font("Arial", 11);
                     descriptionEditable.setFont(font);
 
                     boolean foc = requestFocusOrDieTrying(descriptionEditable);
                     descriptionEditable.focusedProperty().addListener((observable, oldValue, newValue) -> {
                         if (foc &&!newValue) {
-                            System.out.println("in focused new value");
+                            //System.out.println("in focused new value");
                             getNode().setDescription(descriptionEditable.getText());
                             title.setText(descriptionEditable.getText());
                             getRoot().getChildren().remove(descriptionEditable);
@@ -197,7 +186,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
                 ActionEvent.ACTION,
                 action -> {
                     getNode().setDescription(descriptionLabel.getText());
-                    System.out.println("set description to " + descriptionLabel.getText());
+                   // System.out.println("set description to " + descriptionLabel.getText());
                     setDescription();
                 }
         );
@@ -219,9 +208,9 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
                 }
         );
 
-        System.out.println("alert width: " + alert.getWidth());
+        //System.out.println("alert width: " + alert.getWidth());
         alert.setWidth(1200);
-        System.out.println("alert width: " + alert.getWidth());
+       // System.out.println("alert width: " + alert.getWidth());
 
         Optional<ButtonType> x = alert.showAndWait();
 
@@ -253,7 +242,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
     //TODO: customise
     public void setDescription() {
-        Font font = new Font("Arial", 17);
+        Font font = new Font("Arial", 11);
 
         title.setMaxSize(border.getWidth(), border.getHeight());
         title.setTextAlignment(TextAlignment.CENTER);
@@ -276,12 +265,13 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         background.widthProperty().bind(border.widthProperty().subtract(border.strokeWidthProperty().multiply(2)));
         background.heightProperty().bind(border.heightProperty().subtract(border.strokeWidthProperty().multiply(2)));
 
-
+//        getNode().setHeight(50);
+//        getNode().setWidth(100);
         title.setText(node.getDescription());
         //System.out.println("ceca setting title");
         title.setAlignment(Pos.CENTER);
         title.setVisible(true);
-        Font font = new Font("Arial", 17);
+        Font font = new Font("Arial", 11);
         title.setFont(font);
 
         background.getStyleClass().setAll(STYLE_CLASS_BACKGROUND);

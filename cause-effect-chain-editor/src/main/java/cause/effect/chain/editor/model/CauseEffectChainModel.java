@@ -5,7 +5,7 @@ import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.GraphEditorController;
 import de.tesis.dynaware.grapheditor.core.connections.ConnectionCommands;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
-import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
+import cause.effect.chain.editor.model.skins.CauseActionModel.CecaDiagramConstants;
 import cause.effect.chain.editor.model.skins.statemachine.StateMachineConnectionSkin;
 import cause.effect.chain.editor.model.skins.statemachine.StateMachineConstants;
 import cause.effect.chain.editor.model.skins.statemachine.StateMachineTailSkin;

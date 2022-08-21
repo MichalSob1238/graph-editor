@@ -4,7 +4,6 @@ import cause.effect.chain.editor.controller.modes.CauseActionModeController;
 import cause.effect.chain.editor.controller.modes.StateMachineModeController;
 import cause.effect.chain.editor.controller.transformations.ModelTransformationController;
 import cause.effect.chain.editor.model.CauseEffectChainModel;
-import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramNodeSkin;
 import cause.effect.chain.editor.model.skins.statemachine.StateMachineNodeSkin;
 import de.tesis.dynaware.grapheditor.*;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
@@ -19,17 +18,17 @@ import de.tesis.dynaware.grapheditor.window.WindowPosition;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
-import javafx.geometry.Side;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.transform.Scale;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CauseEffectChainEditorController {
@@ -39,33 +38,17 @@ public class CauseEffectChainEditorController {
     @FXML
     private MenuBar menuBar;
     @FXML
-    private MenuItem addConnectorButton;
+    private MenuItem transformIntoCauseAction;
     @FXML
-    private MenuItem clearConnectorsButton;
-    @FXML
-    private Menu connectorTypeMenu;
-    @FXML
-    private Menu connectorPositionMenu;
-    @FXML
-    private RadioMenuItem inputConnectorTypeButton;
-    @FXML
-    private RadioMenuItem outputConnectorTypeButton;
-    @FXML
-    private RadioMenuItem leftConnectorPositionButton;
-    @FXML
-    private RadioMenuItem rightConnectorPositionButton;
-    @FXML
-    private RadioMenuItem topConnectorPositionButton;
-    @FXML
-    private RadioMenuItem bottomConnectorPositionButton;
+    private MenuItem transformIntoStateMachine;
     @FXML
     private RadioMenuItem showGridButton;
     @FXML
     private RadioMenuItem snapToGridButton;
     @FXML
-    private RadioMenuItem cecaSkinButton;
+    private MenuItem cecaSkinButton;
     @FXML
-    private RadioMenuItem stateMachineSkinButton;
+    private MenuItem stateMachineSkinButton;
     @FXML
     private Menu intersectionStyle;
     @FXML
@@ -225,11 +208,11 @@ public class CauseEffectChainEditorController {
     public void transformIntoStateMachine() {
         List<GNode> nodes = chainModel.getGraphEditor().getModel().getNodes();
         List<GNodeSkin> skins = nodes.stream().map(node -> chainModel.getGraphEditor().getSkinLookup().lookupNode(node)).collect(Collectors.toList());
-        System.out.println("found " + skins.size() + skins);
+        //System.out.println("found " + skins.size() + skins);
         for (GNodeSkin skin : skins) {
-            System.out.println("found " + skin + skin.isCorrect);
+            //System.out.println("found " + skin + skin.isCorrect);
             if (!skin.isCorrect) {
-                System.out.println("found incorrect skin: " + skin + skin.isCorrect);
+                //System.out.println("found incorrect skin: " + skin + skin.isCorrect);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Cannot convert");
                 alert.setHeaderText("Cannot convert");
@@ -254,24 +237,42 @@ public class CauseEffectChainEditorController {
         activeSkinController.get().addAndGate(currentZoomFactor);
     }
 
-    @FXML
-    public void addConnector() {
-        activeSkinController.get().addConnector(getSelectedConnectorPosition(), inputConnectorTypeButton.isSelected());
-    }
-
-    @FXML
-    public void clearConnectors() {
-        activeSkinController.get().clearConnectors();
-    }
 
     @FXML
     public void setCecaSkin() {
-        activeSkinController.set(cecaSkinController);
+        if (cecaSkinController.equals(activeSkinController.get())){
+            return;
+        }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("WARNING");
+        alert.setHeaderText("Changing the mode of edited diagram");
+        alert.setContentText("Changing the mode of the currently edited diagram will clean current screen. \n Proceed regardless?");
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent()) {
+            if (result.get().equals(ButtonType.OK)){
+                activeSkinController.set(cecaSkinController);
+            }
+        }
+
     }
 
     @FXML
     public void setStateMachineSkinControler() {
-        activeSkinController.set(stateMachineController);
+        if (stateMachineController.equals(activeSkinController.get())){
+            return;
+        }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("WARNING");
+        alert.setHeaderText("Changing the mode of edited diagram");
+        alert.setContentText("Changing the mode of the currently edited diagram will clean current screen. \n Proceed regardless?");
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent()) {
+            if (result.get().equals(ButtonType.OK)){
+                activeSkinController.set(stateMachineController);
+            }
+        }
     }
 
     @FXML
@@ -315,18 +316,8 @@ public class CauseEffectChainEditorController {
 
         chainModel.getGraphEditor().getView().getTransforms().add(scaleTransform);
 
-        final ToggleGroup skinGroup = new ToggleGroup();
-        skinGroup.getToggles().addAll(cecaSkinButton, stateMachineSkinButton);
-
         final ToggleGroup connectionStyleGroup = new ToggleGroup();
         connectionStyleGroup.getToggles().addAll(gappedStyleButton, detouredStyleButton);
-
-        final ToggleGroup connectorTypeGroup = new ToggleGroup();
-        connectorTypeGroup.getToggles().addAll(inputConnectorTypeButton, outputConnectorTypeButton);
-
-        final ToggleGroup positionGroup = new ToggleGroup();
-        positionGroup.getToggles().addAll(leftConnectorPositionButton, rightConnectorPositionButton);
-        positionGroup.getToggles().addAll(topConnectorPositionButton, bottomConnectorPositionButton);
 
         chainModel.getGraphEditor().getProperties().gridVisibleProperty().bind(showGridButton.selectedProperty());
         chainModel.getGraphEditor().getProperties().snapToGridProperty().bind(snapToGridButton.selectedProperty());
@@ -334,11 +325,7 @@ public class CauseEffectChainEditorController {
         minimapButton.setGraphic(AwesomeIcon.MAP.node());
 
         initializeZoomOptions();
-
-        final ListChangeListener<? super GNode> selectedNodesListener = change -> checkConnectorButtonsToDisable();
-
-        chainModel.getGraphEditor().getSelectionManager().getSelectedNodes().addListener(selectedNodesListener);
-        checkConnectorButtonsToDisable();
+        checkTransformToDisable();
     }
 
     /**
@@ -348,12 +335,12 @@ public class CauseEffectChainEditorController {
 
         final ToggleGroup toggleGroup = new ToggleGroup();
 
-        for (int i = 1; i <= 5; i++) {
+        for (double i = 1; i <= 3; i=i+0.5) {
 
             final RadioMenuItem zoomOption = new RadioMenuItem();
-            final double zoomFactor = i;
+            final double zoomFactor = 1.0/i;
 
-            zoomOption.setText(i + "00%");
+            zoomOption.setText("x" + new BigDecimal(String.valueOf(1.0 / i)).setScale(3, BigDecimal.ROUND_HALF_UP));
             zoomOption.setOnAction(event -> setZoomFactor(zoomFactor));
 
             toggleGroup.getToggles().add(zoomOption);
@@ -405,20 +392,19 @@ public class CauseEffectChainEditorController {
      */
     private void handleActiveSkinControllerChange() {
 
+        clearAll();
+
         if (stateMachineController.equals(activeSkinController.get())) {
             chainModel.getGraphEditor().setConnectorValidator(new StateMachineConnectorValidator());
             chainModel.getGraphEditor().getSelectionManager().setConnectionSelectionPredicate(null);
-            stateMachineSkinButton.setSelected(true);
 
         } else {
             chainModel.getGraphEditor().setConnectorValidator(null);
             chainModel.getGraphEditor().getSelectionManager().setConnectionSelectionPredicate(null);
-            cecaSkinButton.setSelected(true);
         }
 
-        //clearAll();
         flushCommandStack();
-        checkConnectorButtonsToDisable();
+        checkTransformToDisable();
         chainModel.getGraphEditor().getSelectionManager().clearMemory();
     }
 
@@ -443,25 +429,15 @@ public class CauseEffectChainEditorController {
     /**
      * Checks if the connector buttons need disabling (e.g. because no nodes are selected).
      */
-    private void checkConnectorButtonsToDisable() {
 
-        final boolean nothingSelected = chainModel.getGraphEditor().getSelectionManager().getSelectedNodes().isEmpty();
+    private void checkTransformToDisable() {
 
-        if (nothingSelected) {
-            addConnectorButton.setDisable(true);
-            clearConnectorsButton.setDisable(true);
-            connectorTypeMenu.setDisable(false);
-            connectorPositionMenu.setDisable(false);
-        } else if (cecaSkinController.equals(activeSkinController.get())) {
-            addConnectorButton.setDisable(false);
-            clearConnectorsButton.setDisable(false);
-            connectorTypeMenu.setDisable(false);
-            connectorPositionMenu.setDisable(false);
+         if (cecaSkinController.equals(activeSkinController.get())) {
+             transformIntoCauseAction.setDisable(true);
+             transformIntoStateMachine.setDisable(false);
         } else {
-            addConnectorButton.setDisable(false);
-            clearConnectorsButton.setDisable(false);
-            connectorTypeMenu.setDisable(false);
-            connectorPositionMenu.setDisable(false);
+             transformIntoCauseAction.setDisable(false);
+             transformIntoStateMachine.setDisable(true);
         }
 
     }
@@ -480,22 +456,6 @@ public class CauseEffectChainEditorController {
     public CauseEffectChainModel getModel() {
         return this.chainModel;
     }
-    /**
-     * Gets the side corresponding to the currently selected connector position in the menu.
-     *
-     * @return the {@link Side} corresponding to the currently selected connector position
-     */
-    private Side getSelectedConnectorPosition() {
 
-        if (leftConnectorPositionButton.isSelected()) {
-            return Side.LEFT;
-        } else if (rightConnectorPositionButton.isSelected()) {
-            return Side.RIGHT;
-        } else if (topConnectorPositionButton.isSelected()) {
-            return Side.TOP;
-        } else {
-            return Side.BOTTOM;
-        }
-    }
 
 }

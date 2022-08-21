@@ -1,4 +1,4 @@
-package cause.effect.chain.editor.model.skins.StateActionModel;
+package cause.effect.chain.editor.model.skins.CauseActionModel;
 
 public class CecaDiagramConstants {
     public static final String CECA_NODE = "ceca-node";

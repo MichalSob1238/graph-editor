@@ -120,7 +120,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         final double width = Math.max(50, text.getLayoutBounds().getWidth());
         final double height = Math.max(20, text.getLayoutBounds().getHeight());
 
-        Font font = new Font("Arial", 17);
+        Font font = new Font("Arial", 11);
 
         title.setMinSize(width, height);
         title.setMaxSize(border.getWidth(), border.getHeight());

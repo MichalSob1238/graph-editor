@@ -1,9 +1,8 @@
-package cause.effect.chain.editor.model.skins.StateActionModel;
+package cause.effect.chain.editor.model.skins.CauseActionModel;
 
-import cause.effect.chain.editor.model.skins.StateActionModel.gateutils.AndGateShape;
-import cause.effect.chain.editor.model.skins.StateActionModel.gateutils.OrGateShape;
+import cause.effect.chain.editor.model.skins.CauseActionModel.gateutils.AndGateShape;
+import cause.effect.chain.editor.model.skins.CauseActionModel.gateutils.OrGateShape;
 import cause.effect.chain.editor.utils.NodeTraversalUtils;
-import com.jfoenix.controls.JFXTextField;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
@@ -12,7 +11,6 @@ import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -154,9 +152,9 @@ public class CecaDiagramGateSkin extends GNodeSkin {
                 }
         );
 
-        System.out.println("alert width: " + alert.getWidth());
+        //System.out.println("alert width: " + alert.getWidth());
         alert.setWidth(1200);
-        System.out.println("alert width: " + alert.getWidth());
+        //System.out.println("alert width: " + alert.getWidth());
 
         Optional<ButtonType> x = alert.showAndWait();
 
@@ -235,7 +233,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
         final double width = Math.max(50, text.getLayoutBounds().getWidth());
         final double height = Math.max(20, text.getLayoutBounds().getHeight());
 
-        Font font = new Font("Arial", 17);
+        Font font = new Font("Arial", 11);
 
         description.setMinSize(width, height);
         description.setMaxSize(border.getWidth(), border.getHeight());
@@ -253,6 +251,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
      */
     public CecaDiagramGateSkin(GNode node) {
         super(node);
+
         if (Objects.equals(subtype, "and")) {
             andGateShape.getBackground().translateXProperty().bind(getRoot().widthProperty().divide(-2.0).add(andGateShape.getBackground().widthProperty().divide(2.0)));
             andGateShape.getBackground().widthProperty().bind(getRoot().widthProperty().multiply(0.9));
@@ -285,10 +284,13 @@ public class CecaDiagramGateSkin extends GNodeSkin {
         description.setVisible(true);
         //description.setOnMouseClicked(doubleClickedListener);
         getRoot().getChildren().add(description);
+
         tooltip.setText("");
         getRoot().getChildren().forEach(mhm -> Tooltip.install(mhm, tooltip));
         getRoot().getChildren().forEach(mhm -> mhm.setOnMouseClicked(doubleClickedListener) );
-
+        getNode().setHeight(90);
+        getNode().setWidth(120);
+        getRoot().setMinSize(50, 50);
         background.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::filterMouseDragged);
 
         addSelectionHalo();

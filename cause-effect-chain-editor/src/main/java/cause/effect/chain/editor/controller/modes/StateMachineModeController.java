@@ -1,7 +1,6 @@
 package cause.effect.chain.editor.controller.modes;
 
 import cause.effect.chain.editor.model.CauseEffectChainModel;
-import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
 import cause.effect.chain.editor.model.skins.statemachine.StateMachineConnectorSkin;
 import cause.effect.chain.editor.model.skins.statemachine.StateMachineConstants;
 import cause.effect.chain.editor.model.skins.statemachine.StateMachineTailSkin;
