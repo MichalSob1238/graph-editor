@@ -318,7 +318,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
     private EventHandler<MouseEvent> getDoubleClickedListener() {
         return event -> {
             if (event.getButton().compareTo(MouseButton.SECONDARY) == 0) {
-                System.out.println("State Machine handling rightclick");
+                //System.out.println("State Machine handling rightclick");
                 showNodeInformation();
             } else if (event.getClickCount() >= 2) {
                 if (!isCorrect) {
@@ -342,7 +342,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
                     alert.showAndWait();
                 } else {
-                    System.out.println("State Machine handling doubleclick");
+                    //System.out.println("State Machine handling doubleclick");
 
                     ////System.out.println(getNode());
                     descriptionEditable.setPrefSize(-1, -1);
@@ -360,7 +360,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
                     boolean foc = requestFocusOrDieTrying(descriptionEditable);
                     descriptionEditable.focusedProperty().addListener((observable, oldValue, newValue) -> {
                         if (foc && !newValue) {
-                            System.out.println("in focused new value");
+                           // System.out.println("in focused new value");
                             getNode().setDescription(descriptionEditable.getText());
                             title.setText(descriptionEditable.getText());
                             getRoot().getChildren().remove(descriptionEditable);
@@ -508,7 +508,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
                 ActionEvent.ACTION,
                 action -> {
                     getNode().setDescription(descriptionLabel.getText());
-                    System.out.println("set description to " + descriptionLabel.getText());
+                    //System.out.println("set description to " + descriptionLabel.getText());
                     setDescription();
                 }
         );
@@ -539,9 +539,9 @@ public class StateMachineNodeSkin extends GNodeSkin {
         );
 
 
-        System.out.println("alert width: " + alert.getWidth());
+       // System.out.println("alert width: " + alert.getWidth());
         alert.setWidth(1200);
-        System.out.println("alert width: " + alert.getWidth());
+       // System.out.println("alert width: " + alert.getWidth());
 
         Optional<ButtonType> x = alert.showAndWait();
     }

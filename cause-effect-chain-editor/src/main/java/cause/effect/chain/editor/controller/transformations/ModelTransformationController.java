@@ -356,7 +356,7 @@ public class ModelTransformationController {
                     .filter(connector -> !connector.getConnections().isEmpty())
                     .collect(Collectors.toList()).get(0).getConnections().get(0).getDescription();
 
-            System.out.println("pre-warn was " + prevOutput + " post was " + nextInput);
+           // System.out.println("pre-warn was " + prevOutput + " post was " + nextInput);
 
             warnNode.getConnectors().stream()
                     .map(conctr -> conctr.getConnections().get(0))
@@ -368,26 +368,26 @@ public class ModelTransformationController {
     }
 
     public void beginTransformationIntoDiagram(GNode rootNode) {
-        System.out.println("Called begin transform into diagram on node " + rootNode);
+        //System.out.println("Called begin transform into diagram on node " + rootNode);
         List<GConnector> inputConnectors = rootNode.getConnectors().stream()
                 .filter(conector -> isInput(conector.getType()))
                 .filter(connector -> !connector.getConnections().isEmpty())
                 .collect(Collectors.toList());
 
-        System.out.println("found " + inputConnectors.size() + " input connectors");
+       // System.out.println("found " + inputConnectors.size() + " input connectors");
 
 
         if (inputConnectors.isEmpty()) {
-            System.out.println("trying to make root node " + rootNode);
+            //System.out.println("trying to make root node " + rootNode);
             rootNode.setType(CecaDiagramConstants.CECA_NODE);
             rootNode.setSubtype(CecaDiagramConstants.CAUSE_ACTION_ROOT);
             return;
         }
 
         if (inputConnectors.size() == 1) {
-            System.out.println("1");
-            System.out.println("output is " + inputConnectors.get(0).getConnections().get(0).getSource().getParent());
-            System.out.println("input is " + inputConnectors.get(0).getConnections().get(0).getTarget().getParent());
+            //System.out.println("1");
+            //System.out.println("output is " + inputConnectors.get(0).getConnections().get(0).getSource().getParent());
+           // System.out.println("input is " + inputConnectors.get(0).getConnections().get(0).getTarget().getParent());
             GNode predecessorNode = (GNode) inputConnectors.get(0).getConnections().get(0).getSource().getParent();
             String description = inputConnectors.get(0).getConnections().get(0).getDescription();
             procesPredecesorNode(rootNode, predecessorNode, description);
@@ -480,17 +480,17 @@ public class ModelTransformationController {
 
         final GConnector conditionNodeInput = conditionNode.getConnectors().stream().filter(connector -> isInput(connector.getType())).collect(Collectors.toList()).get(0);
         final GConnector conditionNodeOutput = conditionNode.getConnectors().stream().filter(connector -> !isInput(connector.getType())).collect(Collectors.toList()).get(0);
-        System.out.println("connectors: " + conditionNodeInput + "," + conditionNodeOutput);
+       // System.out.println("connectors: " + conditionNodeInput + "," + conditionNodeOutput);
 
         final GConnector output = stateMachineController.addConnector(predecessorNode, DefaultConnectorTypes.RIGHT_OUTPUT);
         final GConnector input = stateMachineController.addConnector(rootNode, DefaultConnectorTypes.LEFT_INPUT);
 
-        System.out.println("rootNode " + rootNode + " predecessorNode " + predecessorNode + "predecessorNode");
+        //System.out.println("rootNode " + rootNode + " predecessorNode " + predecessorNode + "predecessorNode");
 
         causeActionModeController.addConnection(output, conditionNodeInput);
-        System.out.println("adding connection between  " + (GNode) output.getParent() + " and " + (GNode) conditionNodeInput.getParent());
+        //System.out.println("adding connection between  " + (GNode) output.getParent() + " and " + (GNode) conditionNodeInput.getParent());
         causeActionModeController.addConnection(conditionNodeOutput, input);
-        System.out.println("adding connection between  " + (GNode) conditionNodeOutput.getParent() + " and " + (GNode) input.getParent());
+        //System.out.println("adding connection between  " + (GNode) conditionNodeOutput.getParent() + " and " + (GNode) input.getParent());
         predecessorNode.setType(CecaDiagramConstants.CECA_NODE);
         predecessorNode.setSubtype(CecaDiagramConstants.ACTION);
         beginTransformationIntoDiagram(predecessorNode);

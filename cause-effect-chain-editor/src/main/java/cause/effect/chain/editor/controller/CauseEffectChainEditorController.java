@@ -222,7 +222,7 @@ public class CauseEffectChainEditorController {
             }
 
         }
-        setStateMachineSkinControler();
+        activeSkinController.set(stateMachineController);
         modelTransformationController.transformIntoStateMachine();
         chainModel.getGraphEditor().getModel().getNodes().forEach(coherencyChecker::updateCorrectnesStatus);
         flushCommandStack();
@@ -251,6 +251,7 @@ public class CauseEffectChainEditorController {
 
         if (result.isPresent()) {
             if (result.get().equals(ButtonType.OK)){
+                clearAll();
                 activeSkinController.set(cecaSkinController);
             }
         }
@@ -270,6 +271,7 @@ public class CauseEffectChainEditorController {
 
         if (result.isPresent()) {
             if (result.get().equals(ButtonType.OK)){
+                clearAll();
                 activeSkinController.set(stateMachineController);
             }
         }
@@ -392,8 +394,6 @@ public class CauseEffectChainEditorController {
      */
     private void handleActiveSkinControllerChange() {
 
-        clearAll();
-
         if (stateMachineController.equals(activeSkinController.get())) {
             chainModel.getGraphEditor().setConnectorValidator(new StateMachineConnectorValidator());
             chainModel.getGraphEditor().getSelectionManager().setConnectionSelectionPredicate(null);
@@ -431,7 +431,7 @@ public class CauseEffectChainEditorController {
      */
 
     private void checkTransformToDisable() {
-        System.out.println("checking to disable, active is " + activeSkinController.get() + "and equals gives me" + cecaSkinController.equals(activeSkinController.get()) );
+        //System.out.println("checking to disable, active is " + activeSkinController.get() + "and equals gives me" + cecaSkinController.equals(activeSkinController.get()) );
 
          if (cecaSkinController.equals(activeSkinController.get())) {
              transformIntoCauseAction.setDisable(true);

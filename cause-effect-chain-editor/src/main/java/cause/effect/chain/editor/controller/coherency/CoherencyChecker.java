@@ -342,9 +342,9 @@ public class CoherencyChecker {
         //System.out.println("check initial state");
         for (GConnector connector : node.getConnectors()) {
             //TODO: check for null pointer error
-            System.out.println("check connector " + connector + " in initial state");
+            //System.out.println("check connector " + connector + " in initial state");
             for (GConnection connection : connector.getConnections()) {
-                System.out.println("check connection " + connection + " in initial state");
+                //System.out.println("check connection " + connection + " in initial state");
                 String targetNodeSubtype = NodeTraversalUtils.getTargetNode(connection).getSubtype();
                 //TODO: these cannot actually be null - you can use equals
                 if (Objects.equals(targetNodeSubtype, CecaDiagramConstants.CONDITION) || Objects.equals(targetNodeSubtype, "or")) {
