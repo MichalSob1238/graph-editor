@@ -6,8 +6,7 @@ import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
 import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants;
-import de.tesis.dynaware.grapheditor.model.GConnector;
-import de.tesis.dynaware.grapheditor.model.GNode;
+import de.tesis.dynaware.grapheditor.model.*;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -16,16 +15,14 @@ import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -37,6 +34,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
+import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.domain.EditingDomain;
 
 import javax.tools.Tool;
 import java.util.*;
@@ -80,13 +82,19 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
     private final List<GConnectorSkin> leftConnectorSkins = new ArrayList<>();
     private EventHandler<? super MouseEvent> doubleClickedListener = getDoubleClickedListener();
     private final List<String> issuesWithNode = new ArrayList<>();
-    public boolean isCorrect = true;
+    //public boolean isCorrect = false;
 
 
     public Tooltip tooltip = new Tooltip("");
 
     private EventHandler<MouseEvent> getDoubleClickedListener() {
         return event -> {
+            if (event.getButton().compareTo(MouseButton.SECONDARY) == 0)
+            {
+                System.out.println("State Machine handling rightclick");
+                showNodeInformation();
+            }
+            else
             if (event.getClickCount() >= 2) {
                 if (!isCorrect) {
                     Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -140,6 +148,99 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
             }
         };
     }
+
+    private void showNodeInformation() {
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        alert.setResizable(false);
+
+        alert.getDialogPane().setPrefSize(600, 400);
+        alert.getDialogPane().setMinSize(500, 300);
+
+        alert.setHeaderText("Information about the node:");
+
+        Label nodeType = new Label("Node type: Cause action perspective node");
+        Label nodeSubtype = new Label("Node subtype: " + getNode().getSubtype());
+
+        Label description = new Label("Description: ");
+        TextArea descriptionLabel = new TextArea();
+        descriptionLabel.setText(getNode().getDescription());
+
+
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(5, 5, 5, 60));
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        grid.add(nodeType, 0, 0, 1, 1);
+        grid.add(nodeSubtype, 0, 1, 1, 1);
+        grid.add(description, 0, 2, 1, 1);
+        grid.add(descriptionLabel, 0, 3, 2, 2);
+
+        alert.getDialogPane().setContent(grid);
+        alert.getDialogPane().resize(400, 400);
+        //alert.getDialogPane().getContent().prefWidth();
+        ButtonType buttonTypeOk = new ButtonType("OK", ButtonBar.ButtonData.LEFT);
+        ButtonType addOutputConnector = new ButtonType("Add Output Connector", ButtonBar.ButtonData.LEFT);
+        ButtonType clearConnectors = new ButtonType("Remove Empty Connectors", ButtonBar.ButtonData.LEFT);
+
+        alert.getDialogPane().getButtonTypes().add(buttonTypeOk);
+        alert.getDialogPane().getButtonTypes().add(addOutputConnector);
+        alert.getDialogPane().getButtonTypes().add(clearConnectors);
+
+        alert.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+
+        final Button btOk = (Button) alert.getDialogPane().lookupButton(buttonTypeOk);
+        final Button addOutputConnectorBtn = (Button) alert.getDialogPane().lookupButton(addOutputConnector);
+        final Button clearConnectorsBtn = (Button) alert.getDialogPane().lookupButton(clearConnectors);
+
+        btOk.addEventFilter(
+                ActionEvent.ACTION,
+                action -> {
+                    getNode().setDescription(descriptionLabel.getText());
+                    System.out.println("set description to " + descriptionLabel.getText());
+                    setDescription();
+                }
+        );
+
+        addOutputConnectorBtn.addEventFilter(
+                ActionEvent.ACTION,
+                action -> {
+                    addConnector(getNode(), DefaultConnectorTypes.RIGHT_OUTPUT);
+                    action.consume();
+                }
+        );
+
+        clearConnectorsBtn.addEventFilter(
+                ActionEvent.ACTION,
+                action -> {
+                    getNode().getConnectors().removeIf(connector -> connector.getConnections().isEmpty());
+                    getGraphEditor().reload();
+                    action.consume();
+                }
+        );
+
+        System.out.println("alert width: " + alert.getWidth());
+        alert.setWidth(1200);
+        System.out.println("alert width: " + alert.getWidth());
+
+        Optional<ButtonType> x = alert.showAndWait();
+
+    }
+
+    public GConnector addConnector(GNode node, String type) {
+        final GConnector connector = GraphFactory.eINSTANCE.createGConnector();
+        connector.setType(type);
+        final GModel model = getGraphEditor().getModel();
+        final CompoundCommand command = new CompoundCommand();
+        final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
+        final EReference connectors = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
+        command.append(AddCommand.create(editingDomain, node, connectors, connector));
+        if (command.canExecute()) {
+            editingDomain.getCommandStack().execute(command);
+        }
+        return connector;
+    }
+
     private boolean requestFocusOrDieTrying(Node node) {
         Platform.runLater(() -> {
             if (!node.isFocused()) {
@@ -148,14 +249,6 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
             }
         });
         return true;
-    }
-    private EventHandler<MouseEvent> changeToStateMachineListener() {
-        return event -> {
-            if (event.getClickCount() >= 2) {
-                getNode().setType(StateMachineConstants.STATE_MACHINE_NODE);
-                ((DefaultGraphEditor) getGraphEditor()).getController().setModel(getGraphEditor().getModel());
-            }
-        };
     }
 
     //TODO: customise
@@ -199,10 +292,10 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         background.setOnMouseClicked(doubleClickedListener);
         getRoot().getChildren().addAll(border, background);
         getRoot().getChildren().add(title);
+        getRoot().setMinSize(50, 50);
 
         tooltip.setShowDelay(Duration.seconds(1.0));
-        System.out.println(getNode().getDescription().length());
-        System.out.println(tooltip.getPrefWidth());
+
         tooltip.setWrapText(true);
         tooltip.setMaxWidth(200);
         tooltip.setMaxWidth(600);
@@ -214,9 +307,10 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
         title.setVisible(true);
         addSelectionHalo();
-        addErrorHalo();
         addSelectionListener();
         updateColour();
+
+        addErrorHalo();
         addInitialError();
     }
 
@@ -506,7 +600,6 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
             errorHalo.setWidth(border.getWidth() + 2 * HALO_OFFSET);
             errorHalo.setHeight(border.getHeight() + 2 * HALO_OFFSET);
-
             final double cornerLength = 2 * HALO_CORNER_SIZE;
             final double xGap = border.getWidth() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
             final double yGap = border.getHeight() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;

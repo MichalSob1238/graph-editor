@@ -63,7 +63,7 @@
 						<Menu text="Skin Type">
 							<items>
 								<RadioMenuItem fx:id="cecaSkinButton" text="CecaDiagram" onAction="#setCecaSkin"/>
-								<RadioMenuItem fx:id="stateMachineSkinButton" text="StateMachineDiagram" onAction="#setStateMachineSkin"/>
+								<RadioMenuItem fx:id="stateMachineSkinButton" text="StateMachineDiagram" onAction="#setStateMachineSkinControler"/>
 							</items>
 						</Menu>
 						<!-- Added blank spaces to force menu to be wider. -->

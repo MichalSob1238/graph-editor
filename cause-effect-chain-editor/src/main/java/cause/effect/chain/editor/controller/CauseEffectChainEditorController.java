@@ -4,16 +4,17 @@ import cause.effect.chain.editor.controller.modes.CauseActionModeController;
 import cause.effect.chain.editor.controller.modes.StateMachineModeController;
 import cause.effect.chain.editor.controller.transformations.ModelTransformationController;
 import cause.effect.chain.editor.model.CauseEffectChainModel;
+import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramNodeSkin;
+import cause.effect.chain.editor.model.skins.statemachine.StateMachineNodeSkin;
 import de.tesis.dynaware.grapheditor.*;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.connection.SimpleConnectionSkin;
 import cause.effect.chain.editor.controller.coherency.CoherencyChecker;
 import de.tesis.dynaware.grapheditor.demo.GraphEditorPersistence;
 import de.tesis.dynaware.grapheditor.demo.customskins.SkinController;
 import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CecaDiagramConstants;
-import de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConnectorValidator;
+import cause.effect.chain.editor.model.skins.statemachine.StateMachineConnectorValidator;
 import de.tesis.dynaware.grapheditor.demo.utils.AwesomeIcon;
 import de.tesis.dynaware.grapheditor.model.GNode;
-import de.tesis.dynaware.grapheditor.model.impl.GModelImpl;
 import de.tesis.dynaware.grapheditor.window.WindowPosition;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -27,7 +28,9 @@ import javafx.scene.transform.Scale;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CauseEffectChainEditorController {
 
@@ -130,6 +133,7 @@ public class CauseEffectChainEditorController {
     public void load() {
         graphEditorPersistence.loadFromFile(chainModel.getGraphEditor());
         checkSkinType();
+        chainModel.getGraphEditor().getModel().getNodes().forEach(coherencyChecker::updateCorrectnesStatus);
     }
 
     @FXML
@@ -199,15 +203,45 @@ public class CauseEffectChainEditorController {
 
     @FXML
     public void transformIntoDiagram() {
+        List<GNode> nodes = chainModel.getGraphEditor().getModel().getNodes();
+        List<StateMachineNodeSkin> skins = nodes.stream().map(node -> (StateMachineNodeSkin) chainModel.getGraphEditor().getSkinLookup().lookupNode(node)).collect(Collectors.toList());
+        for (StateMachineNodeSkin skin : skins) {
+            if (!skin.isCorrect) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Cannot convert");
+                alert.setHeaderText("Cannot convert");
+                alert.setContentText("Conversion was impossible due to errors in the model. Please fix them and try again");
+                alert.showAndWait();
+                return ;
+            }
+        }
         activeSkinController.set(cecaSkinController);
         modelTransformationController.transformIntoCauseActionDiagram();
+        chainModel.getGraphEditor().getModel().getNodes().forEach(coherencyChecker::updateCorrectnesStatus);
         flushCommandStack();
     }
 
     @FXML
     public void transformIntoStateMachine() {
-        setStateMachineSkin();
+        List<GNode> nodes = chainModel.getGraphEditor().getModel().getNodes();
+        List<GNodeSkin> skins = nodes.stream().map(node -> chainModel.getGraphEditor().getSkinLookup().lookupNode(node)).collect(Collectors.toList());
+        System.out.println("found " + skins.size() + skins);
+        for (GNodeSkin skin : skins) {
+            System.out.println("found " + skin + skin.isCorrect);
+            if (!skin.isCorrect) {
+                System.out.println("found incorrect skin: " + skin + skin.isCorrect);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Cannot convert");
+                alert.setHeaderText("Cannot convert");
+                alert.setContentText("Conversion was impossible due to errors in the model. Please fix them and try again");
+                alert.showAndWait();
+                return ;
+            }
+
+        }
+        setStateMachineSkinControler();
         modelTransformationController.transformIntoStateMachine();
+        chainModel.getGraphEditor().getModel().getNodes().forEach(coherencyChecker::updateCorrectnesStatus);
         flushCommandStack();
 //        ArrayList<GNode> list = new ArrayList<>(chainModel.getGraphEditor().getModel().getNodes());
 //        chainModel.getGraphEditor().getSkinManager().swapNodeSkin(list);
@@ -236,7 +270,7 @@ public class CauseEffectChainEditorController {
     }
 
     @FXML
-    public void setStateMachineSkin() {
+    public void setStateMachineSkinControler() {
         activeSkinController.set(stateMachineController);
     }
 

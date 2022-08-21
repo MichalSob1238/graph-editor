@@ -28,6 +28,7 @@ import de.tesis.dynaware.grapheditor.utils.ResizableBox;
 public abstract class GNodeSkin extends GSkin {
 
     private final GNode node;
+    public boolean isCorrect = true;
 
     private final ResizableBox root = new ResizableBox() {
 

@@ -130,8 +130,14 @@ public class StateMachineController implements SkinController{
         final GConnection connection = GraphFactory.eINSTANCE.createGConnection();
 
         connection.setType(StateMachineConstants.STATE_MACHINE_CONNECTION);
-        connection.setSource(source);
-        connection.setTarget(target);
+        if (source.getType().contains("output"))
+        {
+            connection.setSource(source);
+            connection.setTarget(target);
+        } else {
+            connection.setSource(target);
+            connection.setTarget(source);
+        }
         connection.setDescription(description);
 
         source.getConnections().add(connection);

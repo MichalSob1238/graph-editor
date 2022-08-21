@@ -10,10 +10,7 @@ import de.tesis.dynaware.grapheditor.model.GConnection;
 import de.tesis.dynaware.grapheditor.model.GConnector;
 import de.tesis.dynaware.grapheditor.model.GNode;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class CoherencyChecker {
 
@@ -50,13 +47,14 @@ public class CoherencyChecker {
         List<String> errorList = new ArrayList<>();
         int inputs = 0;
         boolean outputCondition = false;
+        String subtype = gate.getSubtype();
         for (GConnector connector : gate.getConnectors()) {
             if (NodeTraversalUtils.isInput(connector)) {
                 for (GConnection connection : connector.getConnections()) {
                     inputs++;
-                    GNode preceedingNode = NodeTraversalUtils.getTargetNode(connection);
-                    if (!Objects.equals(preceedingNode.getSubtype(), "action")) {
-                        errorList.add("Gate Node can only be preceeded by action nodes, currently one of the connections leads to " + preceedingNode.getSubtype() + " node");
+                    GNode preceedingNode = NodeTraversalUtils.getSourceNode(connection);
+                    if (!Objects.equals(preceedingNode.getSubtype(), "condition")) {
+                        errorList.add( subtype.toUpperCase(Locale.ROOT) + " gate can only be preceeded by condition nodes, currently one of the connections leads to " + preceedingNode.getSubtype() + " node");
                     }
                 }
             } else {
@@ -64,12 +62,81 @@ public class CoherencyChecker {
                     outputCondition = true;
                     GNode preceedingNode = NodeTraversalUtils.getTargetNode(connection);
                     String preceedingNodeSubtype = preceedingNode.getSubtype();
-                    if (Objects.equals(preceedingNodeSubtype, "action") || Objects.equals(preceedingNode.getType(), CecaDiagramConstants.GATE_NODE)) {
-                        errorList.add("Gate Node can only be leading to a disadvantage node, currently one of the connections leads to " + preceedingNodeSubtype + " node");
+                    switch (preceedingNodeSubtype) {
+                        case "action":
+                        case CecaDiagramConstants.TARGET_DISADVANTAGE:
+                        {
+                            break;
+                        }
+                        default: {
+                            errorList.add(subtype.toUpperCase(Locale.ROOT) + " gate can only be leading to a action or target disadvantage, currently one of the connections leads to " + preceedingNodeSubtype + " node");
+                        }
                     }
                 }
             }
         }
+
+
+//        if (subtype == "and") {
+//            for (GConnector connector : gate.getConnectors()) {
+//                if (NodeTraversalUtils.isInput(connector)) {
+//                    for (GConnection connection : connector.getConnections()) {
+//                        inputs++;
+//                        GNode preceedingNode = NodeTraversalUtils.getSourceNode(connection);
+//                        if (!Objects.equals(preceedingNode.getSubtype(), "condition")) {
+//                            errorList.add("AND gate can only be preceeded by condition nodes, currently one of the connections leads to " + preceedingNode.getSubtype() + " node");
+//                        }
+//                    }
+//                } else {
+//                    for (GConnection connection : connector.getConnections()) {
+//                        outputCondition = true;
+//                        GNode preceedingNode = NodeTraversalUtils.getTargetNode(connection);
+//                        String preceedingNodeSubtype = preceedingNode.getSubtype();
+//                        switch (preceedingNodeSubtype) {
+//                            case "action":
+//                            case CecaDiagramConstants.TARGET_DISADVANTAGE:
+//                            {
+//                                break;
+//                            }
+//                            default: {
+//                                errorList.add("AND gate can only be leading to a action or target disadvantage, currently one of the connections leads to " + preceedingNodeSubtype + " node");
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        } else
+//        {  List<String> precedingTypes = new ArrayList<>();
+//            for (GConnector connector : gate.getConnectors()) {
+//                if (NodeTraversalUtils.isInput(connector)) {
+//                    for (GConnection connection : connector.getConnections()) {
+//                        inputs++;
+//                        GNode preceedingNode = NodeTraversalUtils.getSourceNode(connection);
+//                        String preceedingNodeSubtype = preceedingNode.getSubtype();
+//                        precedingTypes.add(preceedingNodeSubtype);
+//                    }
+//                } else {
+//                    for (GConnection connection : connector.getConnections()) {
+//                        outputCondition = true;
+//                        GNode preceedingNode = NodeTraversalUtils.getTargetNode(connection);
+//                        String followingNodeSuptype = preceedingNode.getSubtype();
+//                        switch (followingNodeSuptype) {
+//                            case "condition":
+//                            {
+//                                if(precedingTypes.contains("condition") || precedingTypes.contains("and") || precedingTypes.contains("or")  )
+//                                    errorList.add("OR gate with condition on output cannot have condition or gate on inputs");
+//                                    break;
+//                            }
+//                            default: {
+//                                if(precedingTypes.contains("action") || precedingTypes.contains(CecaDiagramConstants.CAUSE_ACTION_ROOT) ||precedingTypes.contains("and") || precedingTypes.contains("or")  )
+//                                    errorList.add("OR gate with action on output cannot have action or gate on inputs");
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
         if (!(inputs > 1)) {
             errorList.add("Gate node must have at least 2 input connections");
         }
@@ -262,7 +329,7 @@ public class CoherencyChecker {
             for (GConnection connection : connector.getConnections()) {
                 String sourceNodeSubtype = NodeTraversalUtils.getSourceNode(connection).getSubtype();
                 //TODO: these cannot actually be null - you can use equals
-                if (Objects.equals(sourceNodeSubtype, CecaDiagramConstants.CONDITION) || Objects.equals(sourceNodeSubtype, "AND") || Objects.equals(sourceNodeSubtype, "OR")) {
+                if (Objects.equals(sourceNodeSubtype, CecaDiagramConstants.CONDITION) || Objects.equals(sourceNodeSubtype, "and") || Objects.equals(sourceNodeSubtype, "or")) {
                     return null;
                 }
             }
@@ -279,7 +346,7 @@ public class CoherencyChecker {
                 System.out.println("check connection " + connection + " in initial state");
                 String targetNodeSubtype = NodeTraversalUtils.getTargetNode(connection).getSubtype();
                 //TODO: these cannot actually be null - you can use equals
-                if (Objects.equals(targetNodeSubtype, CecaDiagramConstants.CONDITION) || Objects.equals(targetNodeSubtype, "OR")) {
+                if (Objects.equals(targetNodeSubtype, CecaDiagramConstants.CONDITION) || Objects.equals(targetNodeSubtype, "or")) {
                     return null;
                 }
             }

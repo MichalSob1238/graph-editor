@@ -2,27 +2,37 @@ package cause.effect.chain.editor.model.skins.StateActionModel;
 
 import cause.effect.chain.editor.model.skins.StateActionModel.gateutils.AndGateShape;
 import cause.effect.chain.editor.model.skins.StateActionModel.gateutils.OrGateShape;
+import cause.effect.chain.editor.utils.NodeTraversalUtils;
 import com.jfoenix.controls.JFXTextField;
 import de.tesis.dynaware.grapheditor.GConnectorSkin;
 import de.tesis.dynaware.grapheditor.GNodeSkin;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
-import de.tesis.dynaware.grapheditor.model.GConnector;
-import de.tesis.dynaware.grapheditor.model.GNode;
+import de.tesis.dynaware.grapheditor.model.*;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.css.PseudoClass;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
+import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.domain.EditingDomain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +54,11 @@ public class CecaDiagramGateSkin extends GNodeSkin {
     private final Rectangle background = new Rectangle();
 
     private final Label description = new Label();
+    private final Rectangle errorHalo = new Rectangle();
+    List<String> issuesWithNode = new ArrayList<>();
+
+
+    public Tooltip tooltip = new Tooltip("");
     private static final String STYLE_CLASS_BACKGROUND = "and-node-background";
     private static final String STYLE_CLASS_SELECTION_HALO = "default-node-selection-halo";
 
@@ -59,35 +74,158 @@ public class CecaDiagramGateSkin extends GNodeSkin {
 
     private static final PseudoClass PSEUDO_CLASS_SELECTED = PseudoClass.getPseudoClass("selected");
 
+    private void showNodeInformation() {
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        alert.setResizable(false);
+
+        alert.getDialogPane().setPrefSize(500, 300);
+        alert.getDialogPane().setMinSize(500, 300);
+
+        alert.setHeaderText("Information about the node:");
+
+        Label nodeType = new Label("Node type: Gate node");
+        Label nodeSubtype = new Label("Node subtype: " + getNode().getSubtype());
+
+
+
+        GridPane grid = new GridPane();
+       // grid.setPadding(new Insets(5, 5, 5, 60));
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        grid.add(nodeType, 0, 0, 1, 1);
+        grid.add(nodeSubtype, 0, 1, 1, 1);
+        if(!issuesWithNode.isEmpty()){
+            Label issuesWithNodeLabel = new Label("Issues with node:");
+            TextArea issuesText = new TextArea(String.join("\n", issuesWithNode));
+            grid.add(issuesWithNodeLabel,0,2);
+            grid.add(issuesText,0,3,2,2);
+        }
+
+
+        alert.getDialogPane().setContent(grid);
+        alert.getDialogPane().resize(400, 400);
+        //alert.getDialogPane().getContent().prefWidth();
+        ButtonType buttonTypeOk = new ButtonType("OK", ButtonBar.ButtonData.LEFT);
+        ButtonType addInputConnector = new ButtonType("Add inputs", ButtonBar.ButtonData.LEFT);
+        ButtonType clearConnectors = new ButtonType("Clean inputs", ButtonBar.ButtonData.LEFT);
+
+        alert.getDialogPane().getButtonTypes().add(buttonTypeOk);
+        alert.getDialogPane().getButtonTypes().add(addInputConnector);
+        alert.getDialogPane().getButtonTypes().add(clearConnectors);
+
+        alert.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+
+        final Button btOk = (Button) alert.getDialogPane().lookupButton(buttonTypeOk);
+        final Button addInputConnectorBtn = (Button) alert.getDialogPane().lookupButton(addInputConnector);
+        final Button clearConnectorsBtn = (Button) alert.getDialogPane().lookupButton(clearConnectors);
+
+
+        addInputConnectorBtn.addEventFilter(
+                ActionEvent.ACTION,
+                action -> {
+                    addConnector(getNode(), DefaultConnectorTypes.LEFT_INPUT);
+                    action.consume();
+                }
+        );
+
+        clearConnectorsBtn.addEventFilter(
+                ActionEvent.ACTION,
+                action -> {
+                    List<GConnector> cons = getNode().getConnectors();
+                    List<GConnector> consToRemove = new ArrayList<>();
+                    int counter = 0;
+                    for (GConnector conctr : cons) {
+                        if (NodeTraversalUtils.isInput(conctr)){
+                            counter++;
+                            if( conctr.getConnections().isEmpty())
+                            {
+                                consToRemove.add(conctr);
+                            }
+                        }
+                    }
+                    while (!consToRemove.isEmpty() && counter > 2) {
+                        getNode().getConnectors().remove(consToRemove.get(0));
+                        consToRemove.remove(0);
+                        counter--;
+                    }
+                    getGraphEditor().reload();
+                    action.consume();
+                }
+        );
+
+        System.out.println("alert width: " + alert.getWidth());
+        alert.setWidth(1200);
+        System.out.println("alert width: " + alert.getWidth());
+
+        Optional<ButtonType> x = alert.showAndWait();
+
+    }
+
+    private void addConnector(GNode node, String leftInput) {
+        final GConnector connector = GraphFactory.eINSTANCE.createGConnector();
+        connector.setType(leftInput);
+        final GModel model = getGraphEditor().getModel();
+        final CompoundCommand command = new CompoundCommand();
+        final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
+        final EReference connectors = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
+        command.append(AddCommand.create(editingDomain, node, connectors, connector));
+        if (command.canExecute()) {
+            editingDomain.getCommandStack().execute(command);
+        }
+    }
+
     private EventHandler<MouseEvent> getDoubleClickedListener() {
         return event -> {
-            if (event.getClickCount() >= 2) {
-                ////System.out.println("handling doubleclick");
-                JFXTextField descriptionEditable = new JFXTextField();
-                descriptionEditable.setPrefSize(-1, -1);
-                descriptionEditable.setMinSize(description.getWidth(), description.getHeight());
-                descriptionEditable.setMaxSize(background.getWidth(), background.getHeight());
-                descriptionEditable.setTranslateX(description.getTranslateX());
-                descriptionEditable.setTranslateY(description.getTranslateY());
-                descriptionEditable.setText(description.getText());
-                description.setVisible(false);
-                getRoot().getChildren().add(descriptionEditable);
-                if (getNode().getType() != null) {
-                    descriptionEditable.positionCaret(getNode().getDescription().length());
-                }
-                descriptionEditable.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                    if (!newValue) {
-                        getNode().setDescription(descriptionEditable.getText());
-                        description.setText(descriptionEditable.getText());
-                        getRoot().getChildren().remove(descriptionEditable);
-                        setDescription();
-                        description.setVisible(true);
-                    }
-                });
+            if (event.getButton().compareTo(MouseButton.SECONDARY) == 0) {
+                showNodeInformation();
             }
         };
     }
 
+    private void addErrorHalo() {
+        getRoot().getChildren().add(errorHalo);
+
+        errorHalo.setManaged(false);
+        errorHalo.setMouseTransparent(false);
+        errorHalo.setVisible(false);
+
+        errorHalo.setLayoutX(-HALO_OFFSET);
+        errorHalo.setLayoutY(-HALO_OFFSET);
+        errorHalo.getStyleClass().add("default-node-error-halo");
+    }
+
+    private void addInitialError() {
+        String subtype = getNode().getSubtype();
+        List<String> status = new ArrayList<>();
+        switch (subtype) {
+            case "and": {
+                status.add("AND gate must have at least two inputs from condition nodes.");
+                status.add("AND gate must have at least one output to an action or a target disadvantage.");
+                break;
+            }
+            case "or": {
+                status.add("OR gate must have at least two non-gate inputs.");
+                status.add("OR gate must have at least one non-gate output.");
+                break;
+            }
+        }
+        updateStatus(status);
+    }
+
+    public void layoutErrorHalo() {
+        if (errorHalo.isVisible()) {
+
+            errorHalo.setWidth(getRoot().getWidth() + 2 * HALO_OFFSET);
+            errorHalo.setHeight(getRoot().getHeight() + 2 * HALO_OFFSET);
+            final double cornerLength = 2 * HALO_CORNER_SIZE;
+            final double xGap = getRoot().getWidth() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
+            final double yGap = getRoot().getHeight() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
+
+            errorHalo.setStrokeDashOffset(-HALO_CORNER_SIZE);
+            errorHalo.getStrokeDashArray().setAll(yGap, cornerLength, xGap, cornerLength);
+        }
+    }
     //TODO: customise
     public void setDescription() {
         ////System.out.println("setting description");
@@ -145,13 +283,18 @@ public class CecaDiagramGateSkin extends GNodeSkin {
         ////System.out.println("setting description");
         description.setAlignment(Pos.CENTER);
         description.setVisible(true);
-        description.setOnMouseClicked(doubleClickedListener);
+        //description.setOnMouseClicked(doubleClickedListener);
         getRoot().getChildren().add(description);
+        tooltip.setText("");
+        getRoot().getChildren().forEach(mhm -> Tooltip.install(mhm, tooltip));
+        getRoot().getChildren().forEach(mhm -> mhm.setOnMouseClicked(doubleClickedListener) );
 
         background.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::filterMouseDragged);
 
         addSelectionHalo();
         addSelectionListener();
+        addErrorHalo();
+        addInitialError();
 
     }
 
@@ -268,6 +411,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
     public void layoutConnectors() {
         layoutAllConnectors();
         layoutSelectionHalo();
+        layoutErrorHalo();
 
     }
     private void layoutSelectionHalo() {
@@ -371,7 +515,24 @@ public class CecaDiagramGateSkin extends GNodeSkin {
 
     @Override
     public int updateStatus(List<String> status) {
-        return status.size();
+        if (status.isEmpty()) {
+            //System.out.println("true");
+            this.isCorrect = true;
+            this.issuesWithNode.clear();
+            errorHalo.setVisible(false);
+            tooltip.setShowDelay(Duration.seconds(1000));
+
+        } else {
+            this.isCorrect = false;
+            this.issuesWithNode.clear();
+            this.issuesWithNode.addAll(status);
+            errorHalo.setVisible(true);
+            layoutErrorHalo();
+            tooltip.setText(String.join("\n", issuesWithNode));
+            tooltip.setShowDelay(Duration.seconds(1));
+
+        }
+        return issuesWithNode.size();
     }
 
     private void filterMouseDragged(final MouseEvent event) {

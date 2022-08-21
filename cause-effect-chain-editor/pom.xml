@@ -81,12 +81,12 @@
                 <version>${maven.jar.plugin.version}</version>
                 <configuration>
                     <outputDirectory>${project.build.directory}/deploy</outputDirectory>
-                    <finalName>GraphEditorDemo</finalName>
+                    <finalName>CauseEffectChainEditor</finalName>
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
-                            <mainClass>de.tesis.dynaware.grapheditor.demo.GraphEditorDemo</mainClass>
+                            <mainClass>cause.effect.chain.editor.StarterClass</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

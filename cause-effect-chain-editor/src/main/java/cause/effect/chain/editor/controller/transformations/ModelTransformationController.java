@@ -2,14 +2,17 @@ package cause.effect.chain.editor.controller.transformations;
 
 import cause.effect.chain.editor.controller.modes.CauseActionModeController;
 import cause.effect.chain.editor.controller.modes.StateMachineModeController;
+import cause.effect.chain.editor.model.skins.statemachine.StateMachineConnectionSkin;
 import de.tesis.dynaware.grapheditor.GraphEditor;
 import de.tesis.dynaware.grapheditor.core.DefaultGraphEditor;
+import de.tesis.dynaware.grapheditor.core.connections.ConnectionCommands;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
 import de.tesis.dynaware.grapheditor.demo.customskins.NodeTraversalUtils;
 import de.tesis.dynaware.grapheditor.demo.customskins.ceca.diagram.CauseActionDiagramSubtypes;
 import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
 import cause.effect.chain.editor.model.skins.statemachine.StateMachineConstants;
 import de.tesis.dynaware.grapheditor.model.*;
+import javafx.scene.control.Alert;
 import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EReference;
@@ -68,7 +71,7 @@ public class ModelTransformationController {
 
     }
 
-    private void beginTransformationIntoStateMachine2(GNode rootNode){
+    private void beginTransformationIntoStateMachine2(GNode rootNode) {
         List<GConnector> outputConnectors = rootNode.getConnectors().stream()
                 .filter(conector -> !isInput(conector.getType()))
                 .filter(connector -> !connector.getConnections().isEmpty())
@@ -89,7 +92,7 @@ public class ModelTransformationController {
             case CecaDiagramConstants.CONDITION:
                 ////System.out.println("found condition");
                 graphEditor.getSkinLookup().lookupNode(targetNode).setSelected(true);
-                seekTargetAction(rootNode,targetNode);
+                seekTargetAction(rootNode, targetNode);
                 break;
             case "and":
                 ////System.out.println("IMPOSSIBLE");
@@ -106,6 +109,7 @@ public class ModelTransformationController {
         }
     }
 
+
     private void seekTargetAction(GNode rootNode, GNode targetNode) {
         ////System.out.println("found " + targetNode + " seekTargetAction ");
         String description = targetNode.getDescription();
@@ -113,7 +117,7 @@ public class ModelTransformationController {
                 .filter(conector -> !isInput(conector.getType()))
                 .filter(connector -> !connector.getConnections().isEmpty())
                 .collect(Collectors.toList());
-
+        List<String> gates = new ArrayList<>();
         outputConnectors.forEach(connector -> {
             seekAction(rootNode, NodeTraversalUtils.getTargetNode(connector), description);
         });
@@ -131,7 +135,7 @@ public class ModelTransformationController {
                 final GConnector input = stateMachineController.addConnector(targetNode, StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
 
                 stateMachineController.addStateMachineConnection(output, input, description);
-                if(!Objects.equals(targetNode.getType(), StateMachineConstants.STATE_MACHINE_NODE)) {
+                if (!Objects.equals(targetNode.getType(), StateMachineConstants.STATE_MACHINE_NODE)) {
                     List<GConnector> outputConnectors = targetNode.getConnectors().stream()
                             .filter(conector -> !isInput(conector.getType()))
                             .filter(connector -> !connector.getConnections().isEmpty())
@@ -141,8 +145,7 @@ public class ModelTransformationController {
                     targetNode.setType(StateMachineConstants.STATE_MACHINE_NODE);
                     if (type.equals(CecaDiagramConstants.ACTION)) {
                         targetNode.setSubtype(StateMachineConstants.INTERMEDIATE_DISADVANTAGE);
-                    } else
-                    {
+                    } else {
                         targetNode.setSubtype(StateMachineConstants.TARGET_DISADVANTAGE);
                     }
                 }
@@ -268,6 +271,13 @@ public class ModelTransformationController {
                 .filter(node -> node.getSubtype().equals(CauseActionDiagramSubtypes.TARGET_DISADVANTAGE))
                 .collect(Collectors.toList());
     }
+
+    private List<GNode> getWarnNodes() {
+        return graphEditor.getModel().getNodes().stream()
+                .filter(node -> node.getSubtype().equals(StateMachineConstants.WARN))
+                .collect(Collectors.toList());
+    }
+
     private List<GNode> getRootCauseNodes() {
         return graphEditor.getModel().getNodes().stream()
                 .filter(node -> node.getSubtype().equals(CecaDiagramConstants.CAUSE_ACTION_ROOT))
@@ -286,13 +296,30 @@ public class ModelTransformationController {
 
     public void transformIntoCauseActionDiagram() {
         graphEditor.getSelectionManager().clearSelection();
-        List<GNode> rootNodes = getNodesWithDescription3();
-
-        ////System.out.println("found " + rootNodes.size() + " root nodes");
-        rootNodes.forEach(this::beginTransformationIntoDiagram);
+        List<GNode> warnNodes = getWarnNodes();
+        removeWarnNodes(warnNodes);
+        List<GNode> mitigationNodes = getMitigationNodes();
+        removeMitigation(mitigationNodes);
+        graphEditor.getSelectionManager().deleteSelection();
+        List<GNode> rootNodes = getTargetDisadvantageNodes();
+        rootNodes.forEach(node -> {
+            node.setSubtype(CecaDiagramConstants.TARGET_DISADVANTAGE);
+            node.setType(CecaDiagramConstants.CECA_NODE);
+        });
+        System.out.println("found " + rootNodes.size() + " root nodes");
+        try {
+            rootNodes.forEach(this::beginTransformationIntoDiagram);
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error while transforming:");
+            alert.setHeaderText("An error occured when transforming");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+            return;
+        }
         graphEditor.getSelectionManager().deleteSelection();
         for (GNode node : graphEditor.getModel().getNodes()) {
-            List<GConnector> toremove =  node.getConnectors().stream().filter(connector -> connector.getConnections().isEmpty()).collect(Collectors.toList());
+            List<GConnector> toremove = node.getConnectors().stream().filter(connector -> connector.getConnections().isEmpty()).collect(Collectors.toList());
             final CompoundCommand command = new CompoundCommand();
             final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(graphEditor.getModel());
             command.append(RemoveCommand.create(editingDomain, node, NODE_CONNECTORS, toremove));
@@ -301,24 +328,68 @@ public class ModelTransformationController {
             }
         }
         graphEditor.reload();
+        ((DefaultGraphEditor) graphEditor).getController().setModel(graphEditor.getModel());
+    }
+
+    private void removeMitigation(List<GNode> mitigationNodes) {
+        mitigationNodes.stream().forEach(node -> graphEditor.getSkinLookup().lookupNode(node).setSelected(true));
+    }
+
+    private List<GNode> getMitigationNodes() {
+        return graphEditor.getModel().getNodes().stream()
+                .filter(node -> node.getSubtype().equals(StateMachineConstants.WARN) || node.getSubtype().equals(StateMachineConstants.MITIGATION))
+                .collect(Collectors.toList());
+    }
+
+    private void removeWarnNodes(List<GNode> warnNodes) {
+        for (GNode warnNode : warnNodes) {
+            GConnector prevOutput = warnNode.getConnectors().stream()
+                    .filter(conector -> isInput(conector.getType()))
+                    .filter(connector -> !connector.getConnections().isEmpty())
+                    .collect(Collectors.toList()).get(0).getConnections().get(0).getSource();
+
+            GConnector nextInput = warnNode.getConnectors().stream()
+                    .filter(conector -> !isInput(conector.getType()))
+                    .filter(connector -> !connector.getConnections().isEmpty())
+                    .collect(Collectors.toList()).get(0).getConnections().get(0).getTarget();
+
+            String description = warnNode.getConnectors().stream()
+                    .filter(conector -> !isInput(conector.getType()))
+                    .filter(connector -> !connector.getConnections().isEmpty())
+                    .collect(Collectors.toList()).get(0).getConnections().get(0).getDescription();
+
+            System.out.println("pre-warn was " + prevOutput + " post was " + nextInput);
+
+            warnNode.getConnectors().stream()
+                    .map(conctr -> conctr.getConnections().get(0))
+                    .forEach(conction -> ConnectionCommands.removeConnection(graphEditor.getModel(), conction));
+
+            stateMachineController.addStateMachineConnection(prevOutput, nextInput, description);
+
+        }
     }
 
     public void beginTransformationIntoDiagram(GNode rootNode) {
-        ////System.out.println("Called begin transform into diagram on node " + rootNode);
+        System.out.println("Called begin transform into diagram on node " + rootNode);
         List<GConnector> inputConnectors = rootNode.getConnectors().stream()
                 .filter(conector -> isInput(conector.getType()))
                 .filter(connector -> !connector.getConnections().isEmpty())
                 .collect(Collectors.toList());
 
-        ////System.out.println("found " + inputConnectors.size() + " input connectors");
+        System.out.println("found " + inputConnectors.size() + " input connectors");
+
 
         if (inputConnectors.isEmpty()) {
-            ////System.out.println("fucked up, somehow " + rootNode);
+            System.out.println("trying to make root node " + rootNode);
+            rootNode.setType(CecaDiagramConstants.CECA_NODE);
+            rootNode.setSubtype(CecaDiagramConstants.CAUSE_ACTION_ROOT);
             return;
         }
 
         if (inputConnectors.size() == 1) {
-            ////System.out.println("1");
+            System.out.println("1");
+            System.out.println("output is " + inputConnectors.get(0).getConnections().get(0).getSource().getParent());
+            System.out.println("input is " + inputConnectors.get(0).getConnections().get(0).getTarget().getParent());
             GNode predecessorNode = (GNode) inputConnectors.get(0).getConnections().get(0).getSource().getParent();
             String description = inputConnectors.get(0).getConnections().get(0).getDescription();
             procesPredecesorNode(rootNode, predecessorNode, description);
@@ -329,9 +400,11 @@ public class ModelTransformationController {
 
             List<GConnection> orConnections = new ArrayList<>();
             HashMap<List<String>, List<GConnection>> connectionsMap = new HashMap<>();
+
             inputConnectors.forEach(connector -> {
                 GConnection connection = connector.getConnections().get(0);
                 String description = connection.getDescription();
+
                 if (description.contains("&")) {
                     List<String> conditions = Arrays.stream(description.split("&")).map(String::trim).collect(Collectors.toList());
                     ////System.out.println("conditions + " + conditions);
@@ -400,22 +473,29 @@ public class ModelTransformationController {
 
     private void procesPredecesorNode(GNode rootNode, GNode predecessorNode, String description) {
         ////System.out.println("predecessorNode + " + predecessorNode);
-        final GNode actionNode = causeActionModeController.addNode((predecessorNode.getX() + rootNode.getX()) / 2.0, (predecessorNode.getY() + rootNode.getY()) / 2.0, description);
+        final GNode conditionNode = causeActionModeController.addConditionNode((predecessorNode.getX() + rootNode.getX()) / 2.0, (predecessorNode.getY() + rootNode.getY()) / 2.0, description);
 
-        actionNode.setDescription(description);
+        conditionNode.setDescription(description);
 
         final GModel model = graphEditor.getModel();
         //TODO: limit X so it doest go out of bounds
 
-        final GConnector actionNodeInput = actionNode.getConnectors().stream().filter(connector -> isInput(connector.getType())).collect(Collectors.toList()).get(0);
-        final GConnector actionNodeOutput = actionNode.getConnectors().stream().filter(connector -> !isInput(connector.getType())).collect(Collectors.toList()).get(0);
-
+        final GConnector conditionNodeInput = conditionNode.getConnectors().stream().filter(connector -> isInput(connector.getType())).collect(Collectors.toList()).get(0);
+        final GConnector conditionNodeOutput = conditionNode.getConnectors().stream().filter(connector -> !isInput(connector.getType())).collect(Collectors.toList()).get(0);
+        System.out.println("connectors: " + conditionNodeInput + "," + conditionNodeOutput);
 
         final GConnector output = stateMachineController.addConnector(predecessorNode, DefaultConnectorTypes.RIGHT_OUTPUT);
         final GConnector input = stateMachineController.addConnector(rootNode, DefaultConnectorTypes.LEFT_INPUT);
 
-        causeActionModeController.addConnection(output, actionNodeInput );
-        causeActionModeController.addConnection(actionNodeOutput, input);
+        System.out.println("rootNode " + rootNode + " predecessorNode " + predecessorNode + "predecessorNode");
+
+        causeActionModeController.addConnection(output, conditionNodeInput);
+        System.out.println("adding connection between  " + (GNode) output.getParent() + " and " + (GNode) conditionNodeInput.getParent());
+        causeActionModeController.addConnection(conditionNodeOutput, input);
+        System.out.println("adding connection between  " + (GNode) conditionNodeOutput.getParent() + " and " + (GNode) input.getParent());
+        predecessorNode.setType(CecaDiagramConstants.CECA_NODE);
+        predecessorNode.setSubtype(CecaDiagramConstants.ACTION);
+        beginTransformationIntoDiagram(predecessorNode);
 
     }
 }

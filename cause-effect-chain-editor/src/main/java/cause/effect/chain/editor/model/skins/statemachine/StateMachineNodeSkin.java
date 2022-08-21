@@ -15,7 +15,9 @@ import de.tesis.dynaware.grapheditor.utils.ResizableBox;
 import javafx.application.Platform;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -23,16 +25,16 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.edit.command.AddCommand;
@@ -59,6 +61,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
     private final Rectangle selectionHalo = new Rectangle();
     private final Rectangle background = new Rectangle();
+    private final Rectangle errorHalo = new Rectangle();
 
     private static final String STYLE_CLASS_BACKGROUND = "sm-node-background";
     private static final String STYLE_CLASS_SELECTION_HALO = "default-node-selection-halo";
@@ -75,14 +78,16 @@ public class StateMachineNodeSkin extends GNodeSkin {
     private static final EReference CONNECTIONS = GraphPackage.Literals.GMODEL__CONNECTIONS;
     private static final EReference CONNECTOR_CONNECTIONS = GraphPackage.Literals.GCONNECTOR__CONNECTIONS;
 
-    private static final Map<String , String> colours = new HashMap<String , String>() {{
-        put(StateMachineConstants.ROOT_CAUSE,  "#B2BEB5"  );
+    private static final Map<String, String> colours = new HashMap<String, String>() {{
+        put(StateMachineConstants.ROOT_CAUSE, "#B2BEB5");
         put(StateMachineConstants.TARGET_DISADVANTAGE, "#B2BEB5");
-        put(StateMachineConstants.INTERMEDIATE_DISADVANTAGE,   "#50C878");
+        put(StateMachineConstants.INTERMEDIATE_DISADVANTAGE, "#50C878");
+        put("mitigation", "#dbd514");
+        put ("warn","#dbd514");
     }};
 
     private final List<String> issuesWithNode = new ArrayList<>();
-    private boolean isCorrect = true;
+    //public boolean isCorrect = false;
 
     public Tooltip tooltip = new Tooltip("");
 
@@ -97,8 +102,6 @@ public class StateMachineNodeSkin extends GNodeSkin {
         super(node);
 
         getRoot().isCircle = true;
-        System.out.println(getRoot().getHeight() + ", " + getRoot().getWidth());
-        System.out.println(getRoot().getHeight() + ", " + getRoot().getWidth());
         border.widthProperty().bind(getRoot().widthProperty());
         border.heightProperty().bind(getRoot().heightProperty());
         background.widthProperty().bind(border.widthProperty().subtract(border.strokeWidthProperty().multiply(2)));
@@ -109,9 +112,23 @@ public class StateMachineNodeSkin extends GNodeSkin {
         title.setText(getNode().getDescription());
         ////System.out.println("setting title");
         title.setAlignment(Pos.CENTER);
+        title.setTextAlignment(TextAlignment.CENTER);
         title.setVisible(true);
         title.setOnMouseClicked(doubleClickedListener);
+        background.setOnMouseClicked(doubleClickedListener);
+        Font font = new Font("Arial", 17);
+        title.setFont(font);
+        title.setWrapText(true);
+
         getRoot().getChildren().add(title);
+        tooltip.setShowDelay(Duration.seconds(1.0));
+        tooltip.setWrapText(true);
+        tooltip.setMaxWidth(200);
+        tooltip.setMaxWidth(600);
+        Font font2 = new Font("Arial", 13);
+        tooltip.setFont(font2);
+
+        getRoot().getChildren().forEach(mhm -> Tooltip.install(mhm, tooltip));
 
         background.getStyleClass().setAll(STYLE_CLASS_BACKGROUND);
         border.getStyleClass().setAll(STYLE_CLASS_BORDER);
@@ -120,6 +137,56 @@ public class StateMachineNodeSkin extends GNodeSkin {
         addSelectionHalo();
         addSelectionListener();
         updateColour();
+
+        addErrorHalo();
+        addInitialError();
+    }
+
+    private void addErrorHalo() {
+        getRoot().getChildren().add(errorHalo);
+
+        errorHalo.setManaged(false);
+        errorHalo.setMouseTransparent(false);
+        errorHalo.setVisible(false);
+
+        errorHalo.setLayoutX(-HALO_OFFSET);
+        errorHalo.setLayoutY(-HALO_OFFSET);
+        errorHalo.getStyleClass().add("default-node-error-halo");
+    }
+
+    private void addInitialError() {
+        String subtype = getNode().getSubtype();
+        List<String> status = new ArrayList<>();
+        switch (subtype) {
+            case StateMachineConstants.INTERMEDIATE_DISADVANTAGE: {
+                status.add("Intermediate disadvantage node must have at least one input.");
+                status.add("Intermediate disadvantage node must have at least one output.");
+                break;
+            }
+            case StateMachineConstants.ROOT_CAUSE: {
+                status.add("Root Cause node must have at least one output.");
+                break;
+            }
+            case StateMachineConstants.TARGET_DISADVANTAGE: {
+                status.add("Target disadvantage node must have at least one input.");
+                break;
+            }
+        }
+        updateStatus(status);
+    }
+
+    public void layoutErrorHalo() {
+        if (errorHalo.isVisible()) {
+
+            errorHalo.setWidth(border.getWidth() + 2 * HALO_OFFSET);
+            errorHalo.setHeight(border.getHeight() + 2 * HALO_OFFSET);
+            final double cornerLength = 2 * HALO_CORNER_SIZE;
+            final double xGap = border.getWidth() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
+            final double yGap = border.getHeight() - 2 * HALO_CORNER_SIZE + 2 * HALO_OFFSET;
+
+            errorHalo.setStrokeDashOffset(-HALO_CORNER_SIZE);
+            errorHalo.getStrokeDashArray().setAll(yGap, cornerLength, xGap, cornerLength);
+        }
     }
 
 
@@ -142,6 +209,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
     public void layoutConnectors() {
         layoutAllConnectors();
         layoutSelectionHalo();
+        layoutErrorHalo();
 
     }
 
@@ -233,6 +301,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
             }
         }
     }
+
     private double getMinorOffsetX(final GConnector connector) {
 
         final String type = connector.getType();
@@ -257,145 +326,233 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
     private EventHandler<MouseEvent> getDoubleClickedListener() {
         return event -> {
-            if (event.getClickCount() >= 2) {
-                System.out.println("State Machine handling doubleclick");
+            if (event.getButton().compareTo(MouseButton.SECONDARY) == 0) {
+                System.out.println("State Machine handling rightclick");
                 showNodeInformation();
+            } else if (event.getClickCount() >= 2) {
+                if (!isCorrect) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Issues with the node detected ");
+                    alert.setHeaderText("Node has the following issues that prevent the model from being legal");
 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Node Status");
-                alert.setHeaderText("Node has the following issues that prevent the model from being legal");
-
-                Label label1 = new Label("Name: ");
-               TextField text1 = new TextField();
-                TextField text2 = new TextField();
-
-                GridPane grid = new GridPane();
-                grid.add(label1, 1, 1);
-                grid.add(text1, 2, 1);
-                grid.add(text2, 2, 2);
-                alert.getDialogPane().setContent(grid);
-                ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
-                alert.getDialogPane().getButtonTypes().add(buttonTypeOk);
-
-
-                System.out.println("handling doubleclick SM node");
-                ////System.out.println(getNode());
-                descriptionEditable.setPrefSize(-1, -1);
-                descriptionEditable.setMinSize(title.getWidth(), title.getHeight());
-                descriptionEditable.setMaxSize(background.getWidth(), background.getHeight());
-                descriptionEditable.setTranslateX(title.getTranslateX());
-                descriptionEditable.setTranslateY(title.getTranslateY());
-                descriptionEditable.setText(title.getText());
-                title.setVisible(false);
-                getRoot().getChildren().add(descriptionEditable);
-                descriptionEditable.selectAll();
-                Font font = new Font("Arial", 17);
-                descriptionEditable.setFont(font);
-
-                boolean foc = requestFocusOrDieTrying(descriptionEditable);
-                descriptionEditable.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                    if (foc &&!newValue) {
-                        System.out.println("in focused new value");
-                        getNode().setDescription(descriptionEditable.getText());
-                        title.setText(descriptionEditable.getText());
-                        getRoot().getChildren().remove(descriptionEditable);
-                        setDescription();
-                        tooltip.setText(descriptionEditable.getText());
-                        title.setVisible(true);
+                    TextArea textArea = new TextArea();
+                    for (String issue : issuesWithNode) {
+                        textArea.appendText(issue + ".\n");
                     }
-                });
+                    textArea.setEditable(false);
+                    textArea.setWrapText(true);
+
+                    textArea.setMaxWidth(Double.MAX_VALUE);
+                    textArea.setMaxHeight(Double.MAX_VALUE);
+                    GridPane.setVgrow(textArea, Priority.ALWAYS);
+                    GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+                    alert.getDialogPane().setContent(textArea);
+
+                    alert.showAndWait();
+                } else {
+                    System.out.println("State Machine handling doubleclick");
+
+                    ////System.out.println(getNode());
+                    descriptionEditable.setPrefSize(-1, -1);
+                    descriptionEditable.setMinSize(title.getWidth(), title.getHeight());
+                    descriptionEditable.setMaxSize(background.getWidth(), background.getHeight());
+                    descriptionEditable.setTranslateX(title.getTranslateX());
+                    descriptionEditable.setTranslateY(title.getTranslateY());
+                    descriptionEditable.setText(title.getText());
+                    title.setVisible(false);
+                    getRoot().getChildren().add(descriptionEditable);
+                    descriptionEditable.selectAll();
+                    Font font = new Font("Arial", 17);
+                    descriptionEditable.setFont(font);
+
+                    boolean foc = requestFocusOrDieTrying(descriptionEditable);
+                    descriptionEditable.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                        if (foc && !newValue) {
+                            System.out.println("in focused new value");
+                            getNode().setDescription(descriptionEditable.getText());
+                            title.setText(descriptionEditable.getText());
+                            getRoot().getChildren().remove(descriptionEditable);
+                            setDescription();
+                            tooltip.setText(descriptionEditable.getText());
+                            title.setVisible(true);
+                        }
+                    });
+                }
             }
         };
     }
 
     private void showNodeInformation() {
 
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        alert.setResizable(false);
+
+        alert.getDialogPane().setPrefSize(600, 400);
+        alert.getDialogPane().setMinSize(500, 300);
+
+        alert.setHeaderText("Information about the node:");
+
+        Label nodeType = new Label("Node type: State machine node");
+        Label nodeSubtype = new Label("Node subtype: " + getNode().getSubtype());
+
+        Label description = new Label("Description: ");
+        TextArea descriptionLabel = new TextArea();
+        descriptionLabel.setText(getNode().getDescription());
+
+
         GridPane grid = new GridPane();
-        Label label1 = new Label("Description: ");
-        TextField text1 = new TextField();
-        grid.add(label1, 1, 1);
-        grid.add(text1, 2, 1);
-        Button avoid = new Button("avoid");
-        Button warn = new Button("warn");
+        grid.setPadding(new Insets(5, 5, 5, 60));
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        grid.add(nodeType, 0, 0, 1, 1);
+        grid.add(nodeSubtype, 0, 1, 1, 1);
+        grid.add(description, 0, 2, 1, 1);
+        grid.add(descriptionLabel, 0, 3, 2, 2);
+
+        Label mitigation = new Label("Mitigation strategies:");
+
+        Button avoid = new Button("Avoid");
+        Button warn = new Button("Warn");
         Button counteract = new Button("Counteract");
-        warn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                Stage stage = (Stage) warn.getScene().getWindow();
-                stage.close();
-                handleWarnButton();
-            }
+        warn.setOnAction(e -> {
+            Stage stage = (Stage) warn.getScene().getWindow();
+            stage.close();
+            handleWarnButton();
         });
 
-        avoid.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                final GNode node = GraphFactory.eINSTANCE.createGNode();
-                node.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_NODE);
-                node.setY(getRoot().getLayoutY() + 50);
+        avoid.setOnAction(e -> {
+            final GNode node = GraphFactory.eINSTANCE.createGNode();
+            node.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_NODE);
+            node.setSubtype("mitigation");
+            node.setY(getRoot().getLayoutY() - 80);
 
-                node.setX(getRoot().getLayoutX() + getRoot().getWidth() + 10);
-                node.setId(allocateNewId());
+            node.setX(getRoot().getLayoutX() + getRoot().getWidth() + 10);
+            node.setId(allocateNewId());
 
-                final GConnector input = GraphFactory.eINSTANCE.createGConnector();
-                input.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
-                node.getConnectors().add(input);
-                final GConnector output = GraphFactory.eINSTANCE.createGConnector();
-                output.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
-                getNode().getConnectors().add(output);
+            final GConnector input = GraphFactory.eINSTANCE.createGConnector();
+            input.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
+            node.getConnectors().add(input);
+            final GConnector output = GraphFactory.eINSTANCE.createGConnector();
+            output.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
+            getNode().getConnectors().add(output);
 
-                node.setDescription("avoid state description");
+            node.setDescription("avoid state description");
 
-                Commands.addNode(getGraphEditor().getModel(), node);
-                ////System.out.println("created avoid node" + node);
-                ////System.out.println("alert node connectors: + " + node.getConnectors() );
+            Commands.addNode(getGraphEditor().getModel(), node);
+            ////System.out.println("created avoid node" + node);
+            ////System.out.println("alert node connectors: + " + node.getConnectors() );
 
-                addStateMachineConnection(output,input, "avoidance");
+            addStateMachineConnection(output, input, "avoidance");
 
-            }
         });
 
-        counteract.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                final GNode node = GraphFactory.eINSTANCE.createGNode();
-                node.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_NODE);
-                node.setY(getRoot().getLayoutY() + 50);
+        counteract.setOnAction(e -> {
+            final GNode node = GraphFactory.eINSTANCE.createGNode();
+            node.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_NODE);
+            node.setSubtype("mitigation");
+            node.setY(getRoot().getLayoutY() - 70);
 
-                node.setX(getRoot().getLayoutX());
-                node.setId(allocateNewId());
+            node.setX(getRoot().getLayoutX());
+            node.setId(allocateNewId());
 
-                final GConnector input = GraphFactory.eINSTANCE.createGConnector();
-                input.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_BOTTOM_INPUT_CONNECTOR);
-                node.getConnectors().add(input);
-                final GConnector output = GraphFactory.eINSTANCE.createGConnector();
-                output.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_BOTTOM_OUTPUT_CONNECTOR);
-                node.getConnectors().add(output);
+            final GConnector input = GraphFactory.eINSTANCE.createGConnector();
+            input.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_BOTTOM_INPUT_CONNECTOR);
+            node.getConnectors().add(input);
+            final GConnector output = GraphFactory.eINSTANCE.createGConnector();
+            output.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_BOTTOM_OUTPUT_CONNECTOR);
+            node.getConnectors().add(output);
 
 
-                final GConnector rootOutput = GraphFactory.eINSTANCE.createGConnector();
-                rootOutput.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_TOP_OUTPUT_CONNECTOR);
-                getNode().getConnectors().add(rootOutput);
-                final GConnector rootInput = GraphFactory.eINSTANCE.createGConnector();
-                rootInput.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_TOP_INPUT_CONNECTOR);
-                getNode().getConnectors().add(rootInput);
-                node.setDescription("avoid state description");
+            final GConnector rootOutput = GraphFactory.eINSTANCE.createGConnector();
+            rootOutput.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_TOP_OUTPUT_CONNECTOR);
+            getNode().getConnectors().add(rootOutput);
+            final GConnector rootInput = GraphFactory.eINSTANCE.createGConnector();
+            rootInput.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_TOP_INPUT_CONNECTOR);
+            getNode().getConnectors().add(rootInput);
+            node.setDescription("avoid state description");
 
-                Commands.addNode(getGraphEditor().getModel(), node);
-                ////System.out.println("created counteract node" + node);
-                ////System.out.println("alert node connectors: + " + node.getConnectors() );
+            Commands.addNode(getGraphEditor().getModel(), node);
+            ////System.out.println("created counteract node" + node);
+            ////System.out.println("alert node connectors: + " + node.getConnectors() );
 
-                addStateMachineConnection(output, rootInput,"conteract");
-                addStateMachineConnection(rootOutput,input, "conteract");
-            }
+            addStateMachineConnection(output, rootInput, "conteract");
+            addStateMachineConnection(rootOutput, input, "conteract");
         });
+        GridPane innerGrid = new GridPane();
+        innerGrid.setVgap(5);
+        innerGrid.setHgap(5);
+        grid.add(mitigation, 0, 5);
+        innerGrid.add(avoid, 0, 0);
+        innerGrid.add(warn, 1, 0);
+        innerGrid.add(counteract, 2, 0);
+        grid.add(innerGrid, 1, 5, 2, 1);
+        GridPane.setFillWidth(innerGrid, true);
+        GridPane.setFillWidth(descriptionLabel, true);
 
-        grid.add(avoid,1,2);
-        grid.add(warn,2,2);
-        grid.add(counteract,3,2);
+        alert.getDialogPane().setContent(grid);
+        alert.getDialogPane().resize(400, 400);
+        //alert.getDialogPane().getContent().prefWidth();
+        ButtonType buttonTypeOk = new ButtonType("OK", ButtonBar.ButtonData.LEFT);
+        ButtonType addInputConnector = new ButtonType("Add Input Connector", ButtonBar.ButtonData.LEFT);
+        ButtonType addOutputConnector = new ButtonType("Add Output Connector", ButtonBar.ButtonData.LEFT);
+        ButtonType clearConnectors = new ButtonType("Remove Empty Connectors", ButtonBar.ButtonData.LEFT);
 
-        Scene scene = new Scene(grid);
-        Stage stage = new Stage();
-        stage.setScene(scene);
 
-        stage.showAndWait();
+
+        alert.getDialogPane().getButtonTypes().add(buttonTypeOk);
+        alert.getDialogPane().getButtonTypes().add(addOutputConnector);
+        alert.getDialogPane().getButtonTypes().add(clearConnectors);
+        alert.getDialogPane().getButtonTypes().add(addInputConnector);
+
+
+        alert.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+        final Button btOk = (Button) alert.getDialogPane().lookupButton(buttonTypeOk);
+        final Button addOutputConnectorBtn = (Button) alert.getDialogPane().lookupButton(addOutputConnector);
+        final Button addInputConnectorBtn = (Button) alert.getDialogPane().lookupButton(addInputConnector);
+        final Button clearConnectorsBtn = (Button) alert.getDialogPane().lookupButton(clearConnectors);
+
+        btOk.addEventFilter(
+                ActionEvent.ACTION,
+                action -> {
+                    getNode().setDescription(descriptionLabel.getText());
+                    System.out.println("set description to " + descriptionLabel.getText());
+                    setDescription();
+                }
+        );
+
+        addInputConnectorBtn.addEventFilter(
+                ActionEvent.ACTION,
+                action -> {
+                    addStateMachineConnector(getNode(), StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
+                    action.consume();
+                }
+        );
+
+        addOutputConnectorBtn.addEventFilter(
+                ActionEvent.ACTION,
+                action -> {
+                    addStateMachineConnector(getNode(), StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
+                    action.consume();
+                }
+        );
+
+        clearConnectorsBtn.addEventFilter(
+                ActionEvent.ACTION,
+                action -> {
+                    getNode().getConnectors().removeIf(connector -> connector.getConnections().isEmpty());
+                    getGraphEditor().reload();
+                    action.consume();
+                }
+        );
+
+
+        System.out.println("alert width: " + alert.getWidth());
+        alert.setWidth(1200);
+        System.out.println("alert width: " + alert.getWidth());
+
+        Optional<ButtonType> x = alert.showAndWait();
     }
 
     private void handleWarnButton() {
@@ -405,34 +562,44 @@ public class StateMachineNodeSkin extends GNodeSkin {
                 .map(con -> con.get(0))
                 .collect(Collectors.toList());
 
-        List<String> descriptions = inputConnections.stream().map(GConnection::getDescription).collect(Collectors.toList());
-
-        ChoiceDialog dialog = new ChoiceDialog(descriptions.get(0),descriptions);
+        List<String> descriptions = inputConnections.stream().map(GConnection::getDescription).filter(desc -> !Objects.equals(desc,"")).collect(Collectors.toList());
+        if (descriptions.stream().allMatch(des -> Objects.equals(des, "")))
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setHeaderText("No connections to node");
+            alert.setContentText("To add a warning strategy to a node, it must have at least one predecessor with a described conenction");
+            alert.setResizable(true);
+            alert.showAndWait();
+            return;
+        }
+        ChoiceDialog dialog = new ChoiceDialog(descriptions.get(0), descriptions);
         dialog.setTitle("Chose which transition to warn of");
         dialog.setHeaderText("Select your choice");
+        dialog.setResizable(true);
         Optional<String> result = dialog.showAndWait();
-        String selected = descriptions.get(0);
+        String selected;
 
         if (result.isPresent()) {
-
             selected = result.get();
+            int i = 0;
+            while (i < inputConnections.size()) {
+                GConnection selectedCon = inputConnections.get(i);
+                if (Objects.equals(selectedCon.getDescription(), selected)) {
+                    addAlertState(selected, selectedCon);
+                    break;
+                }
+                ++i;
+            }
         }
         ////System.out.println("connection selected: " + selected);
-        int i = 0;
-        while (i < inputConnections.size()) {
-            GConnection selectedCon = inputConnections.get(i);
-            if (Objects.equals(selectedCon.getDescription(), selected))
-            {
-                addAlertState(selected, selectedCon);
-                break;
-            }
-            ++i;
-        }
+
     }
 
     private void addAlertState(String selected, GConnection selectedCon) {
         final GNode node = GraphFactory.eINSTANCE.createGNode();
         node.setType(de.tesis.dynaware.grapheditor.demo.customskins.state.machine.StateMachineConstants.STATE_MACHINE_NODE);
+        node.setSubtype("warn");
         node.setY(getRoot().getLayoutY());
 
         node.setX(getRoot().getLayoutX() - getRoot().getWidth() - 10);
@@ -447,7 +614,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
         node.getConnectors().add(output);
 
 
-        node.setDescription("alert state description");
+        node.setDescription("alert state");
 
         Commands.addNode(getGraphEditor().getModel(), node);
         ////System.out.println("created alert node" + node);
@@ -458,8 +625,8 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
         ConnectionCommands.removeConnection(getGraphEditor().getModel(), selectedCon);
 
-        addStateMachineConnection(output,targetConnector, selected);
-        addStateMachineConnection(sourceConnector,input, selected);
+        addStateMachineConnection(output, targetConnector, selected);
+        addStateMachineConnection(sourceConnector, input, selected);
         return;
     }
 
@@ -488,22 +655,16 @@ public class StateMachineNodeSkin extends GNodeSkin {
         }
         return connector;
     }
-    
+
     //TODO: customise
     public void setDescription() {
         ////System.out.println("setting description");
-        final Text text = new Text(getNode().getDescription());
-        new Scene(new Group(text));
-        text.applyCss();
-        final double width = Math.max(50, text.getLayoutBounds().getWidth());
-        final double height = Math.max(20, text.getLayoutBounds().getHeight());
-
         Font font = new Font("Arial", 17);
 
-        title.setMinSize(width, height);
         title.setMaxSize(border.getWidth(), border.getHeight());
         title.setTextAlignment(TextAlignment.CENTER);
-        title.resize(border.getWidth(),border.getHeight());
+        title.setWrapText(true);
+
         title.setText(Optional.ofNullable(getNode().getDescription()).orElse("!!"));
         title.setFont(font);
     }
@@ -578,7 +739,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
     }
 
     @Override
-    public Point2D getConnectorPosition(GConnectorSkin connectorSkin){
+    public Point2D getConnectorPosition(GConnectorSkin connectorSkin) {
         final Node connectorRoot = connectorSkin.getRoot();
 
         final Side side = DefaultConnectorTypes.getSide(connectorSkin.getConnector().getType());
@@ -610,13 +771,16 @@ public class StateMachineNodeSkin extends GNodeSkin {
             this.background.setStyle("-fx-fill:" + colours.get(getNode().getSubtype()) + ";");
             this.isCorrect = true;
             this.issuesWithNode.clear();
+            errorHalo.setVisible(false);
+            tooltip.setText(getNode().getDescription());
 
         } else {
-            //System.out.println("false  status");
-            this.background.setStyle("-fx-fill:#FF4500;");
             this.isCorrect = false;
             this.issuesWithNode.clear();
             this.issuesWithNode.addAll(status);
+            errorHalo.setVisible(true);
+            layoutErrorHalo();
+            tooltip.setText(String.join("\n", issuesWithNode));
         }
         return status.size();
     }

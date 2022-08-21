@@ -14,4 +14,6 @@ public class StateMachineConstants {
     public static final String ROOT_CAUSE = "root-cause";
     public static final String INTERMEDIATE_DISADVANTAGE = "intermediate-disadvantage";
     public static final String TARGET_DISADVANTAGE = "target-disadvantage";
+    public static final String WARN = "warn";
+    public static final String MITIGATION = "mitigation";
 }

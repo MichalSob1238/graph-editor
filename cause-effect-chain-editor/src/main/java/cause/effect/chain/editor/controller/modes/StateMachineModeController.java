@@ -1,18 +1,31 @@
 package cause.effect.chain.editor.controller.modes;
 
 import cause.effect.chain.editor.model.CauseEffectChainModel;
+import cause.effect.chain.editor.model.skins.StateActionModel.CecaDiagramConstants;
+import cause.effect.chain.editor.model.skins.statemachine.StateMachineConnectorSkin;
+import cause.effect.chain.editor.model.skins.statemachine.StateMachineConstants;
+import cause.effect.chain.editor.model.skins.statemachine.StateMachineTailSkin;
 import de.tesis.dynaware.grapheditor.GraphEditorContainer;
 import de.tesis.dynaware.grapheditor.core.skins.defaults.utils.DefaultConnectorTypes;
 import de.tesis.dynaware.grapheditor.demo.customskins.SkinController;
-import cause.effect.chain.editor.model.skins.statemachine.*;
+import cause.effect.chain.editor.model.skins.statemachine.StateMachineNodeSkin;
+import cause.effect.chain.editor.model.skins.statemachine.StateMachineConnectionSkin;
 import de.tesis.dynaware.grapheditor.model.*;
 import javafx.geometry.Side;
+import javafx.scene.control.ChoiceDialog;
 import org.eclipse.emf.ecore.EReference;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 public class StateMachineModeController implements SkinController {
 
     private final CauseEffectChainModel graphEditor;
     private final GraphEditorContainer graphEditorContainer;
+    private final ChoiceDialog dialog;
+    private final List<String> dialogData = Arrays.asList(StateMachineConstants.ROOT_CAUSE, StateMachineConstants.INTERMEDIATE_DISADVANTAGE, StateMachineConstants.TARGET_DISADVANTAGE);
+
 
     private static final EReference CONNECTIONS = GraphPackage.Literals.GMODEL__CONNECTIONS;
     private static final EReference CONNECTOR_CONNECTIONS = GraphPackage.Literals.GCONNECTOR__CONNECTIONS;
@@ -40,6 +53,10 @@ public class StateMachineModeController implements SkinController {
         graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_TOP_OUTPUT_CONNECTOR, StateMachineTailSkin.class);
         graphEditor.setTailSkin(StateMachineConstants.STATE_MACHINE_LEFT_OUTPUT_CONNECTOR, StateMachineTailSkin.class);
         ////System.out.println("CREATING SM CONTROLLER");
+
+        dialog = new ChoiceDialog(dialogData.get(0), dialogData);
+        dialog.setTitle("Add a node");
+        dialog.setHeaderText("Select your choice");
     }
 
     @Override
@@ -47,8 +64,13 @@ public class StateMachineModeController implements SkinController {
         ////System.out.println("called add node");
         final double windowXOffset = graphEditorContainer.windowXProperty().get() / currentZoomFactor;
         final double windowYOffset = graphEditorContainer.windowYProperty().get() / currentZoomFactor;
+        Optional<String> result = dialog.showAndWait();
+        String selected;
 
-        final GNode node = graphEditor.addStateMachineNode(windowXOffset+10, windowYOffset +10, "DESCRIPTION zf");
+        if (result.isPresent()) {
+            selected = result.get();
+            graphEditor.addStateMachineNode(windowXOffset+10, windowYOffset +10, "DESCRIPTION", selected);
+        }
     }
 
     public GNode addNode(double X, double Y, String description) {
@@ -77,6 +99,7 @@ public class StateMachineModeController implements SkinController {
         final GConnection connection = graphEditor.addStateMachineConnection(source, target, description);
         return connection;
     }
+
     /**
      * Gets the connector type string corresponding to the given position and input values.
      *

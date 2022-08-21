@@ -4,12 +4,14 @@ import de.tesis.dynaware.grapheditor.utils.Arrow;
 import de.tesis.dynaware.grapheditor.utils.GeometryUtils;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.paint.Paint;
 
 public class LineNode extends Group {
 
     private static final String STYLE_CLASS_LINE = "line";
 
     private final javafx.scene.shape.Line line = new javafx.scene.shape.Line();
+
 
     private double startX;
     private double startY;
@@ -23,7 +25,8 @@ public class LineNode extends Group {
     public LineNode() {
 
         line.getStyleClass().add(STYLE_CLASS_LINE);
-
+        line.setStrokeWidth(2);
+        line.setFill(Paint.valueOf("red"));
         getChildren().addAll(line);
     }
 

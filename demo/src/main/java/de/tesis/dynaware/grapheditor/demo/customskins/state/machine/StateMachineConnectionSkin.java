@@ -60,6 +60,7 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
         text.setManaged(false);
         ////System.out.println("SMCON");
         text.setOnMouseClicked(doubleClickedListener);
+
         background.setManaged(false);
         getConnection().getTarget().getParent();
     }

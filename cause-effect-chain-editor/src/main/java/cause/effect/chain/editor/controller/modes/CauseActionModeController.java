@@ -35,7 +35,7 @@ public class CauseActionModeController implements SkinController {
         graphEditor.setConnectorSkin(CecaDiagramConstants.DIAGRAM_OUTPUT_CONNECTOR, CecaDiagramConnectorSkin.class);
 
         dialog = new ChoiceDialog(dialogData.get(0), dialogData);
-        dialog.setTitle("test");
+        dialog.setTitle("Add a node");
         dialog.setHeaderText("Select your choice");
 
     }
@@ -50,17 +50,23 @@ public class CauseActionModeController implements SkinController {
         String selected = "cancelled.";
 
         if (result.isPresent()) {
-
             selected = result.get();
+            graphEditor.addCauseActionNode(windowXOffset, windowYOffset, "DESCRIPTION!", selected);
         }
         //System.out.println("choice box test" + selected);
-        graphEditor.addCauseActionNode(windowXOffset, windowYOffset, "DESCRIPTION!", selected);
+
     }
 
     public GNode addNode(double X, double Y, String description) {
         //System.out.println("called add using coords node");
 
         return graphEditor.addCauseActionNode(X, Y, description);
+    }
+
+    public GNode addConditionNode(double X, double Y, String description) {
+        //System.out.println("called add using coords node");
+
+        return graphEditor.addCauseActionNode(X, Y, description, "condition");
     }
 
     @Override

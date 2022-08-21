@@ -5,15 +5,21 @@ import cause.effect.chain.editor.model.skins.statemachine.utils.LineUtils;
 import de.tesis.dynaware.grapheditor.GConnectionSkin;
 import de.tesis.dynaware.grapheditor.GJointSkin;
 import de.tesis.dynaware.grapheditor.model.GConnection;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,9 +39,10 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
     private final LineNode line3 = new LineNode();
     private final LineNode background3 = new LineNode();
     private Text text = new Text("some text");
-    private final Group root = new Group(background,selectionHalo, line, line2, background2, line3, background3, text);
+    private final Group root = new Group(background, selectionHalo, line, line2, background2, line3, background3, text);
     private EventHandler<? super MouseEvent> doubleClickedListener = getDoubleClickedListener();
     private boolean isBlocked = false;
+
 
     private List<Point2D> points;
 
@@ -46,14 +53,18 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
      */
     public StateMachineConnectionSkin(GConnection connection) {
         super(connection);
-        
+
         line.setManaged(false);
         line.getStyleClass().setAll(STYLE_CLASS);
 
-        text.setText(getConnection().getDescription());
+        betterSetText(getConnection().getDescription());
         text.setManaged(false);
         text.setOnMouseClicked(doubleClickedListener);
-        background.setManaged(false);
+        root.getChildren().forEach(nd -> nd.setOnMouseClicked(doubleClickedListener));
+
+        //Setting padding to the text flow
+
+
         getConnection().getTarget().getParent();
     }
 
@@ -74,23 +85,27 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
 
             this.points = points;
         }
-        if (false)
-        {
-            final Point2D start = points.get(0);
-            final Point2D end = points.get(1);
-            final Point2D newStart = new Point2D((start.getX() + end.getX())/2.0 -20 , (start.getY() + end.getY())/2.0 - 20);
-            final Point2D newEnd = new Point2D((start.getX() + end.getX())/2.0 + 20 , (start.getY() + end.getY())/2.0 + 20);
-            LineUtils.draw(line2, newStart, newEnd, OFFSET_FROM_CONNECTOR);
-            LineUtils.draw(background2, newStart, newEnd, OFFSET_FROM_CONNECTOR);
-            final Point2D newStart2 = new Point2D((start.getX() + end.getX())/2.0 - 20 , (start.getY() + end.getY())/2.0 + 20);
-            final Point2D newEnd2 = new Point2D((start.getX() + end.getX())/2.0  + 20 , (start.getY() + end.getY())/2.0 - 20);
-            LineUtils.draw(line3, newStart2, newEnd2, OFFSET_FROM_CONNECTOR);
-            LineUtils.draw(background3, newStart2, newEnd2, OFFSET_FROM_CONNECTOR);
-        }
+
+        final Point2D start = points.get(0);
+        final Point2D end = points.get(1);
+        final Point2D newStart = new Point2D((start.getX() + end.getX()) / 2.0 - 20, (start.getY() + end.getY()) / 2.0 - 20);
+        final Point2D newEnd = new Point2D((start.getX() + end.getX()) / 2.0 + 20, (start.getY() + end.getY()) / 2.0 + 20);
+        LineUtils.draw(line2, newStart, newEnd, OFFSET_FROM_CONNECTOR);
+        LineUtils.draw(background2, newStart, newEnd, OFFSET_FROM_CONNECTOR);
+        final Point2D newStart2 = new Point2D((start.getX() + end.getX()) / 2.0 - 20, (start.getY() + end.getY()) / 2.0 + 20);
+        final Point2D newEnd2 = new Point2D((start.getX() + end.getX()) / 2.0 + 20, (start.getY() + end.getY()) / 2.0 - 20);
+        LineUtils.draw(line3, newStart2, newEnd2, OFFSET_FROM_CONNECTOR);
+        LineUtils.draw(background3, newStart2, newEnd2, OFFSET_FROM_CONNECTOR);
+        adjustBlockVisibility();
         text.setVisible(true);
-        double x = points.get(0).getX()/2.0 + points.get(1).getX()/2;
-        text.setX(x);
-        text.setY(points.get(1).getY()/2.0 + points.get(0).getY()/2.0);
+        Font font = new Font("Arial", 17);
+        text.setFont(font);
+
+//        textFlow.setVisible(true);
+        double x = points.get(0).getX() / 2.0 + points.get(1).getX() / 2;
+        int offset = Math.min(text.getText().length()*5, 150);
+        text.setX(x - offset);
+        text.setY(points.get(1).getY() / 2.0 + points.get(0).getY() / 2.0);
     }
 
     @Override
@@ -98,14 +113,55 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
         return root;
     }
 
+    public void betterSetText(String str) {
+        getConnection().setDescription(str);
+        if (str.length() <= 50){
+            text.setText(str);
+            return;
+        }
+        List<String> results = new ArrayList<>();
+        int length = str.length();
+
+        for (int i = 0; i < length; i += 39) {
+            results.add(str.substring(i, Math.min(length, i + 39)));
+        }
+
+        String toSet = String.join("\n",results);
+        text.setText(toSet);
+    }
+
+    private void adjustBlockVisibility() {
+
+        line2.setVisible(isBlocked);
+        background2.setVisible(isBlocked);
+        line3.setVisible(isBlocked);
+        background3.setVisible(isBlocked);
+
+    }
+
     private EventHandler<MouseEvent> getDoubleClickedListener() {
         return event -> {
             if (event.getClickCount() >= 2) {
-                TextInputDialog td = new TextInputDialog();
+                TextInputDialog td = new TextInputDialog(getConnection().getDescription());
+                td.setContentText("Description");
+                td.setHeaderText("Connection information");
+                td.setTitle("Connection menu");
+                ButtonType buttonTypeBlock = new ButtonType("BLOCK/UNBLOCK", ButtonBar.ButtonData.LEFT);
+
+
+                td.getDialogPane().getButtonTypes().add(buttonTypeBlock);
+                final Button btnBlock = (Button) td.getDialogPane().lookupButton(buttonTypeBlock);
+                btnBlock.addEventFilter(
+                        ActionEvent.ACTION,
+                        action -> {
+                            isBlocked = !isBlocked;
+                            adjustBlockVisibility();
+                        }
+                );
                 td.showAndWait();
                 getConnection().setDescription(td.getEditor().getText());
                 ////System.out.println("set description to + "  + getConnection().getDescription());
-                text.setText(getConnection().getDescription());
+                betterSetText(getConnection().getDescription());
             }
         };
     }

@@ -93,6 +93,58 @@ public class CauseEffectChainModel {
         return node;
     }
 
+    public GNode addStateMachineNode(double X, double Y, String description, String selected) {
+        final GNode node = GraphFactory.eINSTANCE.createGNode();
+        node.setType(StateMachineConstants.STATE_MACHINE_NODE);
+        node.setSubtype(selected);
+        node.setY(Y);
+
+        node.setX(X);
+        node.setId(allocateNewId());
+
+        addInitialConnectorsStateMachine(node);
+
+
+        node.setDescription(description);
+
+        Commands.addNode(graphEditor.getModel(), node);
+        ////System.out.printlnprintln(node);
+        return node;
+    }
+
+    private void addInitialConnectorsStateMachine(GNode node) {
+        String subtype = node.getSubtype();
+        switch (subtype){
+            case CecaDiagramConstants.CAUSE_ACTION_ROOT:
+            {
+                final GConnector output = GraphFactory.eINSTANCE.createGConnector();
+                node.getConnectors().add(output);
+                output.setType(StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
+                break;
+            }
+            case StateMachineConstants.TARGET_DISADVANTAGE: {
+                final GConnector input = GraphFactory.eINSTANCE.createGConnector();
+                node.getConnectors().add(input);
+                input.setType(StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
+                break;
+            }
+            case StateMachineConstants.INTERMEDIATE_DISADVANTAGE:{
+                final GConnector input = GraphFactory.eINSTANCE.createGConnector();
+                node.getConnectors().add(input);
+                input.setType(StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
+
+                final GConnector output = GraphFactory.eINSTANCE.createGConnector();
+                node.getConnectors().add(output);
+                output.setType(StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
+                break;
+            }
+        }
+
+
+
+    }
+
+
     public void addConditionActionConnector(final String type) {
         final GModel model = graphEditor.getModel();
         final SkinLookup skinLookup = graphEditor.getSkinLookup();
@@ -155,8 +207,15 @@ public class CauseEffectChainModel {
         final GConnection connection = GraphFactory.eINSTANCE.createGConnection();
 
         connection.setType(StateMachineConstants.STATE_MACHINE_CONNECTION);
-        connection.setSource(source);
-        connection.setTarget(target);
+        if (source.getType().contains("output"))
+        {
+            connection.setSource(source);
+            connection.setTarget(target);
+        } else {
+            connection.setSource(target);
+            connection.setTarget(source);
+        }
+
         connection.setDescription(description);
 
         source.getConnections().add(connection);
@@ -176,6 +235,7 @@ public class CauseEffectChainModel {
 
         return connection;
     }
+
 
     public void clearConnectors() {
         Commands.clearConnectors(graphEditor.getModel(), graphEditor.getSelectionManager().getSelectedNodes());
