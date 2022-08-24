@@ -464,9 +464,25 @@ public class ConnectorDragManager {
      */
     private void addConnection(final GConnector source, final GConnector target) {
 
-        final String connectionType = validator.createConnectionType(source, target);
-        final String jointType = validator.createJointType(source, target);
-        final List<Point2D> jointPositions = skinLookup.lookupTail(source).allocateJointPositions();
+        GConnector realSource;
+        GConnector realTarget;
+
+        System.out.println("Connection Creaated with source: " + source.getParent() +" target: " + target.getParent());
+        if (source.getType().contains("output"))
+        {
+            realSource = source;
+            realTarget = target;
+        } else {
+            realSource = target;
+            realTarget =  source;
+        }
+        System.out.println("Connection Creaated with source: " + source.getParent() +" target: " + target.getParent());
+        System.out.println("==");
+
+
+        final String connectionType = validator.createConnectionType(realSource, realTarget);
+        final String jointType = validator.createJointType(realSource, realTarget);
+        final List<Point2D> jointPositions = skinLookup.lookupTail(realSource).allocateJointPositions();
 
         final List<GJoint> joints = new ArrayList<>();
 
@@ -480,7 +496,7 @@ public class ConnectorDragManager {
             joints.add(joint);
         }
 
-        final CompoundCommand command = ConnectionCommands.addConnection(model, source, target, connectionType, joints);
+        final CompoundCommand command = ConnectionCommands.addConnection(model, realSource, realTarget, connectionType, joints);
 
         // Notify the event manager so additional commands may be appended to this compound command.
         final GConnection addedConnection = model.getConnections().get(model.getConnections().size() - 1);

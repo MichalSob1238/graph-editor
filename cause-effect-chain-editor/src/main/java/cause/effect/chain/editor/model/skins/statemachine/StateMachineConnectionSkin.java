@@ -39,7 +39,9 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
     private final LineNode line3 = new LineNode();
     private final LineNode background3 = new LineNode();
     private Text text = new Text("some text");
-    private final Group root = new Group(background, selectionHalo, line, line2, background2, line3, background3, text);
+    Label lbl = new Label("");
+
+    private final Group root = new Group(background, selectionHalo, line, line2, background2, line3, background3, text, lbl);
     private EventHandler<? super MouseEvent> doubleClickedListener = getDoubleClickedListener();
     private boolean isBlocked = false;
 
@@ -58,7 +60,10 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
         line.getStyleClass().setAll(STYLE_CLASS);
 
         betterSetText(getConnection().getDescription());
+
         text.setManaged(false);
+        lbl.setVisible(true);
+        text.setVisible(false);
         text.setOnMouseClicked(doubleClickedListener);
         root.getChildren().forEach(nd -> nd.setOnMouseClicked(doubleClickedListener));
 
@@ -97,7 +102,7 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
         LineUtils.draw(line3, newStart2, newEnd2, OFFSET_FROM_CONNECTOR);
         LineUtils.draw(background3, newStart2, newEnd2, OFFSET_FROM_CONNECTOR);
         adjustBlockVisibility();
-        text.setVisible(true);
+        text.setVisible(false);
         Font font = new Font("Arial", 11);
         text.setFont(font);
 
@@ -106,6 +111,23 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
         int offset = Math.min(text.getText().length()*5, 150);
         text.setX(x - offset);
         text.setY(points.get(1).getY() / 2.0 + points.get(0).getY() / 2.0);
+        lbl.setLayoutX(x- lbl.getWidth()/2.0 );
+
+        lbl.setLayoutY(points.get(1).getY() / 2.0 + points.get(0).getY() / 2.0 - lbl.getHeight()/2);
+        lbl.setWrapText(true);
+        lbl.setPrefWidth(200);
+
+        lbl.setOnMouseEntered(e -> {
+            lbl.setScaleX(1.5);
+            lbl.setScaleY(1.5);
+            lbl.setTextFill(Color.DARKGOLDENROD);
+        });
+
+        lbl.setOnMouseExited(e -> {
+            lbl.setScaleX(1);
+            lbl.setScaleY(1);
+            lbl.setTextFill(Color.BLACK);
+        });
     }
 
     @Override
@@ -115,6 +137,7 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
 
     public void betterSetText(String str) {
         getConnection().setDescription(str);
+        lbl.setText(str);
         if (str.length() <= 50){
             text.setText(str);
             return;
@@ -128,6 +151,7 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
 
         String toSet = String.join("\n",results);
         text.setText(toSet);
+
     }
 
     private void adjustBlockVisibility() {

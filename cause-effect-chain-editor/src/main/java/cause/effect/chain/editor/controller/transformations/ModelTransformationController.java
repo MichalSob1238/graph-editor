@@ -123,11 +123,13 @@ public class ModelTransformationController {
     }
 
     private void seekAction(GNode rootNode, GNode targetNode, String description) {
-        ////System.out.println("found " + targetNode + " seekAction ");
+        //System.out.println("found in seek action target: " + targetNode);
+        //System.out.println("found in seek action root: " + rootNode + " seekAction ");
         String type = targetNode.getSubtype();
         switch (type) {
             case StateMachineConstants.INTERMEDIATE_DISADVANTAGE:
             case CecaDiagramConstants.TARGET_DISADVANTAGE:
+            case  StateMachineConstants.STATE_MACHINE_NODE:
             case CecaDiagramConstants.ACTION: {
                 final GConnector output = stateMachineController.addConnector(rootNode, StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
                 final GConnector input = stateMachineController.addConnector(targetNode, StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
@@ -164,7 +166,7 @@ public class ModelTransformationController {
                 });
 
                 String newDescription = String.join(" & ", descriptions);
-                ////System.out.println("descriptions: " + newDescription);
+               // System.out.println("descriptions: " + newDescription);
                 List<GConnector> outputConnectors = targetNode.getConnectors().stream()
                         .filter(conector -> !isInput(conector.getType()))
                         .filter(connector -> !connector.getConnections().isEmpty())

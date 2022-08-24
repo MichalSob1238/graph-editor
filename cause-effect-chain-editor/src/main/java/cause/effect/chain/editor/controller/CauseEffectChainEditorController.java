@@ -151,6 +151,7 @@ public class CauseEffectChainEditorController {
     @FXML
     public void cut() {
         chainModel.getGraphEditor().getSelectionManager().cut();
+        chainModel.getGraphEditor().getModel().getNodes().forEach(coherencyChecker::updateCorrectnesStatus);
     }
 
     @FXML
@@ -161,6 +162,7 @@ public class CauseEffectChainEditorController {
     @FXML
     public void paste() {
         activeSkinController.get().handlePaste();
+        chainModel.getGraphEditor().getModel().getNodes().forEach(coherencyChecker::updateCorrectnesStatus);
     }
 
     @FXML
@@ -171,6 +173,7 @@ public class CauseEffectChainEditorController {
     @FXML
     public void deleteSelection() {
         chainModel.getGraphEditor().getSelectionManager().deleteSelection();
+        chainModel.getGraphEditor().getModel().getNodes().forEach(coherencyChecker::updateCorrectnesStatus);
     }
 
     @FXML
@@ -222,7 +225,7 @@ public class CauseEffectChainEditorController {
             }
 
         }
-        setStateMachineSkinControler();
+        activeSkinController.set(stateMachineController);
         modelTransformationController.transformIntoStateMachine();
         chainModel.getGraphEditor().getModel().getNodes().forEach(coherencyChecker::updateCorrectnesStatus);
         flushCommandStack();
@@ -252,6 +255,7 @@ public class CauseEffectChainEditorController {
         if (result.isPresent()) {
             if (result.get().equals(ButtonType.OK)){
                 activeSkinController.set(cecaSkinController);
+                clearAll();
             }
         }
 
@@ -271,6 +275,7 @@ public class CauseEffectChainEditorController {
         if (result.isPresent()) {
             if (result.get().equals(ButtonType.OK)){
                 activeSkinController.set(stateMachineController);
+                clearAll();
             }
         }
     }
@@ -391,8 +396,6 @@ public class CauseEffectChainEditorController {
      * Enables & disables certain menu options and sets CSS classes based on the new skin type that was set active.
      */
     private void handleActiveSkinControllerChange() {
-
-        clearAll();
 
         if (stateMachineController.equals(activeSkinController.get())) {
             chainModel.getGraphEditor().setConnectorValidator(new StateMachineConnectorValidator());

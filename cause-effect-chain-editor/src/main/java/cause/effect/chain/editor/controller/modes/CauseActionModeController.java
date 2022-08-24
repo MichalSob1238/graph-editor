@@ -51,7 +51,7 @@ public class CauseActionModeController implements SkinController {
 
         if (result.isPresent()) {
             selected = result.get();
-            graphEditor.addCauseActionNode(windowXOffset, windowYOffset, "DESCRIPTION!", selected);
+            graphEditor.addCauseActionNode(windowXOffset, windowYOffset, "description", selected);
         }
         //System.out.println("choice box test" + selected);
 

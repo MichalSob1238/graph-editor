@@ -36,8 +36,8 @@
 						<MenuItem text="Add Node" onAction="#addNode" accelerator="Shortcut+N"/>
 						<MenuItem text="Add And Gate" onAction="#addAndGate"/>
 						<MenuItem text="Add Or Gate" onAction="#addOrGate" />
-						<MenuItem text="Transform Diagram into State Machine" fx:id="transformIntoCauseAction" onAction="#transformIntoStateMachine" />
-						<MenuItem text="Transform State Machine into Diagram" fx:id="transformIntoStateMachine"  onAction="#transformIntoDiagram" />
+						<MenuItem text="Transform Diagram into State Machine"  fx:id="transformIntoStateMachine" onAction="#transformIntoStateMachine" />
+						<MenuItem text="Transform State Machine into Diagram"  fx:id="transformIntoCauseAction" onAction="#transformIntoDiagram" />
 					</items>
 				</Menu>
 				<Menu text="Settings">

@@ -268,7 +268,7 @@ public class CauseEffectChainModel {
 
         node.setType(CecaDiagramConstants.GATE_NODE);
         node.setSubtype("or");
-        node.setDescription("DESCRIPTION3!");
+        node.setDescription("");
 
         Commands.addNode(graphEditor.getModel(), node);
         return node;
@@ -297,7 +297,7 @@ public class CauseEffectChainModel {
 
         node.setType(CecaDiagramConstants.GATE_NODE);
         node.setSubtype("and");
-        node.setDescription("DESCRIPTION2!");
+        node.setDescription("description2!");
 
         Commands.addNode(graphEditor.getModel(), node);
         return node;
@@ -320,19 +320,30 @@ public class CauseEffectChainModel {
         GModel model = graphEditor.getModel();
         final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
         final CompoundCommand command = new CompoundCommand();
+        System.out.println("created new connection");
 
         final List<GJoint> joints = new ArrayList<>();
+        GConnector realSource;
+        GConnector realTarget;
+        if (source.getType().contains("output"))
+        {
+            realSource = source;
+            realTarget = target;
+        } else {
+            realSource = target;
+            realTarget =  source;
+        }
 
         final GJoint joint = GraphFactory.eINSTANCE.createGJoint();
-        joint.setX(((((GNode) target.getParent()).getX() + ((GNode) source.getParent()).getX())/2.0) + ((GNode) source.getParent()).getWidth() );
-        joint.setY(((GNode) source.getParent()).getY());
+        joint.setX(((((GNode) realTarget.getParent()).getX() + ((GNode) realSource.getParent()).getX())/2.0) + ((GNode) realSource.getParent()).getWidth() );
+        joint.setY(((GNode) realSource.getParent()).getY());
         joints.add(joint);
         final GJoint joint2 = GraphFactory.eINSTANCE.createGJoint();
-        joint2.setX((((GNode) target.getParent()).getX()+ ((GNode) source.getParent()).getX())/2.0);
-        joint2.setY(((GNode) target.getParent()).getX());
+        joint2.setX((((GNode) realTarget.getParent()).getX()+ ((GNode) realSource.getParent()).getX())/2.0);
+        joint2.setY(((GNode) realTarget.getParent()).getX());
         joints.add(joint2);
         ////System.out.printlnprintln("JOINTS " + joints);
-        ConnectionCommands.addConnection(model, source, target, null, joints);
+        ConnectionCommands.addConnection(model, realSource, realTarget, null, joints);
 
         if (command.canExecute()) {
             editingDomain.getCommandStack().execute(command);

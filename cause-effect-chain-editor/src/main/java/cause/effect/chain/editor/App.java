@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import cause.effect.chain.editor.controller.CauseEffectChainEditorController;
@@ -30,8 +31,10 @@ public class App extends Application {
 
         scene.getStylesheets().add(getClass().getResource(DEMO_STYLESHEET).toExternalForm());
         scene.getStylesheets().add(getClass().getResource(GATE_SKIN_STYLESHEET).toExternalForm());
+
         Font.loadFont(getClass().getResource(FONT_AWESOME).toExternalForm(), 12);
 
+        stage.getIcons().add( new Image(getClass().getResource("/icons/javaicon.png").toExternalForm()));
         stage.setScene(scene);
         stage.setTitle(APPLICATION_TITLE);
 

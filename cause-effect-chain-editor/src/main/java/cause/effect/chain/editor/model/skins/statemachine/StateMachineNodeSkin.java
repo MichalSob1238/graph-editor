@@ -486,21 +486,33 @@ public class StateMachineNodeSkin extends GNodeSkin {
         alert.getDialogPane().resize(400, 400);
         //alert.getDialogPane().getContent().prefWidth();
         ButtonType buttonTypeOk = new ButtonType("OK", ButtonBar.ButtonData.LEFT);
-        ButtonType addInputConnector = new ButtonType("Add Input Connector", ButtonBar.ButtonData.LEFT);
-        ButtonType addOutputConnector = new ButtonType("Add Output Connector", ButtonBar.ButtonData.LEFT);
-        ButtonType clearConnectors = new ButtonType("Remove Empty Connectors", ButtonBar.ButtonData.LEFT);
+        ButtonType addInputConnector = new ButtonType("Add Input", ButtonBar.ButtonData.LEFT);
+        ButtonType clearConnectors = new ButtonType("Clean Connectors", ButtonBar.ButtonData.LEFT);
 
 
 
         alert.getDialogPane().getButtonTypes().add(buttonTypeOk);
-        alert.getDialogPane().getButtonTypes().add(addOutputConnector);
+        if(getNode().getSubtype() != StateMachineConstants.TARGET_DISADVANTAGE){
+            ButtonType addOutputConnector = new ButtonType("Add Output", ButtonBar.ButtonData.LEFT);
+            alert.getDialogPane().getButtonTypes().add(addOutputConnector);
+            final Button addOutputConnectorBtn = (Button) alert.getDialogPane().lookupButton(addOutputConnector);
+            addOutputConnectorBtn.addEventFilter(
+                    ActionEvent.ACTION,
+                    action -> {
+                        addStateMachineConnector(getNode(), StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
+                        action.consume();
+                    }
+            );
+        }
+
+
         alert.getDialogPane().getButtonTypes().add(clearConnectors);
         alert.getDialogPane().getButtonTypes().add(addInputConnector);
 
 
         alert.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
         final Button btOk = (Button) alert.getDialogPane().lookupButton(buttonTypeOk);
-        final Button addOutputConnectorBtn = (Button) alert.getDialogPane().lookupButton(addOutputConnector);
+
         final Button addInputConnectorBtn = (Button) alert.getDialogPane().lookupButton(addInputConnector);
         final Button clearConnectorsBtn = (Button) alert.getDialogPane().lookupButton(clearConnectors);
 
@@ -521,13 +533,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
                 }
         );
 
-        addOutputConnectorBtn.addEventFilter(
-                ActionEvent.ACTION,
-                action -> {
-                    addStateMachineConnector(getNode(), StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
-                    action.consume();
-                }
-        );
+
 
         clearConnectorsBtn.addEventFilter(
                 ActionEvent.ACTION,

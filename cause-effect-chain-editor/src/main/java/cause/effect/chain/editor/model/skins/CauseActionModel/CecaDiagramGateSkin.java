@@ -32,10 +32,7 @@ import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class CecaDiagramGateSkin extends GNodeSkin {
     private final Rectangle selectionHalo = new Rectangle();
@@ -51,7 +48,6 @@ public class CecaDiagramGateSkin extends GNodeSkin {
     private final Rectangle border = new Rectangle();
     private final Rectangle background = new Rectangle();
 
-    private final Label description = new Label();
     private final Rectangle errorHalo = new Rectangle();
     List<String> issuesWithNode = new ArrayList<>();
 
@@ -224,24 +220,6 @@ public class CecaDiagramGateSkin extends GNodeSkin {
             errorHalo.getStrokeDashArray().setAll(yGap, cornerLength, xGap, cornerLength);
         }
     }
-    //TODO: customise
-    public void setDescription() {
-        ////System.out.println("setting description");
-        final Text text = new Text(getNode().getDescription());
-        new Scene(new Group(text));
-        text.applyCss();
-        final double width = Math.max(50, text.getLayoutBounds().getWidth());
-        final double height = Math.max(20, text.getLayoutBounds().getHeight());
-
-        Font font = new Font("Arial", 11);
-
-        description.setMinSize(width, height);
-        description.setMaxSize(border.getWidth(), border.getHeight());
-        description.setTextAlignment(TextAlignment.CENTER);
-        description.resize(border.getWidth(),border.getHeight());
-        description.setText(Optional.ofNullable(getNode().getDescription()).orElse("!!"));
-        description.setFont(font);
-    }
 
 
     /**
@@ -278,14 +256,8 @@ public class CecaDiagramGateSkin extends GNodeSkin {
             getRoot().getChildren().addAll(orGateShape.getBackgroundComponents());
         }
 
-        description.setText(subtype);
-        ////System.out.println("setting description");
-        description.setAlignment(Pos.CENTER);
-        description.setVisible(true);
-        //description.setOnMouseClicked(doubleClickedListener);
-        getRoot().getChildren().add(description);
 
-        tooltip.setText("");
+        tooltip.setText(getNode().getSubtype().toUpperCase(Locale.ROOT) +" Gate");
         getRoot().getChildren().forEach(mhm -> Tooltip.install(mhm, tooltip));
         getRoot().getChildren().forEach(mhm -> mhm.setOnMouseClicked(doubleClickedListener) );
         getNode().setHeight(90);
@@ -522,7 +494,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
             this.isCorrect = true;
             this.issuesWithNode.clear();
             errorHalo.setVisible(false);
-            tooltip.setShowDelay(Duration.seconds(1000));
+            tooltip.setText(getNode().getSubtype().toUpperCase(Locale.ROOT) +" Gate");
 
         } else {
             this.isCorrect = false;

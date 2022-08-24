@@ -169,17 +169,30 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         alert.getDialogPane().resize(400, 400);
         //alert.getDialogPane().getContent().prefWidth();
         ButtonType buttonTypeOk = new ButtonType("OK", ButtonBar.ButtonData.LEFT);
-        ButtonType addOutputConnector = new ButtonType("Add Output Connector", ButtonBar.ButtonData.LEFT);
+
         ButtonType clearConnectors = new ButtonType("Remove Empty Connectors", ButtonBar.ButtonData.LEFT);
 
         alert.getDialogPane().getButtonTypes().add(buttonTypeOk);
-        alert.getDialogPane().getButtonTypes().add(addOutputConnector);
+
+        if(!Objects.equals(getNode().getSubtype(), CecaDiagramConstants.TARGET_DISADVANTAGE)) {
+            ButtonType addOutputConnector = new ButtonType("Add Output Connector", ButtonBar.ButtonData.LEFT);
+            alert.getDialogPane().getButtonTypes().add(addOutputConnector);
+            final Button addOutputConnectorBtn = (Button) alert.getDialogPane().lookupButton(addOutputConnector);
+            addOutputConnectorBtn.addEventFilter(
+                    ActionEvent.ACTION,
+                    action -> {
+                        addConnector(getNode(), DefaultConnectorTypes.RIGHT_OUTPUT);
+                        action.consume();
+                    }
+            );
+        }
+
         alert.getDialogPane().getButtonTypes().add(clearConnectors);
 
         alert.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
 
         final Button btOk = (Button) alert.getDialogPane().lookupButton(buttonTypeOk);
-        final Button addOutputConnectorBtn = (Button) alert.getDialogPane().lookupButton(addOutputConnector);
+
         final Button clearConnectorsBtn = (Button) alert.getDialogPane().lookupButton(clearConnectors);
 
         btOk.addEventFilter(
@@ -191,13 +204,6 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
                 }
         );
 
-        addOutputConnectorBtn.addEventFilter(
-                ActionEvent.ACTION,
-                action -> {
-                    addConnector(getNode(), DefaultConnectorTypes.RIGHT_OUTPUT);
-                    action.consume();
-                }
-        );
 
         clearConnectorsBtn.addEventFilter(
                 ActionEvent.ACTION,
@@ -265,8 +271,9 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         background.widthProperty().bind(border.widthProperty().subtract(border.strokeWidthProperty().multiply(2)));
         background.heightProperty().bind(border.heightProperty().subtract(border.strokeWidthProperty().multiply(2)));
 
-//        getNode().setHeight(50);
-//        getNode().setWidth(100);
+        getNode().setHeight(50);
+        getNode().setWidth(Math.max(Math.min(getNode().getDescription().length() *  7, 200),50));
+        System.out.println(Math.max(Math.min(getNode().getDescription().length(), 200),50));
         title.setText(node.getDescription());
         //System.out.println("ceca setting title");
         title.setAlignment(Pos.CENTER);
@@ -287,8 +294,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         tooltip.setShowDelay(Duration.seconds(1.0));
 
         tooltip.setWrapText(true);
-        tooltip.setMaxWidth(200);
-        tooltip.setMaxWidth(600);
+        tooltip.setMaxWidth(400);
         Font font2 = new Font("Arial", 13);
         tooltip.setFont(font2);
 

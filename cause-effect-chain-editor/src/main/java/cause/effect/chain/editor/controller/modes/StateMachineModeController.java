@@ -68,7 +68,7 @@ public class StateMachineModeController implements SkinController {
 
         if (result.isPresent()) {
             selected = result.get();
-            graphEditor.addStateMachineNode(windowXOffset+10, windowYOffset +10, "DESCRIPTION", selected);
+            graphEditor.addStateMachineNode(windowXOffset+10, windowYOffset +10, "description", selected);
         }
     }
 
