@@ -42,8 +42,4 @@ public class App extends Application {
 
         controller.panToCenter();
     }
-
-    public static void main(final String[] args) {
-        launch(args);
-    }
 }
