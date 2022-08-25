@@ -467,8 +467,8 @@ public class ResizableBox extends DraggableBox {
         if (x < 0 || y < 0 || x > width || y > height) {
             return RectangleMouseRegion.OUTSIDE;
         }
-        //System.out.println("not outside");
-        //System.out.println("("+ x + "," + y + ")");
+        ////System.out.println("not outside");
+        ////System.out.println("("+ x + "," + y + ")");
         final boolean isNorth = y < resizeBorderTolerance;
         final boolean isSouth = y > height - resizeBorderTolerance;
         final boolean isEast = x > width - resizeBorderTolerance;
@@ -480,85 +480,85 @@ public class ResizableBox extends DraggableBox {
         boolean isInCircle = dist <= Math.sqrt(width/2*width/2 + height/2*height/2) && dist >= Math.sqrt(width/2*width/2*0.2 + height/2*height/2*0.2);
         double radius = Math.sqrt(x * x + y * y);
         //final boolean isInCircle = radius < Math.sqrt(width*width + height*height) && radius > Math.sqrt(width*width*0.6 + height*height*0.6) ;
-        //System.out.println("isInCircle " + isInCircle);
+        ////System.out.println("isInCircle " + isInCircle);
         boolean isNE = x > width/2 && y > height/2;
         boolean isSE = !(x > width/2) && y > height/2;
         boolean isSW = !(x > width/2) && !(y > height/2);
         boolean isNW = x > width/2 && !(y > height/2);
         if (isCircle) {
             if (isInCircle & isNE) {
-                //System.out.println("SOUTHEAST");
+                ////System.out.println("SOUTHEAST");
                 return RectangleMouseRegion.SOUTHEAST;
             } else if (isInCircle & isSW ) {
-                //System.out.println("NORTHWEST");
+                ////System.out.println("NORTHWEST");
                 return RectangleMouseRegion.NORTHWEST;
             } else if (isInCircle & isSE) {
-                //System.out.println("SOUTHWEST");
+                ////System.out.println("SOUTHWEST");
                 return RectangleMouseRegion.SOUTHWEST;
             } else if (isInCircle & isNW) {
-                //System.out.println("NORTHEAST");
+                ////System.out.println("NORTHEAST");
                 return RectangleMouseRegion.NORTHEAST;
             } else {
-                //System.out.println("INSIDE");
+                ////System.out.println("INSIDE");
                 return RectangleMouseRegion.INSIDE;
             }
         } else {
             if (isNorth && isEast) {
-                //System.out.println("NORTHEAST");
+                ////System.out.println("NORTHEAST");
                 return RectangleMouseRegion.NORTHEAST;
             } else if (isNorth && isWest) {
-                //System.out.println("NORTHWEST");
+                ////System.out.println("NORTHWEST");
                 return RectangleMouseRegion.NORTHWEST;
             } else if (isSouth && isEast) {
-                //System.out.println("SOUTHEAST");
+                ////System.out.println("SOUTHEAST");
                 return RectangleMouseRegion.SOUTHEAST;
             } else if (isSouth && isWest) {
-                //System.out.println("SOUTHWEST");
+                ////System.out.println("SOUTHWEST");
                 return RectangleMouseRegion.SOUTHWEST;
             } else if (isNorth) {
-                //System.out.println("NORTH");
+                ////System.out.println("NORTH");
                 return RectangleMouseRegion.NORTH;
             } else if (isSouth) {
-                //System.out.println("SOUTH");
+                ////System.out.println("SOUTH");
                 return RectangleMouseRegion.SOUTH;
             } else if (isEast) {
-                //System.out.println("EAST");
+                ////System.out.println("EAST");
                 return RectangleMouseRegion.EAST;
             } else if (isWest) {
-                //System.out.println("WEST");
+                ////System.out.println("WEST");
                 return RectangleMouseRegion.WEST;
             } else {
-                //System.out.println("INSIDE");
+                ////System.out.println("INSIDE");
                 return RectangleMouseRegion.INSIDE;
             }
         }
 
 //        if (isNorth && isEast) {
-//            System.out.println("NORTHEAST");
+//            //System.out.println("NORTHEAST");
 //            return RectangleMouseRegion.NORTHEAST;
 //        } else if (isNorth && isWest) {
-//            System.out.println("NORTHWEST");
+//            //System.out.println("NORTHWEST");
 //            return RectangleMouseRegion.NORTHWEST;
 //        } else if (isSouth && isEast) {
-//            System.out.println("SOUTHEAST");
+//            //System.out.println("SOUTHEAST");
 //            return RectangleMouseRegion.SOUTHEAST;
 //        } else if (isSouth && isWest) {
-//            System.out.println("SOUTHWEST");
+//            //System.out.println("SOUTHWEST");
 //            return RectangleMouseRegion.SOUTHWEST;
 //        } else if (isNorth) {
-//            System.out.println("NORTH");
+//            //System.out.println("NORTH");
 //            return RectangleMouseRegion.NORTH;
 //        } else if (isSouth) {
-//            System.out.println("SOUTH");
+//            //System.out.println("SOUTH");
 //            return RectangleMouseRegion.SOUTH;
 //        } else if (isEast) {
-//            System.out.println("EAST");
+//            //System.out.println("EAST");
 //            return RectangleMouseRegion.EAST;
 //        } else if (isWest) {
-//            System.out.println("WEST");
+//            //System.out.println("WEST");
 //            return RectangleMouseRegion.WEST;
 //        } else {
-//            System.out.println("INSIDE");
+//            //System.out.println("INSIDE");
 //            return RectangleMouseRegion.INSIDE;
 //        }
     }

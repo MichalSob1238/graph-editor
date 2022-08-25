@@ -102,11 +102,11 @@ public class CauseEffectChainEditorController {
         initializeMenuBar();
         addActiveSkinControllerListener();
         chainModel.getGraphEditor().setOnConnectionCreated((connection, command) -> {
-            //System.out.println("connection added" + connection);
+            ////System.out.println("connection added" + connection);
             coherencyChecker.getNotified(connection);
         });
         chainModel.getGraphEditor().setOnConnectionRemoved((connection, command) -> {
-            //System.out.println("connection removed" + connection);
+            ////System.out.println("connection removed" + connection);
             coherencyChecker.getNotified(connection);
         });
         graphEditorContainer.setOnMouseClicked(event -> graphEditorContainer.requestFocus());
@@ -136,8 +136,8 @@ public class CauseEffectChainEditorController {
 
     @FXML
     public void undo() {
-        //System.out.println("AAA + " + chainModel.getGraphEditor().getModel().getConnections());
-        //System.out.println("AAA + " + ((GModelImpl) chainModel.getGraphEditor().getModel()).connections);
+        ////System.out.println("AAA + " + chainModel.getGraphEditor().getModel().getConnections());
+        ////System.out.println("AAA + " + ((GModelImpl) chainModel.getGraphEditor().getModel()).connections);
         Commands.undo(chainModel.getGraphEditor().getModel());
         chainModel.getGraphEditor().getModel().getNodes().forEach(coherencyChecker::updateCorrectnesStatus);
     }
@@ -211,11 +211,11 @@ public class CauseEffectChainEditorController {
     public void transformIntoStateMachine() {
         List<GNode> nodes = chainModel.getGraphEditor().getModel().getNodes();
         List<GNodeSkin> skins = nodes.stream().map(node -> chainModel.getGraphEditor().getSkinLookup().lookupNode(node)).collect(Collectors.toList());
-        //System.out.println("found " + skins.size() + skins);
+        ////System.out.println("found " + skins.size() + skins);
         for (GNodeSkin skin : skins) {
-            //System.out.println("found " + skin + skin.isCorrect);
+            ////System.out.println("found " + skin + skin.isCorrect);
             if (!skin.isCorrect) {
-                //System.out.println("found incorrect skin: " + skin + skin.isCorrect);
+                ////System.out.println("found incorrect skin: " + skin + skin.isCorrect);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Cannot convert");
                 alert.setHeaderText("Cannot convert");

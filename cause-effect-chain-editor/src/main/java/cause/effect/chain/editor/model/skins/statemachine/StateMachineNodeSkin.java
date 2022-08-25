@@ -101,7 +101,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
         getRoot().getChildren().addAll(border, background);
 
         title.setText(getNode().getDescription());
-        ////System.out.println("setting title");
+        //////System.out.println("setting title");
         title.setAlignment(Pos.CENTER);
         title.setTextAlignment(TextAlignment.CENTER);
         title.setVisible(true);
@@ -246,12 +246,12 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
     private void updateColour() {
         if (issuesWithNode.isEmpty()) {
-            //System.out.println("true");
+            ////System.out.println("true");
             this.background.setStyle("-fx-fill:" + colours.get(getNode().getSubtype()) + ";");
             this.isCorrect = true;
 
         } else {
-            //System.out.println("false on create status");
+            ////System.out.println("false on create status");
             this.background.setStyle("-fx-fill:#FF4500;");
             this.isCorrect = false;
         }
@@ -318,7 +318,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
     private EventHandler<MouseEvent> getDoubleClickedListener() {
         return event -> {
             if (event.getButton().compareTo(MouseButton.SECONDARY) == 0) {
-                System.out.println("State Machine handling rightclick");
+                //System.out.println("State Machine handling rightclick");
                 showNodeInformation();
             } else if (event.getClickCount() >= 2) {
                 if (!isCorrect) {
@@ -342,9 +342,9 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
                     alert.showAndWait();
                 } else {
-                    System.out.println("State Machine handling doubleclick");
+                    //System.out.println("State Machine handling doubleclick");
 
-                    ////System.out.println(getNode());
+                    //////System.out.println(getNode());
                     descriptionEditable.setPrefSize(-1, -1);
                     descriptionEditable.setMinSize(title.getWidth(), title.getHeight());
                     descriptionEditable.setMaxSize(background.getWidth(), background.getHeight());
@@ -360,7 +360,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
                     boolean foc = requestFocusOrDieTrying(descriptionEditable);
                     descriptionEditable.focusedProperty().addListener((observable, oldValue, newValue) -> {
                         if (foc && !newValue) {
-                            System.out.println("in focused new value");
+                            //System.out.println("in focused new value");
                             getNode().setDescription(descriptionEditable.getText());
                             title.setText(descriptionEditable.getText());
                             getRoot().getChildren().remove(descriptionEditable);
@@ -432,8 +432,8 @@ public class StateMachineNodeSkin extends GNodeSkin {
             node.setDescription("avoid state description");
 
             Commands.addNode(getGraphEditor().getModel(), node);
-            ////System.out.println("created avoid node" + node);
-            ////System.out.println("alert node connectors: + " + node.getConnectors() );
+            //////System.out.println("created avoid node" + node);
+            //////System.out.println("alert node connectors: + " + node.getConnectors() );
 
             addStateMachineConnection(output, input, "avoidance");
 
@@ -465,8 +465,8 @@ public class StateMachineNodeSkin extends GNodeSkin {
             node.setDescription("avoid state description");
 
             Commands.addNode(getGraphEditor().getModel(), node);
-            ////System.out.println("created counteract node" + node);
-            ////System.out.println("alert node connectors: + " + node.getConnectors() );
+            //////System.out.println("created counteract node" + node);
+            //////System.out.println("alert node connectors: + " + node.getConnectors() );
 
             addStateMachineConnection(output, rootInput, "conteract");
             addStateMachineConnection(rootOutput, input, "conteract");
@@ -520,7 +520,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
                 ActionEvent.ACTION,
                 action -> {
                     getNode().setDescription(descriptionLabel.getText());
-                    System.out.println("set description to " + descriptionLabel.getText());
+                    //System.out.println("set description to " + descriptionLabel.getText());
                     setDescription();
                 }
         );
@@ -545,9 +545,9 @@ public class StateMachineNodeSkin extends GNodeSkin {
         );
 
 
-        System.out.println("alert width: " + alert.getWidth());
+        //System.out.println("alert width: " + alert.getWidth());
         alert.setWidth(1200);
-        System.out.println("alert width: " + alert.getWidth());
+        //System.out.println("alert width: " + alert.getWidth());
 
         Optional<ButtonType> x = alert.showAndWait();
     }
@@ -589,7 +589,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
                 ++i;
             }
         }
-        ////System.out.println("connection selected: " + selected);
+        //////System.out.println("connection selected: " + selected);
 
     }
 
@@ -614,8 +614,8 @@ public class StateMachineNodeSkin extends GNodeSkin {
         node.setDescription("alert state");
 
         Commands.addNode(getGraphEditor().getModel(), node);
-        ////System.out.println("created alert node" + node);
-        ////System.out.println("alert node connectors: + " + node.getConnectors() );
+        //////System.out.println("created alert node" + node);
+        //////System.out.println("alert node connectors: + " + node.getConnectors() );
 
         GConnector sourceConnector = selectedCon.getSource();
         GConnector targetConnector = selectedCon.getTarget();
@@ -655,7 +655,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
     //TODO: customise
     public void setDescription() {
-        ////System.out.println("setting description");
+        //////System.out.println("setting description");
         Font font = new Font("Arial", 11);
 
         title.setMaxSize(border.getWidth(), border.getHeight());
@@ -762,9 +762,9 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
     @Override
     public int updateStatus(List<String> status) {
-        //System.out.println("updating status");
+        ////System.out.println("updating status");
         if (status.isEmpty()) {
-            //System.out.println("true");
+            ////System.out.println("true");
             this.background.setStyle("-fx-fill:" + colours.get(getNode().getSubtype()) + ";");
             this.isCorrect = true;
             this.issuesWithNode.clear();

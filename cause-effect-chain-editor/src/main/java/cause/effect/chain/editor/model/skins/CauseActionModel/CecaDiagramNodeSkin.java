@@ -80,7 +80,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
         return event -> {
             if (event.getButton().compareTo(MouseButton.SECONDARY) == 0)
             {
-                //System.out.println("State Machine handling rightclick");
+                ////System.out.println("State Machine handling rightclick");
                 showNodeInformation();
             }
             else
@@ -106,8 +106,8 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
                     alert.showAndWait();
                 } else {
-                    //System.out.println("handling doubleclick ceca node");
-                    ////System.out.println(getNode());
+                    ////System.out.println("handling doubleclick ceca node");
+                    //////System.out.println(getNode());
                     descriptionEditable.setPrefSize(-1, -1);
                     descriptionEditable.setMinSize(title.getWidth(), title.getHeight());
                     descriptionEditable.setMaxSize(background.getWidth(), background.getHeight());
@@ -123,7 +123,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
                     boolean foc = requestFocusOrDieTrying(descriptionEditable);
                     descriptionEditable.focusedProperty().addListener((observable, oldValue, newValue) -> {
                         if (foc &&!newValue) {
-                            //System.out.println("in focused new value");
+                            ////System.out.println("in focused new value");
                             getNode().setDescription(descriptionEditable.getText());
                             title.setText(descriptionEditable.getText());
                             getRoot().getChildren().remove(descriptionEditable);
@@ -199,7 +199,7 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
                 ActionEvent.ACTION,
                 action -> {
                     getNode().setDescription(descriptionLabel.getText());
-                   // System.out.println("set description to " + descriptionLabel.getText());
+                   // //System.out.println("set description to " + descriptionLabel.getText());
                     setDescription();
                 }
         );
@@ -214,9 +214,9 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
                 }
         );
 
-        //System.out.println("alert width: " + alert.getWidth());
+        ////System.out.println("alert width: " + alert.getWidth());
         alert.setWidth(1200);
-       // System.out.println("alert width: " + alert.getWidth());
+       // //System.out.println("alert width: " + alert.getWidth());
 
         Optional<ButtonType> x = alert.showAndWait();
 
@@ -273,9 +273,9 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
         getNode().setHeight(50);
         getNode().setWidth(Math.max(Math.min(getNode().getDescription().length() *  7, 200),50));
-        System.out.println(Math.max(Math.min(getNode().getDescription().length(), 200),50));
+        //System.out.println(Math.max(Math.min(getNode().getDescription().length(), 200),50));
         title.setText(node.getDescription());
-        //System.out.println("ceca setting title");
+        ////System.out.println("ceca setting title");
         title.setAlignment(Pos.CENTER);
         title.setVisible(true);
         Font font = new Font("Arial", 11);
@@ -350,12 +350,12 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
     private void updateColour() {
         if (issuesWithNode.isEmpty()) {
-            //System.out.println("true");
+            ////System.out.println("true");
             this.background.setStyle("-fx-fill:" + colours.get(getNode().getSubtype()) + ";");
             this.isCorrect = true;
 
         } else {
-            //System.out.println("false on create status");
+            ////System.out.println("false on create status");
             //this.background.setStyle("-fx-fill:#FF4500;");
             this.isCorrect = false;
         }
@@ -517,9 +517,9 @@ public class CecaDiagramNodeSkin extends GNodeSkin {
 
     @Override
     public int updateStatus(List<String> status) {
-        //System.out.println("updating status");
+        ////System.out.println("updating status");
         if (status.isEmpty()) {
-            //System.out.println("true");
+            ////System.out.println("true");
             this.background.setStyle("-fx-fill:" + colours.get(getNode().getSubtype()) + ";");
             this.isCorrect = true;
             this.issuesWithNode.clear();

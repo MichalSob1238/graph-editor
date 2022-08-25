@@ -106,7 +106,7 @@ public class DefaultTailSkin extends GTailSkin {
 
             final double x = GeometryUtils.moveOnPixel(line.getPoints().get(i));
             final double y = GeometryUtils.moveOnPixel(line.getPoints().get(i + 1));
-            ////System.out.println("ADDING NEW JOINT POSITION: " + x + ", " + y);
+            //////System.out.println("ADDING NEW JOINT POSITION: " + x + ", " + y);
             jointPositions.add(new Point2D(x, y));
         }
 

@@ -246,8 +246,8 @@ public class GraphEditorController {
      */
     public void updateSkinManager() {
 
-        ////System.out.printlnprintln("nodes to add was " + modelMemory.getNodesToAdd());
-        ////System.out.printlnprintln("nodes to remove was " + modelMemory.getNodesToRemove());
+        //////System.out.printlnprintln("nodes to add was " + modelMemory.getNodesToAdd());
+        //////System.out.printlnprintln("nodes to remove was " + modelMemory.getNodesToRemove());
 
         skinManager.removeNodes(modelMemory.getNodesToRemove());
         skinManager.addNodes(modelMemory.getNodesToAdd());

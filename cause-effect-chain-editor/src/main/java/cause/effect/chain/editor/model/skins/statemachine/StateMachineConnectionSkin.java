@@ -115,7 +115,7 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
 
         lbl.setLayoutY(points.get(1).getY() / 2.0 + points.get(0).getY() / 2.0 - lbl.getHeight()/2);
         lbl.setWrapText(true);
-        lbl.setPrefWidth(200);
+        lbl.setMaxWidth(200);
 
         lbl.setOnMouseEntered(e -> {
             lbl.setScaleX(1.5);
@@ -184,7 +184,7 @@ public class StateMachineConnectionSkin extends GConnectionSkin {
                 );
                 td.showAndWait();
                 getConnection().setDescription(td.getEditor().getText());
-                ////System.out.println("set description to + "  + getConnection().getDescription());
+                //////System.out.println("set description to + "  + getConnection().getDescription());
                 betterSetText(getConnection().getDescription());
             }
         };

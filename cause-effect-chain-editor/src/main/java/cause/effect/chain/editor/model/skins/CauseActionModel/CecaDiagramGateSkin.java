@@ -148,9 +148,9 @@ public class CecaDiagramGateSkin extends GNodeSkin {
                 }
         );
 
-        //System.out.println("alert width: " + alert.getWidth());
+        ////System.out.println("alert width: " + alert.getWidth());
         alert.setWidth(1200);
-        //System.out.println("alert width: " + alert.getWidth());
+        ////System.out.println("alert width: " + alert.getWidth());
 
         Optional<ButtonType> x = alert.showAndWait();
 
@@ -241,7 +241,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
 
             getRoot().getChildren().addAll(andGateShape.getBackgroundComponents());
         } else {
-            ////System.out.println("not and");
+            //////System.out.println("not and");
             orGateShape.getBackground().translateXProperty().bind(getRoot().widthProperty().divide(-2.0).add(orGateShape.getBackground().widthProperty().divide(2.0)).add(orGateShape.getSemiCircleBackgroundFront().radiusXProperty().divide(2.0)).add(1));
             orGateShape.getBackground().widthProperty().bind(getRoot().widthProperty().multiply(0.4));
             orGateShape.getBackground().heightProperty().bind(getRoot().heightProperty());
@@ -490,7 +490,7 @@ public class CecaDiagramGateSkin extends GNodeSkin {
     @Override
     public int updateStatus(List<String> status) {
         if (status.isEmpty()) {
-            //System.out.println("true");
+            ////System.out.println("true");
             this.isCorrect = true;
             this.issuesWithNode.clear();
             errorHalo.setVisible(false);

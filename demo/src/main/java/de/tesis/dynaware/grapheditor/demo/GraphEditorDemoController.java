@@ -139,11 +139,11 @@ public class GraphEditorDemoController {
         initializeMenuBar();
         addActiveSkinControllerListener();
         graphEditor.setOnConnectionCreated((connection, command) -> {
-            ////System.out.println("connection added" + connection);
+            //////System.out.println("connection added" + connection);
             coherencyChecker.getNotified(connection);
         });
         graphEditor.setOnConnectionRemoved((connection, command) -> {
-            //System.out.println("connection removed" + connection);
+            ////System.out.println("connection removed" + connection);
             coherencyChecker.getNotified(connection);
         });
         graphEditorContainer.setOnMouseClicked(event -> graphEditorContainer.requestFocus());
@@ -200,8 +200,8 @@ public class GraphEditorDemoController {
 
     @FXML
     public void undo() {
-        ////System.out.println("AAA + " + graphEditor.getModel().getConnections());
-        ////System.out.println("AAA + " + ((GModelImpl) graphEditor.getModel()).connections);
+        //////System.out.println("AAA + " + graphEditor.getModel().getConnections());
+        //////System.out.println("AAA + " + ((GModelImpl) graphEditor.getModel()).connections);
         Commands.undo(graphEditor.getModel());
     }
 
@@ -253,7 +253,7 @@ public class GraphEditorDemoController {
         graphEditor.getSelectionManager().clearSelection();
         List<GNode> rootNodes = getNodesWithDescription3();
 
-        ////System.out.println("found " + rootNodes.size() + " root nodes");
+        //////System.out.println("found " + rootNodes.size() + " root nodes");
         activeSkinController.set(cecaSkinController);
         rootNodes.forEach(this::beginTransformationIntoDiagram);
         deleteSelection();
@@ -276,28 +276,28 @@ public class GraphEditorDemoController {
     }
 
     public void beginTransformationIntoDiagram(GNode rootNode) {
-        ////System.out.println("Called begin transform into diagram on node " + rootNode);
+        //////System.out.println("Called begin transform into diagram on node " + rootNode);
         List<GConnector> inputConnectors = rootNode.getConnectors().stream()
                 .filter(conector -> isInput(conector.getType()))
                 .filter(connector -> !connector.getConnections().isEmpty())
                 .collect(Collectors.toList());
 
-        ////System.out.println("found " + inputConnectors.size() + " input connectors");
+        //////System.out.println("found " + inputConnectors.size() + " input connectors");
 
         if (inputConnectors.isEmpty()) {
-            ////System.out.printlnprintln("fucked up, somehow " + rootNode);
+            //////System.out.printlnprintln("fucked up, somehow " + rootNode);
             return;
         }
 
         if (inputConnectors.size() == 1) {
-            ////System.out.printlnprintln("1");
+            //////System.out.printlnprintln("1");
             GNode predecessorNode = (GNode) inputConnectors.get(0).getConnections().get(0).getSource().getParent();
             String description = inputConnectors.get(0).getConnections().get(0).getDescription();
             procesPredecesorNode(rootNode, predecessorNode, description);
             GConnection conectionToDetele = inputConnectors.get(0).getConnections().get(0);
             graphEditor.getSkinLookup().lookupConnection(conectionToDetele).setSelected(true);
         } else {
-            ////System.out.printlnprintln("2");
+            //////System.out.printlnprintln("2");
 
             List<GConnection> orConnections = new ArrayList<>();
             HashMap<List<String>, List<GConnection>> connectionsMap = new HashMap<>();
@@ -306,13 +306,13 @@ public class GraphEditorDemoController {
                 String description = connection.getDescription();
                 if (description.contains("&")) {
                     List<String> conditions = Arrays.stream(description.split("&")).map(String::trim).collect(Collectors.toList());
-                    ////System.out.printlnprintln("conditions + " + conditions);
+                    //////System.out.printlnprintln("conditions + " + conditions);
 
                     if (connectionsMap.containsKey(conditions)) {
                         connectionsMap.get(conditions).add(connection);
-                        ////System.out.printlnprintln("was previous");
+                        //////System.out.printlnprintln("was previous");
                     } else {
-                        ////System.out.printlnprintln("adding new");
+                        //////System.out.printlnprintln("adding new");
                         List<GConnection> storedConenctions = new ArrayList<>();
                         storedConenctions.add(connection);
                         connectionsMap.put(conditions, storedConenctions);
@@ -372,7 +372,7 @@ public class GraphEditorDemoController {
     }
 
     private void procesPredecesorNode(GNode rootNode, GNode predecessorNode, String description) {
-        ////System.out.printlnprintln("predecessorNode + " + predecessorNode);
+        //////System.out.printlnprintln("predecessorNode + " + predecessorNode);
         final GNode actionNode = cecaSkinController.addNode((predecessorNode.getX() + rootNode.getX()) / 2.0, (predecessorNode.getY() + rootNode.getY()) / 2.0, description);
 
         actionNode.setDescription(description);
@@ -397,18 +397,18 @@ public class GraphEditorDemoController {
         graphEditor.getSelectionManager().clearSelection();
         List<GNode> rootNodes = getNodesWithDescription3();
 
-        ////System.out.printlnprintln("found " + rootNodes.size() + " root nodes");
+        //////System.out.printlnprintln("found " + rootNodes.size() + " root nodes");
 
         activeSkinController.set(stateMachineController);
 
         rootNodes.forEach(this::beginTransformationIntoStateMachine);
         deleteSelection();
         for (GNode node : graphEditor.getModel().getNodes()) {
-            ////System.out.printlnprintln("NODE: " + node + '\n' + node.getConnectors());
+            //////System.out.printlnprintln("NODE: " + node + '\n' + node.getConnectors());
             node.getConnectors().removeIf(connector -> connector.getConnections().isEmpty());
         }
         for (GNode node : graphEditor.getModel().getNodes()) {
-            ////System.out.printlnprintln("NODE: " + node + '\n' + node.getConnectors());
+            //////System.out.printlnprintln("NODE: " + node + '\n' + node.getConnectors());
         }
         graphEditor.reload();
 
@@ -420,29 +420,29 @@ public class GraphEditorDemoController {
     private static final EReference CONNECTOR = GraphPackage.Literals.GCONNECTABLE__CONNECTORS;
 
     private void beginTransformationIntoStateMachine(GNode rootNode) {
-        ////System.out.printlnprintln("Called begin transform on node " + rootNode);
+        //////System.out.printlnprintln("Called begin transform on node " + rootNode);
         List<GConnector> inputConnectors = rootNode.getConnectors().stream()
                 .filter(conector -> isInput(conector.getType()))
                 .filter(connector -> !connector.getConnections().isEmpty())
                 .collect(Collectors.toList());
 
-        ////System.out.printlnprintln("found " + inputConnectors.size() + " input connectors");
+        //////System.out.printlnprintln("found " + inputConnectors.size() + " input connectors");
 
         if (inputConnectors.isEmpty()) {
-            ////System.out.printlnprintln("fucked up, somehow " + rootNode);
+            //////System.out.printlnprintln("fucked up, somehow " + rootNode);
             return;
         }
         //TRUE STEP
         inputConnectors.forEach(connector -> {
             GNode actionOrGateNode = (GNode) connector.getConnections().get(0).getSource().getParent();
-            ////System.out.printlnprintln("Node identified as previous: " + actionOrGateNode + "!!!");
+            //////System.out.printlnprintln("Node identified as previous: " + actionOrGateNode + "!!!");
             List<GConnector> actionOrGateInputs = actionOrGateNode.getConnectors().stream()
                     .filter(actionOrGateConector -> isInput(actionOrGateConector.getType()))
                     .filter(actionOrGateConector -> !actionOrGateConector.getConnections().isEmpty())
                     .collect(Collectors.toList());
 
             if (actionOrGateInputs.isEmpty()) {
-                ////System.out.printlnprintln("found floating action or gate: " + actionOrGateNode);
+                //////System.out.printlnprintln("found floating action or gate: " + actionOrGateNode);
                 return;
             }
             String description;
@@ -471,7 +471,7 @@ public class GraphEditorDemoController {
 
     private void onActionProcess(GNode rootNode, GNode actionNode, String description) {
         //TODO: action with more than one inputs
-        ////System.out.printlnprintln("caleld onActionProcess");
+        //////System.out.printlnprintln("caleld onActionProcess");
         graphEditor.getSkinLookup().lookupNode(actionNode).setSelected(true);
         List<GConnector> actuionInputs = actionNode.getConnectors().stream()
                 .filter(actionConnector -> isInput(actionConnector.getType()))
@@ -488,7 +488,7 @@ public class GraphEditorDemoController {
                     .collect(Collectors.toList());
 
 
-            ////System.out.printlnprintln("found edge state: " + predecessorState);
+            //////System.out.printlnprintln("found edge state: " + predecessorState);
             beginTransformationIntoStateMachine(predecessorState);
 
             final GConnector output = stateMachineController.addConnector(predecessorState, StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR);
@@ -496,10 +496,10 @@ public class GraphEditorDemoController {
             final GConnector input = stateMachineController.addConnector(rootNode, StateMachineConstants.STATE_MACHINE_LEFT_INPUT_CONNECTOR);
 
             stateMachineController.addStateMachineConnection(output, input, description);
-            ////System.out.printlnprintln("set description: " + predecessorState);
+            //////System.out.printlnprintln("set description: " + predecessorState);
             rootNode.setType(StateMachineConstants.STATE_MACHINE_NODE);
 
-            ////System.out.printlnprintln("new edge state: " + predecessorState);
+            //////System.out.printlnprintln("new edge state: " + predecessorState);
         });
 
 

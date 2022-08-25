@@ -30,16 +30,16 @@ public class ResultStore {
     }
 
     public void printElementTimes() {
-        System.out.println("Nr;Czas");
+        //System.out.println("Nr;Czas");
         for (int i = 0; i < elementTimes.length; i++) {
-            System.out.println(i+";"+elementTimes[i]);
+            //System.out.println(i+";"+elementTimes[i]);
         }
     }
 
     public void printConnectionTimes() {
-        System.out.println("Nr;Czas");
+        //System.out.println("Nr;Czas");
         for (int i = 0; i < connectionTimes.length; i++) {
-            System.out.println(i+";"+connectionTimes[i]);
+            //System.out.println(i+";"+connectionTimes[i]);
         }
     }
 }

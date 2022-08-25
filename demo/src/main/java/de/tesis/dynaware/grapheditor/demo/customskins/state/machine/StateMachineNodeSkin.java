@@ -85,7 +85,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
         getRoot().getChildren().addAll(border, background);
 
         title.setText("title!");
-        ////System.out.println("setting title");
+        //////System.out.println("setting title");
         title.setAlignment(Pos.CENTER);
         title.setVisible(true);
         title.setOnMouseClicked(doubleClickedListener);
@@ -213,7 +213,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
             if (event.getClickCount() >= 2) {
 
 
-                ////System.out.println("State Machine handling doubleclick");
+                //////System.out.println("State Machine handling doubleclick");
 
                 JFXTextField descriptionEditable = new JFXTextField();
                 descriptionEditable.setPrefSize(-1, -1);
@@ -242,7 +242,7 @@ public class StateMachineNodeSkin extends GNodeSkin {
 
     //TODO: customise
     public void setDescription() {
-        ////System.out.println("setting description");
+        //////System.out.println("setting description");
         final Text text = new Text(getNode().getDescription());
         new Scene(new Group(text));
         text.applyCss();

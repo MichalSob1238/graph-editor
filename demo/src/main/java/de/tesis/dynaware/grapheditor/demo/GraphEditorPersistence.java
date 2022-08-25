@@ -83,7 +83,7 @@ public class GraphEditorPersistence {
             if (file != null) {
                 loadModel(file, graphEditor);
             } else {
-               // System.out.println("GODDAMNIT");
+               // //System.out.println("GODDAMNIT");
             }
         }
     }

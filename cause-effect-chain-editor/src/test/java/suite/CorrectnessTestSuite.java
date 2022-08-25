@@ -49,7 +49,7 @@ public class CorrectnessTestSuite extends BaseTest{
 
 
         List<GNode> invalidNodes = model.getNodes().stream().filter(nod -> Objects.equals(nod.getId(), "2") || Objects.equals(nod.getId(), "3")).collect(Collectors.toList());
-        System.out.println(invalidNodes);
+        //System.out.println(invalidNodes);
         List<CecaDiagramNodeSkin> skins = invalidNodes.stream().map(gnode ->(CecaDiagramNodeSkin) CauseEffectChainEditorController.instance.getModel().getGraphEditor().getSkinLookup().lookupNode(gnode))
                 .collect(Collectors.toList());
         sleep(100);

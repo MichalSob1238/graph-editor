@@ -45,14 +45,14 @@ public class StateMachineConnectorSkin extends GConnectorSkin {
         super(connector);
 
 //        performChecks();
-        ////System.out.println("create a SMconnector skin");
+        //////System.out.println("create a SMconnector skin");
         root.setManaged(false);
         root.resize(SIZE, SIZE);
         root.setPickOnBounds(false);
         root.getStyleClass().setAll(STYLE_CLASS_BASE);
 
         polygon.setManaged(false);
-        ////System.out.println("very werid thing: " + connector.getType());
+        //////System.out.println("very werid thing: " + connector.getType());
         polygon.getStyleClass().addAll(STYLE_CLASS_BASE, connector.getType());
 
 

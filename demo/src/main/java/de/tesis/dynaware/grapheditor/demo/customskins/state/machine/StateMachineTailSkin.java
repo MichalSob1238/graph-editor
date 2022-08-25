@@ -23,7 +23,7 @@ public class StateMachineTailSkin extends GTailSkin {
     public StateMachineTailSkin(final GConnector connector) {
 
         super(connector);
-        ////System.out.printlnprintln("creating a tail skin");
+        //////System.out.printlnprintln("creating a tail skin");
         line.getStyleClass().add(STYLE_CLASS);
     }
 
@@ -65,7 +65,7 @@ public class StateMachineTailSkin extends GTailSkin {
      * @param end the end point (tip) of the arrow
      */
     private void drawLine(final Point2D start, final Point2D end) {
-        ////System.out.println("drawing line in a tail skin");
+        //////System.out.println("drawing line in a tail skin");
 
         if (getConnector().getType().equals(StateMachineConstants.STATE_MACHINE_RIGHT_OUTPUT_CONNECTOR)) {
             LineUtils.draw(line, start, end, OFFSET_DISTANCE);

@@ -18,6 +18,12 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-base</artifactId>
+			<version>11</version>
+			<classifier>${osplatform}</classifier>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.emf</groupId>
 			<artifactId>edit</artifactId>
 			<version>${org.eclipse.emf.edit.version}</version>

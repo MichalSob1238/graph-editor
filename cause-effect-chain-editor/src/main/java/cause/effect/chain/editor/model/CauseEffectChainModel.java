@@ -89,7 +89,7 @@ public class CauseEffectChainModel {
         node.setDescription(description);
 
         Commands.addNode(graphEditor.getModel(), node);
-        ////System.out.printlnprintln(node);
+        //////System.out.printlnprintln(node);
         return node;
     }
 
@@ -108,7 +108,7 @@ public class CauseEffectChainModel {
         node.setDescription(description);
 
         Commands.addNode(graphEditor.getModel(), node);
-        ////System.out.printlnprintln(node);
+        //////System.out.printlnprintln(node);
         return node;
     }
 
@@ -276,7 +276,7 @@ public class CauseEffectChainModel {
     }
 
     public GNode addConditionActionAndGate(double X, double Y) {
-        ////System.out.printlnprintln("called and gate");
+        //////System.out.printlnprintln("called and gate");
 
         final GNode node = GraphFactory.eINSTANCE.createGNode();
         node.setY(Y);
@@ -320,7 +320,7 @@ public class CauseEffectChainModel {
         GModel model = graphEditor.getModel();
         final EditingDomain editingDomain = AdapterFactoryEditingDomain.getEditingDomainFor(model);
         final CompoundCommand command = new CompoundCommand();
-        System.out.println("created new connection");
+        //System.out.println("created new connection");
 
         final List<GJoint> joints = new ArrayList<>();
         GConnector realSource;
@@ -342,7 +342,7 @@ public class CauseEffectChainModel {
         joint2.setX((((GNode) realTarget.getParent()).getX()+ ((GNode) realSource.getParent()).getX())/2.0);
         joint2.setY(((GNode) realTarget.getParent()).getX());
         joints.add(joint2);
-        ////System.out.printlnprintln("JOINTS " + joints);
+        //////System.out.printlnprintln("JOINTS " + joints);
         ConnectionCommands.addConnection(model, realSource, realTarget, null, joints);
 
         if (command.canExecute()) {
@@ -379,7 +379,7 @@ public class CauseEffectChainModel {
     }
 
     private void addInitialConnectors(GNode node){
-        ////System.out.printlnprintln("adding connectors");
+        //////System.out.printlnprintln("adding connectors");
         switch (node.getSubtype()){
             case CecaDiagramConstants.CAUSE_ACTION_ROOT: {
                 final GConnector output = GraphFactory.eINSTANCE.createGConnector();
@@ -405,7 +405,7 @@ public class CauseEffectChainModel {
                 break;
             }
             default:
-                ////System.out.printlnprintln("NODE MUST HAVE A SUBTYPE");
+                //////System.out.printlnprintln("NODE MUST HAVE A SUBTYPE");
                 break;
         }
 

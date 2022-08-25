@@ -42,7 +42,7 @@ public class CauseActionModeController implements SkinController {
 
     @Override
     public void addNode(double currentZoomFactor) {
-        //System.out.println("called add node");
+        ////System.out.println("called add node");
         final double windowXOffset = graphEditorContainer.windowXProperty().get() / currentZoomFactor;
         final double windowYOffset = graphEditorContainer.windowYProperty().get() / currentZoomFactor;
 
@@ -53,18 +53,18 @@ public class CauseActionModeController implements SkinController {
             selected = result.get();
             graphEditor.addCauseActionNode(windowXOffset, windowYOffset, "description", selected);
         }
-        //System.out.println("choice box test" + selected);
+        ////System.out.println("choice box test" + selected);
 
     }
 
     public GNode addNode(double X, double Y, String description) {
-        //System.out.println("called add using coords node");
+        ////System.out.println("called add using coords node");
 
         return graphEditor.addCauseActionNode(X, Y, description);
     }
 
     public GNode addConditionNode(double X, double Y, String description) {
-        //System.out.println("called add using coords node");
+        ////System.out.println("called add using coords node");
 
         return graphEditor.addCauseActionNode(X, Y, description, "condition");
     }
@@ -134,7 +134,7 @@ public class CauseActionModeController implements SkinController {
 
     @Override
     public void addAndGate(double currentZoomFactor) {
-        //System.out.println("called and gate");
+        ////System.out.println("called and gate");
         final double windowXOffset = graphEditorContainer.windowXProperty().get() / currentZoomFactor;
         final double windowYOffset = graphEditorContainer.windowYProperty().get() / currentZoomFactor;
 
@@ -142,14 +142,14 @@ public class CauseActionModeController implements SkinController {
     }
 
     public GNode addAndGate(double X, double Y) {
-        //System.out.println("called and gate");
+        ////System.out.println("called and gate");
 
         return graphEditor.addConditionActionAndGate(X,Y);
     }
 
     @Override
     public void addOrGate(double currentZoomFactor) {
-        //System.out.println("called or gate from zoom");
+        ////System.out.println("called or gate from zoom");
         final double windowXOffset = graphEditorContainer.windowXProperty().get() / currentZoomFactor;
         final double windowYOffset = graphEditorContainer.windowYProperty().get() / currentZoomFactor;
 
@@ -157,7 +157,7 @@ public class CauseActionModeController implements SkinController {
     }
 
     public GNode addOrGate(double X, double Y, int inputs) {
-        //System.out.println("called or gate");
+        ////System.out.println("called or gate");
 
         final GNode node = graphEditor.addConditionActionOrGate(X, Y, inputs);
         return node;

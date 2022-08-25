@@ -467,7 +467,7 @@ public class ConnectorDragManager {
         GConnector realSource;
         GConnector realTarget;
 
-        System.out.println("Connection Creaated with source: " + source.getParent() +" target: " + target.getParent());
+        //System.out.println("Connection Creaated with source: " + source.getParent() +" target: " + target.getParent());
         if (source.getType().contains("output"))
         {
             realSource = source;
@@ -476,8 +476,8 @@ public class ConnectorDragManager {
             realSource = target;
             realTarget =  source;
         }
-        System.out.println("Connection Creaated with source: " + source.getParent() +" target: " + target.getParent());
-        System.out.println("==");
+        //System.out.println("Connection Creaated with source: " + source.getParent() +" target: " + target.getParent());
+        //System.out.println("==");
 
 
         final String connectionType = validator.createConnectionType(realSource, realTarget);

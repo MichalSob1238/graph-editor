@@ -23,7 +23,7 @@ public class CoherencyChecker {
     }
 
     public void getNotified(GConnection connection) {
-        //System.out.println("got notified for connection " + connection);
+        ////System.out.println("got notified for connection " + connection);
         updateCorrectnesStatus(NodeTraversalUtils.getSourceNode(connection));
         updateCorrectnesStatus(NodeTraversalUtils.getTargetNode(connection));
     }
@@ -232,7 +232,7 @@ public class CoherencyChecker {
                 break;
             }
             default: {
-                //System.out.println("Default case in coherency checker");
+                ////System.out.println("Default case in coherency checker");
             }
         }
 
@@ -263,7 +263,7 @@ public class CoherencyChecker {
                         case CecaDiagramConstants.CAUSE_ACTION_ROOT:
                         case CecaDiagramConstants.TARGET_DISADVANTAGE:
                         case CecaDiagramConstants.ACTION: {
-                            //System.out.println("good stuff");
+                            ////System.out.println("good stuff");
                         }
                     }
                 }
@@ -339,12 +339,12 @@ public class CoherencyChecker {
     }
 
     private String checkForInitialState(GNode node) {
-        //System.out.println("check initial state");
+        ////System.out.println("check initial state");
         for (GConnector connector : node.getConnectors()) {
             //TODO: check for null pointer error
-            System.out.println("check connector " + connector + " in initial state");
+            //System.out.println("check connector " + connector + " in initial state");
             for (GConnection connection : connector.getConnections()) {
-                System.out.println("check connection " + connection + " in initial state");
+                //System.out.println("check connection " + connection + " in initial state");
                 String targetNodeSubtype = NodeTraversalUtils.getTargetNode(connection).getSubtype();
                 //TODO: these cannot actually be null - you can use equals
                 if (Objects.equals(targetNodeSubtype, CecaDiagramConstants.CONDITION) || Objects.equals(targetNodeSubtype, "or")) {
@@ -365,7 +365,7 @@ public class CoherencyChecker {
                 for (GConnection connection : connector.getConnections()) {
                     inputCondition = true;
                     String sourceNodeSubtype = NodeTraversalUtils.getSourceNode(connection).getSubtype();
-                    //System.out.println("source for node " + node + " has subtype " + sourceNodeSubtype);
+                    ////System.out.println("source for node " + node + " has subtype " + sourceNodeSubtype);
                     switch (sourceNodeSubtype) {
                         case CecaDiagramConstants.ACTION:
                         case CecaDiagramConstants.CAUSE_ACTION_ROOT: {

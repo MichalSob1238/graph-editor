@@ -39,7 +39,7 @@ public class ConnectionEventManager {
      * @param command the compound command that created it
      */
     public void notifyConnectionAdded(final GConnection connection, final CompoundCommand command) {
-        ////System.out.println("called notifyConnectionAdded");
+        //////System.out.println("called notifyConnectionAdded");
         if (connectionCreatedHandler != null) {
             connectionCreatedHandler.accept(connection, command);
         }
@@ -52,7 +52,7 @@ public class ConnectionEventManager {
      * @param command the compound command that removed it
      */
     public void notifyConnectionRemoved(final GConnection connection, final CompoundCommand command) {
-        ////System.out.println("called notifyConnectionRemoved");
+        //////System.out.println("called notifyConnectionRemoved");
         if (connectionRemovedHandler != null) {
             connectionRemovedHandler.accept(connection, command);
         }
